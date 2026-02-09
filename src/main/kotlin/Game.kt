@@ -3,11 +3,11 @@ package com.afonsobenedito
 import com.afonsobenedito.werewolf.model.Player
 import com.afonsobenedito.werewolf.model.roles.*
 
-class Game(
+open class Game(
     val name: String
 ) {
     var status: GameStatus = GameStatus.NOT_STARTED
-        private set
+        protected set
     
     val players: MutableList<Player> = mutableListOf()
     var winner: Winner? = null
@@ -17,7 +17,7 @@ class Game(
         players.addAll(newPlayers)
     }
 
-    fun startGame() {
+    open fun startGame() {
         assignRoles()
         status = GameStatus.IN_PROGRESS
     }
