@@ -1,0 +1,39 @@
+package com.afonsobenedito.werewolf.web.api.model
+
+enum class GameMode {
+    OFFLINE, ONLINE
+}
+
+data class CreateGameRequest(
+    val mode: GameMode,
+    val playerName: String? = null // For Online mode, the host joins immediately
+)
+
+data class JoinGameRequest(
+    val playerName: String
+)
+
+data class GameResponse(
+    val id: String,
+    val status: String,
+    val players: List<PlayerResponse>,
+    val mode: GameMode,
+    val phase: String,
+    val dayCount: Int,
+    val winner: String? = null,
+    val lastDeadPlayerName: String? = null,
+    val votes: Map<String, String> = emptyMap()
+)
+
+data class PlayerResponse(
+    val id: String,
+    val name: String,
+    val isAlive: Boolean,
+    val role: String? = null // Hidden for others in Online mode
+)
+
+data class ActionRequest(
+    val playerId: String,
+    val actionType: String, // VOTE, KILL, HEAL, PEEK
+    val targetId: String? = null
+)
