@@ -27,7 +27,7 @@ export default function OnlineGame() {
     const { gameId } = useParams<{ gameId: string }>();
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [myPlayer, setMyPlayer] = useState<Player | null>(null);
-    const [bannerMsg, setBannerMsg] = useState<string | null>(null);
+    // const [bannerMsg, setBannerMsg] = useState<string | null>(null); // Removed banner state
     const [hasVotedReady, setHasVotedReady] = useState(false);
     const [lastPhase, setLastPhase] = useState<string>('');
 
@@ -66,38 +66,27 @@ export default function OnlineGame() {
         };
     }, [gameId]);
 
-    // Handle Phase Transitions & Banners
-
-
-    // Handle Phase Transitions & Banners
+    // Handle Phase Transitions & Alerts
     useEffect(() => {
         if (!gameState) return;
 
         // Detect Night -> Day Transition
         if (lastPhase.includes('NIGHT') && gameState.phase === 'DAY_DISCUSSION') {
             const victim = gameState.lastDeadPlayerName;
-            setBannerMsg(victim ? `${victim} died last night!` : "It was a peaceful night.");
+            alert(victim ? `${victim} died last night!` : "It was a peaceful night.");
             setHasVotedReady(false); // Reset ready vote for new day
         }
 
         // Detect Voting -> Results Transition (or just being in results)
         if (gameState.phase === 'DAY_RESULTS' && lastPhase !== 'DAY_RESULTS') {
             const victim = gameState.lastDeadPlayerName;
-            setBannerMsg(victim && victim !== 'ABSTAIN' ? `${victim} was eliminated!` : "No one was eliminated.");
-
-            // Auto-advance after 3s (Host only) - Keep this auto-advance for game flow, but banner stays until user dismisses or phase changes?
-            // Actually, if we auto-advance, the banner might disappear when phase changes.
-            // Let's keep the auto-advance logic for the host, but the banner is now manual dismiss for everyone.
-            // Wait, if host auto-advances, phase changes for everyone.
-            // If phase changes to NIGHT, the banner *should* probably stick until dismissed?
-            // Current logic: bannerMsg is state. If phase changes, it persists unless explicitly cleared.
-            // So if I don't clear it, it stays. Good.
+            alert(victim && victim !== 'ABSTAIN' ? `${victim} was eliminated!` : "No one was eliminated.");
 
             const isHost = gameState.players[0]?.name === playerName;
             if (isHost) {
                 setTimeout(() => {
                     handleAction('CONTINUE');
-                }, 3000);
+                }, 1000); // Shorter delay since alert is blocking/acknowledged
             }
         }
 
@@ -133,24 +122,15 @@ export default function OnlineGame() {
         }
 
         try {
-            const response = await performAction(gameId, playerName, actionType, targetId); // Note: Update api/gameApi.ts if return type changed, but likely it returns 'any' or check usage.
-            // Actually performAction in gameApi.ts uses axios.post, which returns response.data
-            // We need to check if performAction returns data or we need to update api layer.
-            // Let's assume performAction returns the data object.
-
-            // Wait, I need to check gameApi.ts first to see what it returns.
-            // For now, let's assume it returns void or I need to update it. 
-            // Better check gameApi.ts in next step. For now, let's inject a logging or simple check.
-
-            // Since I cannot verify api type right now, I will assume I need to update gameApi.ts and this file.
-            // But let's apply this change:
+            const response = await performAction(gameId, playerName, actionType, targetId);
             if (response && response.peekResult) {
                 alert("Seer Result: " + response.peekResult);
             } else {
-                alert("Action submitted");
+                // Success - silence
             }
-        } catch (e) {
-            alert("Action failed");
+        } catch (e: any) {
+            const msg = e.response?.data?.message || e.message || "Action failed";
+            alert("Action failed: " + msg);
         }
     };
 
@@ -160,14 +140,7 @@ export default function OnlineGame() {
 
     return (
         <div className="online-game">
-            {bannerMsg && (
-                <div className="banner-overlay">
-                    <div className="banner-content">
-                        <h1>{bannerMsg}</h1>
-                        <button className="dismiss-btn" onClick={() => setBannerMsg(null)}>OK</button>
-                    </div>
-                </div>
-            )}
+            {/* Banner Removed */}
             <div className="header">
                 <h2>Game: {gameId}</h2>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

@@ -225,14 +225,19 @@ class GameService(
         val result = when (instance.phase) {
             GamePhase.NIGHT -> handleNightAction(instance, player, request)
             GamePhase.DAY_DISCUSSION -> {
+                println("DAY_DISCUSSION Action: ${request.actionType} from ${player.name}")
                 if (request.actionType == "READY_TO_VOTE") {
+                    println("Adding ${player.name} to ready players")
                     instance.readyPlayers.add(player.name)
                     val aliveCount = instance.game.players.count { it.isAlive }
+                    println("Ready count: ${instance.readyPlayers.size} / $aliveCount")
                     if (instance.readyPlayers.size >= aliveCount) {
+                        println("Advancing phase to VOTING")
                         advancePhase(instance)
                     }
                     null
                 } else {
+                    println("Invalid action during discussion: ${request.actionType}")
                     throw IllegalArgumentException("Cannot act during discussion")
                 }
             }
