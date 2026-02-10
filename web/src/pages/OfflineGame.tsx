@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { createGame, startGame, getGameState, performAction } from '../api/gameApi';
-import { Play, Skull, RefreshCw, CheckSquare } from 'lucide-react';
+import { Play, RefreshCw } from 'lucide-react';
+import { PlayerCard } from '../components/PlayerCard';
+import { GameHeader } from '../components/GameHeader';
 
 interface Player {
     id: string;
@@ -62,9 +64,6 @@ export default function OfflineGame() {
             setLocalPlayers([...localPlayers, newPlayerName]);
             setNewPlayerName('');
         } else {
-            // Game already started logic? 
-            // Currently not supporting adding players mid-game in Offline mode easily via this UI without refactor.
-            // But user requirement was specifically about setup phase.
             alert("Game already started.");
         }
     };
@@ -214,14 +213,15 @@ export default function OfflineGame() {
     return (
         <div className="offline-game">
             <h1>Offline Mode (Master)</h1>
-            <div className="game-info">
-                <p>Game ID: <strong>{gameId}</strong></p>
-                <div className="phase-banner">
-                    <h2>{getPhaseMessage()}</h2>
-                </div>
-                {gameState.status !== 'NOT_STARTED' && <p>Day: {gameState.dayCount}</p>}
-                {gameState.winner && <h2 className="winner-banner">🏆 Winner: {gameState.winner}</h2>}
-            </div>
+
+            <GameHeader
+                gameId={gameId}
+                phase={getPhaseMessage()} // Offline mode uses descriptive phase message
+                dayCount={gameState.dayCount}
+                showConnectionStatus={false}
+            />
+
+            {gameState.winner && <h2 className="winner-banner">🏆 Winner: {gameState.winner}</h2>}
 
             {/* Voting Results Screen */}
             {isResults && (
@@ -265,9 +265,6 @@ export default function OfflineGame() {
                                 <Play size={16} /> Start Voting
                             </button>
                         ) : (
-                            // Clean Manual Advance logic?
-                            // Only show Force Next Phase if really needed, but mostly automated now.
-                            // Giving user 'Next Phase' button as escape hatch.
                             !isVoting && !isResults && <button onClick={handleNextPhase}><RefreshCw size={16} /> Force Next Phase</button>
                         )}
 
@@ -293,58 +290,48 @@ export default function OfflineGame() {
                     <div className="player-grid">
                         {gameState.players.map(p => {
                             const hasVoted = gameState.votes && gameState.votes[p.name];
+
+                            // Offline specific flags for PlayerCard
+                            const showKill = isNight && isWolfTurn && p.role !== "Werewolf";
+                            const showHeal = isNight && isMedicTurn;
+                            const showPeek = isNight && isSeerTurn && p.role !== "Seer";
+                            const showVoteSelect = isVoting && !activeVoter && !hasVoted;
+                            const showVoteTarget = isVoting && activeVoter && activeVoter !== p.name;
+
                             return (
-                                <div key={p.name} className={`player-card ${!p.isAlive ? 'dead' : ''} ${activeVoter === p.name ? 'active-voter' : ''} ${hasVoted ? 'has-voted' : ''}`}>
-                                    <div className="card-header">
-                                        <h3>{p.name}</h3>
-                                        {hasVoted && isVoting && <span className="voted-badge">Has Voted</span>}
-                                    </div>
+                                <PlayerCard
+                                    key={p.name}
+                                    name={p.name}
+                                    isAlive={p.isAlive}
+                                    role={p.role}
+                                    revealedRole={revealRoles ? p.role : undefined} // Only show if master reveals
+                                    hasVoted={!!hasVoted}
+                                    isVotingPhase={isVoting}
+                                    isActiveVoter={activeVoter === p.name}
+                                    isVoteTarget={false} // Offline logic is manual buttons, not click-to-target generally?
+                                    // Actually, offline mode uses specific buttons, so we pass explicit 'onX' handlers
+                                    // and set 'showX' flags.
 
-                                    {revealRoles && <p className="role">{p.role}</p>}
+                                    showKill={showKill}
+                                    onKill={() => handleKill(p.name)}
 
-                                    {p.isAlive && (
-                                        <div className="actions">
-                                            {isNight && (
-                                                <>
-                                                    {isWolfTurn && p.role !== "Werewolf" && (
-                                                        <button className="icon-btn kill-btn" onClick={() => handleKill(p.name)} title="Kill Player">
-                                                            <Skull size={16} /> Kill
-                                                        </button>
-                                                    )}
+                                    showHeal={showHeal}
+                                    onHeal={() => performAction(gameId!, "Master", "HEAL", p.name).then(() => fetchGameState())}
 
-                                                    {isMedicTurn && (
-                                                        <button className="icon-btn heal-btn" onClick={() => performAction(gameId!, "Master", "HEAL", p.name).then(() => fetchGameState())} title="Heal Player">
-                                                            ❤️ Heal
-                                                        </button>
-                                                    )}
+                                    showPeek={showPeek}
+                                    onPeek={() => {
+                                        const isVillager = p.role === "Villager";
+                                        const msg = isVillager ? "Regular Villager" : "Has Powers / Special Role";
+                                        alert(`${p.name} is: ${msg}`);
+                                        performAction(gameId!, "Master", "PEEK", p.name).then(() => fetchGameState());
+                                    }}
 
-                                                    {isSeerTurn && p.role !== "Seer" && (
-                                                        <button className="icon-btn peek-btn" onClick={() => {
-                                                            const isVillager = p.role === "Villager";
-                                                            const msg = isVillager ? "Regular Villager" : "Has Powers / Special Role";
-                                                            alert(`${p.name} is: ${msg}`);
-                                                            performAction(gameId!, "Master", "PEEK", p.name).then(() => fetchGameState());
-                                                        }} title="Peek Player">
-                                                            👁️ Peek
-                                                        </button>
-                                                    )}
-                                                </>
-                                            )}
+                                    showVoteSelect={!!showVoteSelect}
+                                    onVoteSelect={() => setActiveVoter(p.name)}
 
-                                            {isVoting && !activeVoter && !hasVoted && (
-                                                <button className="icon-btn vote-btn" onClick={() => setActiveVoter(p.name)} title="Cast Vote">
-                                                    <CheckSquare size={16} /> Vote
-                                                </button>
-                                            )}
-
-                                            {isVoting && activeVoter && activeVoter !== p.name && (
-                                                <button className="icon-btn vote-target-btn" onClick={() => handleVote(p.name)} title={`Vote for ${p.name}`}>
-                                                    Vote For
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
+                                    showVoteTarget={!!showVoteTarget}
+                                    onVoteTarget={() => handleVote(p.name)}
+                                />
                             );
                         })}
                     </div>
@@ -354,34 +341,9 @@ export default function OfflineGame() {
             <style>{`
                 .player-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                     gap: 1rem;
                     margin-top: 1rem;
-                }
-                .player-card {
-                    background: #333;
-                    padding: 1rem;
-                    border-radius: 8px;
-                    border: 1px solid #444;
-                    position: relative;
-                }
-                .player-card.dead {
-                    opacity: 0.5;
-                    border-color: red;
-                }
-                .player-card.active-voter {
-                    border-color: #f39c12;
-                    box-shadow: 0 0 10px #f39c12;
-                }
-                .player-card.has-voted {
-                    border-color: #2ecc71;
-                    background: #25412e;
-                    opacity: 0.8;
-                }
-                .role {
-                    font-weight: bold;
-                    color: #aaa;
-                    font-size: 0.9rem;
                 }
                 .winner-banner {
                     color: gold;
@@ -397,24 +359,6 @@ export default function OfflineGame() {
                     gap: 1rem;
                     flex-wrap: wrap;
                 }
-                .icon-btn {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.5rem 1rem;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    color: white;
-                    width: 100%;
-                    justify-content: center;
-                    margin-top: 0.5rem;
-                }
-                .kill-btn { background-color: #e74c3c; }
-                .heal-btn { background-color: #2ecc71; }
-                .peek-btn { background-color: #3498db; }
-                .vote-btn { background-color: #f39c12; color: black; }
-                .vote-target-btn { background-color: #9b59b6; }
                 
                 .death-announcement {
                     background: #c0392b;
@@ -433,24 +377,6 @@ export default function OfflineGame() {
                     background-color: #f39c12;
                     color: black;
                     font-weight: bold;
-                }
-                .action-note {
-                    font-size: 0.8rem;
-                    color: #777;
-                    font-style: italic;
-                }
-                .voted-badge {
-                    background: #2ecc71;
-                    color: white;
-                    padding: 0.2rem 0.5rem;
-                    border-radius: 4px;
-                    font-size: 0.7rem;
-                    float: right;
-                }
-                .card-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
                 }
                 .cancel-btn {
                     background-color: #95a5a6;

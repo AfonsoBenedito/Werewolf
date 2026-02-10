@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getGameState, startGame, performAction } from '../api/gameApi';
-import { RefreshCw, Play, WifiOff } from 'lucide-react';
 import SockJS from 'sockjs-client';
+console.log("OnlineGame module evaluated");
 import { Client } from '@stomp/stompjs';
+import { Play, RefreshCw } from 'lucide-react';
+import { getGameState, performAction, startGame } from '../api/gameApi';
+import { PlayerCard } from '../components/PlayerCard';
+import { GameHeader } from '../components/GameHeader';
 
 interface Player {
     id: string; // name
@@ -140,15 +143,13 @@ export default function OnlineGame() {
 
     return (
         <div className="online-game">
-            {/* Banner Removed */}
-            <div className="header">
-                <h2>Game: {gameId}</h2>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    {!isConnected && <WifiOff color="red" />}
-                    <div className="status-badge">{gameState.phase}</div>
-                </div>
-                <div>Day {gameState.dayCount}</div>
-            </div>
+            <GameHeader
+                gameId={gameId || ''}
+                phase={gameState.phase}
+                dayCount={gameState.dayCount}
+                isConnected={isConnected}
+                showConnectionStatus={true}
+            />
 
             {gameState.winner && <h1 className="winner">Winner: {gameState.winner}</h1>}
 
@@ -175,7 +176,7 @@ export default function OnlineGame() {
                     </div>
 
                     <div className="action-area">
-                        {/* Night Phase Logic */}
+                        {/* ... (Existing Action Logic Kept Same for now, maybe componentize later if specific enough) ... */}
                         {gameState.phase.includes('NIGHT') && myPlayer.isAlive && (
                             <>
                                 {/* Check if it is MY turn */}
@@ -230,53 +231,38 @@ export default function OnlineGame() {
                             const hasVoted = gameState.votes?.[p.name] !== undefined;
                             const isMe = p.name === playerName;
 
-                            // Determine if card interaction is disabled (visual style)
-                            // "since you can't vote in yourself, you should have your own card like its toggled off"
-                            // "That should also happen wolf in wolf phase and to seer in seer phase"
-                            // Medic CAN target self.
-
                             let isDisabled = false;
-
-                            // If it's me
                             if (isMe) {
                                 isDisabled = true;
-                                // Exception: Medic during Medic phase
-                                if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') {
-                                    isDisabled = false;
-                                }
+                                if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') isDisabled = false;
                             }
-
-                            // Also if dead (already handled by 'dead' class opacity, but let's be explicit)
                             if (!p.isAlive) isDisabled = true;
 
                             return (
-                                <div key={p.name} className={`player-card ${!p.isAlive ? 'dead' : ''} ${isDisabled ? 'disabled-card' : ''} ${isMyVoteTarget ? 'vote-target' : ''}`}
+                                <PlayerCard
+                                    key={p.name}
+                                    name={p.name}
+                                    isAlive={p.isAlive}
+                                    isMe={isMe}
+                                    role={p.role}
+                                    revealedRole={p.role} // Online: role is masked by backend
+                                    hasVoted={hasVoted}
+                                    isVotingPhase={gameState.phase === 'DAY_VOTING'}
+                                    isDisabled={isDisabled}
+                                    isVoteTarget={isMyVoteTarget}
                                     onClick={() => {
                                         if (!myPlayer.isAlive) return;
                                         if (isDisabled) return;
 
                                         if (gameState.phase === 'DAY_VOTING') handleAction('VOTE', p.name);
 
-                                        // Night Actions
                                         if (gameState.phase.includes('NIGHT')) {
                                             if (gameState.phase.includes("Wolf") && myPlayer.role === 'Werewolf') handleAction('KILL', p.name);
                                             if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') handleAction('HEAL', p.name);
                                             if (gameState.phase.includes("Seer") && myPlayer.role === 'Seer') handleAction('PEEK', p.name);
                                         }
                                     }}
-                                >
-                                    <div className="avatar">{p.name.charAt(0)}</div>
-                                    <div className="name">{p.name}</div>
-                                    {p.name === playerName && <small>(You)</small>}
-                                    {/* Show revealed role (e.g. other Wolves) */}
-                                    {p.role && p.role !== "Unknown" && p.name !== playerName && (
-                                        <div className="revealed-role">({p.role})</div>
-                                    )}
-                                    {/* Show Voting Badge during Voting Phase - HIDE FOR SELF */}
-                                    {gameState.phase === 'DAY_VOTING' && hasVoted && !isMe && (
-                                        <div className="voted-badge">Voted</div>
-                                    )}
-                                </div>
+                                />
                             );
                         })}
                     </div>
@@ -287,42 +273,22 @@ export default function OnlineGame() {
 
             <style>{`
                 .online-game { max-width: 600px; margin: 0 auto; }
-                .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-                .status-badge { background: #646cff; padding: 0.2rem 0.5rem; borderRadius: 4px; font-weight: bold; }
                 .player-pill { background: #444; padding: 0.5rem; border-radius: 20px; display: inline-block; margin: 0.2rem; }
                 .my-role-card { background: #2a2a2a; padding: 1rem; border: 1px solid #646cff; margin-bottom: 2rem; border-radius: 8px; }
                 .role-reveal { font-size: 1.2em; font-weight: bold; color: #aaddff; }
-                .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem; }
-                .player-card { background: #333; padding: 1rem; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
-                .player-card:hover { transform: scale(1.05); background: #444; }
-                .player-card.dead { opacity: 0.5; filter: grayscale(1); cursor: default; }
-                .player-card.disabled-card { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; border-color: #555; }
-                .player-card.disabled-card:hover { transform: none; background: #333; }
-                .avatar { width: 40px; height: 40px; background: #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold; }
+                .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+                
                 .dead-tag { color: red; font-weight: bold; margin-top: 0.5rem; }
                 .refresh-btn { position: fixed; bottom: 20px; right: 20px; border-radius: 50%; width: 50px; height: 50px; padding: 0; display: flex; align-items: center; justify-content: center; }
                 .sleep-banner { background: #2c3e50; color: #bdc3c7; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid #34495e; }
                 .turn-alert { color: #2ecc71; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
-                .revealed-role { color: #f39c12; font-size: 0.8rem; font-weight: bold; margin-top: 5px; }
                 .discussion-panel { background: #d35400; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
                 .ready-btn { background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-weight: bold; cursor: pointer; }
                 .ready-btn:hover { background: #d35400; }
                 .ready-status { margin-top: 0.5rem; font-size: 0.9rem; font-style: italic; }
                 .ready-wait-msg { font-weight: bold; color: #f1c40f; }
-                .banner-overlay {
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.85); color: white;
-                    display: flex; justify-content: center; align-items: center;
-                    z-index: 1000; animation: fadeIn 0.5s;
-                }
-                .banner-content { text-align: center; }
-                .banner-overlay h1 { font-size: 3rem; margin-bottom: 2rem; color: #e74c3c; text-shadow: 0 0 10px white; }
-                .dismiss-btn { background: #e74c3c; color: white; border: 2px solid white; padding: 1rem 3rem; font-size: 1.5rem; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; }
-                .dismiss-btn:hover { background: #c0392b; transform: scale(1.1); }
                 .skip-btn { background: #95a5a6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 5px; cursor: pointer; }
                 .skip-btn:hover { background: #7f8c8d; }
-                .voted-badge { background: #f1c40f; color: #000; font-size: 0.7rem; padding: 2px 5px; border-radius: 4px; margin-top: 5px; font-weight: bold; }
-                .vote-target { border: 2px solid #e74c3c; box-shadow: 0 0 10px #e74c3c; }
             `}</style>
         </div>
     );
