@@ -1,4 +1,4 @@
-import '../../styles/components/LobbySection.css';
+import '../../styles/components/common/LobbySection.css';
 
 interface LobbySectionProps {
     title: string;

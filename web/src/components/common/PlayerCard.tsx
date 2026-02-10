@@ -1,5 +1,5 @@
 import { Skull, CheckSquare } from 'lucide-react';
-import '../../styles/components/PlayerCard.css';
+import '../../styles/components/common/PlayerCard.css';
 
 interface PlayerCardProps {
     name: string;

@@ -1,5 +1,5 @@
 import { WifiOff } from 'lucide-react';
-import '../../styles/components/GameHeader.css';
+import '../../styles/components/common/GameHeader.css';
 
 interface GameHeaderProps {
     gameId: string;

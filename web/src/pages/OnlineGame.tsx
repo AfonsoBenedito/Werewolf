@@ -3,7 +3,7 @@ import { GameHeader } from '../components/common/GameHeader';
 import { WaitingRoom } from '../components/game/WaitingRoom';
 import { GameBoard } from '../components/game/GameBoard';
 import { useOnlineGame } from '../hooks/useOnlineGame';
-import '../styles/OnlineGame.css';
+import '../styles/pages/OnlineGame.css';
 
 console.log("OnlineGame module evaluated");
 
