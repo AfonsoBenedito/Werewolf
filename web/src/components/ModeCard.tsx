@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { LucideIcon } from 'lucide-react';
 import '../styles/components/ModeCard.css';
 
@@ -11,7 +11,7 @@ interface ModeCardProps {
 
 const ICON_SIZE = 48;
 
-export const ModeCard: React.FC<ModeCardProps> = ({ title, description, Icon, onClick }) => {
+export function ModeCard({ title, description, Icon, onClick }: ModeCardProps) {
     return (
         <button className="mode-card" onClick={onClick}>
             <Icon size={ICON_SIZE} />
@@ -19,4 +19,4 @@ export const ModeCard: React.FC<ModeCardProps> = ({ title, description, Icon, on
             <p>{description}</p>
         </button>
     );
-};
+}

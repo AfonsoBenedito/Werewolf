@@ -4,7 +4,6 @@ import OfflineGame from './pages/OfflineGame';
 import OnlineLobby from './pages/OnlineLobby';
 import OnlineGame from './pages/OnlineGame';
 
-
 function App() {
   return (
     <Router>

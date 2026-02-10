@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Skull, CheckSquare } from 'lucide-react';
 
 interface PlayerCardProps {
@@ -30,12 +30,12 @@ interface PlayerCardProps {
 
 import '../styles/components/PlayerCard.css';
 
-export const PlayerCard: React.FC<PlayerCardProps> = ({
+export function PlayerCard({
     name, isAlive, isMe, revealedRole, hasVoted, isVotingPhase,
     isActiveVoter, isDisabled, isVoteTarget, onClick,
     onKill, onHeal, onPeek, onVoteSelect, onVoteTarget,
     showKill, showHeal, showPeek, showVoteSelect, showVoteTarget
-}) => {
+}: PlayerCardProps) {
 
     return (
         <div
@@ -89,4 +89,4 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             )}
         </div>
     );
-};
+}

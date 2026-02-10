@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { WifiOff } from 'lucide-react';
 
 interface GameHeaderProps {
@@ -11,9 +11,9 @@ interface GameHeaderProps {
 
 import '../styles/components/GameHeader.css';
 
-export const GameHeader: React.FC<GameHeaderProps> = ({
+export function GameHeader({
     gameId, phase, dayCount, isConnected = true, showConnectionStatus = false
-}) => {
+}: GameHeaderProps) {
     return (
         <div className="game-header">
             <div className="header-top">
@@ -31,4 +31,4 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
             </div>
         </div>
     );
-};
+}
