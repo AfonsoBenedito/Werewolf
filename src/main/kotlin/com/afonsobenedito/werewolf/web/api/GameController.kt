@@ -51,8 +51,12 @@ class GameController(
     @PostMapping("/{id}/action")
     fun performAction(@PathVariable id: String, @RequestBody request: ActionRequest): ResponseEntity<Map<String, String>> {
         return try {
-            gameService.performAction(id, request)
-            ResponseEntity.ok(mapOf("message" to "Action accepted"))
+            val result = gameService.performAction(id, request)
+            val responseMap = mutableMapOf("message" to "Action accepted")
+            if (result != null) {
+                responseMap["peekResult"] = result
+            }
+            ResponseEntity.ok(responseMap)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(mapOf("message" to e.message.orEmpty()))
         }

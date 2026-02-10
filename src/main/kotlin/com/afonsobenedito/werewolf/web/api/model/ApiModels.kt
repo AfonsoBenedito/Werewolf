@@ -23,7 +23,9 @@ data class GameResponse(
     val dayCount: Int,
     val winner: String? = null,
     val lastDeadPlayerName: String? = null,
-    val votes: Map<String, String> = emptyMap()
+    val votes: Map<String, String> = emptyMap(),
+    val readyPlayerCount: Int = 0,
+    val totalAliveCount: Int = 0
 )
 
 data class PlayerResponse(

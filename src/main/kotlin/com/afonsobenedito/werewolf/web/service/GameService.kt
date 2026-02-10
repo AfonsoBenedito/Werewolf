@@ -76,7 +76,16 @@ class GameService(
             dayCount = instance.dayCount,
             winner = game.winner?.name,
             lastDeadPlayerName = instance.lastDeadPlayerName,
-            votes = instance.votes
+            votes = if (instance.phase == GamePhase.DAY_VOTING) {
+                // Mask votes: Show own vote target, else "SECRET" (meaning they voted)
+                instance.votes.mapValues { (voter, target) ->
+                    if (voter == playerId) target else "SECRET"
+                }.toMutableMap()
+            } else {
+                instance.votes // Show all results after voting is done (in Results phase)
+            },
+            readyPlayerCount = instance.readyPlayers.size,
+            totalAliveCount = game.players.count { it.isAlive }
         )
     }
 
@@ -105,22 +114,30 @@ class GameService(
     }
 
     private fun shouldRevealRole(instance: GameInstance, player: Player, requesterId: String?): Boolean {
-        // Always reveal if game over or player dead
-        if (instance.game.status == GameStatus.FINISHED || !player.isAlive) return true
+        // 1. Always reveal if game is FINISHED
+        if (instance.game.status == GameStatus.FINISHED) return true
         
-        // Reveal to self
+        // 2. Always reveal if player is DEAD (Public knowledge)
+        if (!player.isAlive) return true
+        
+        // 3. Reveal to SELF
         if (player.name == requesterId) return true
         
-        // Reveal to Master in Offline Mode
-        // We send the data to the frontend, which handles the visual hiding/revealing.
+        // 4. OFFLINE Mode: Reveal everything (Master view)
+        // Ensure this doesn't leak into Online games.
         if (instance.mode == GameMode.OFFLINE) return true
         
-        // Wolves see other Wolves
+        // 5. ONLINE Mode specific logic
         if (requesterId != null) {
             val requester = instance.game.players.find { it.name == requesterId }
-            if (requester?.role is Wolf && player.role is Wolf) return true
+            
+            // Wolves allow seeing other Wolves
+            if (requester?.role is Wolf && player.role is Wolf) {
+                return true
+            }
         }
         
+        // Default: Hidden
         return false
     }
 
@@ -143,13 +160,34 @@ class GameService(
         }
         instance.game.startGame()
         instance.phase = GamePhase.NIGHT
-        instance.currentTurn = "Wolf" // Start with Wolf turn
         instance.dayCount = 1
+        
+        startNightPhase(instance)
         
         saveGame(instance)
     }
+
+    // ... (logic)
+
+
     
-    fun performAction(gameId: String, request: ActionRequest) {
+    private fun startNightPhase(instance: GameInstance) {
+        val turnOrder = listOf("Wolf", "Seer", "Medic")
+        
+        for (roleName in turnOrder) {
+            if (hasAliveRole(instance, roleName)) {
+                instance.currentTurn = roleName
+                return
+            }
+        }
+        
+        // If NO roles are alive (rare/impossible?), end night immediately
+        advancePhase(instance)
+    }
+
+
+    
+    fun performAction(gameId: String, request: ActionRequest): String? {
         val instance = loadGame(gameId) ?: throw IllegalArgumentException("Game not found")
         
         // Bypass player check for Offline Master actions OR Voting
@@ -171,7 +209,7 @@ class GameService(
                    // Let's update TTL to 10 minutes if finished.
                    setShortTtl(instance.id)
                 }
-                return
+                return null
             }
         }
 
@@ -179,11 +217,29 @@ class GameService(
         
         if (!player.isAlive) throw IllegalArgumentException("Player is dead")
         
-        when (instance.phase) {
+        val result = when (instance.phase) {
             GamePhase.NIGHT -> handleNightAction(instance, player, request)
-            GamePhase.DAY_DISCUSSION -> throw IllegalArgumentException("Cannot act during discussion")
-            GamePhase.DAY_VOTING -> handleVotingAction(instance, player, request)
-            GamePhase.DAY_RESULTS -> throw IllegalArgumentException("Cannot act during results")
+            GamePhase.DAY_DISCUSSION -> {
+                if (request.actionType == "READY_TO_VOTE") {
+                    instance.readyPlayers.add(player.name)
+                    val aliveCount = instance.game.players.count { it.isAlive }
+                    if (instance.readyPlayers.size >= aliveCount) {
+                        advancePhase(instance)
+                    }
+                    null
+                } else {
+                    throw IllegalArgumentException("Cannot act during discussion")
+                }
+            }
+            GamePhase.DAY_VOTING -> { handleVotingAction(instance, player, request); null }
+            GamePhase.DAY_RESULTS -> {
+                if (request.actionType == "CONTINUE") {
+                    advancePhase(instance)
+                    null
+                } else {
+                     throw IllegalArgumentException("Cannot act during results")
+                }
+            }
             GamePhase.FINISHED -> throw IllegalArgumentException("Game is already finished")
         }
         
@@ -193,14 +249,67 @@ class GameService(
         if (instance.phase == GamePhase.FINISHED) {
              setShortTtl(instance.id)
         }
+        
+        return result
     }
     
     private fun setShortTtl(gameId: String) {
          redisTemplate.expire(GAME_KEY_PREFIX + gameId, 10, TimeUnit.MINUTES)
     }
 
-    private fun handleNightAction(instance: GameInstance, actor: Player, request: ActionRequest) {
-        // Online logic placeholder
+    private fun handleNightAction(instance: GameInstance, actor: Player, request: ActionRequest): String? {
+        val target = instance.game.players.find { it.name == request.targetId }
+        
+        // 1. Validate Turn
+        // "Wolf" turn -> Actor must be Wolf
+        // "Seer" turn -> Actor must be Seer
+        // "Medic" turn -> Actor must be Medic
+        val expectedRoleName = when(instance.currentTurn) {
+            "Wolf" -> "Wolf"
+            "Seer" -> "Seer"
+            "Medic" -> "Medic"
+            else -> throw IllegalArgumentException("It is not your turn")
+        }
+        
+        if (actor.role?.name != expectedRoleName && !(expectedRoleName == "Wolf" && actor.role is Wolf)) { // Handle generic naming if needed
+             throw IllegalArgumentException("It is not your turn! Current turn: $expectedRoleName")
+        }
+
+        // 2. Execute Action
+        return when (request.actionType) {
+            "KILL" -> {
+                if (actor.role !is Wolf) throw IllegalArgumentException("Only Wolves can kill")
+                // For Online, we ideally strictly want consensus or just first actor?
+                // For simplicity: First Wolf to act decides for the pack.
+                if (target != null && target.role is Wolf) {
+                     throw IllegalArgumentException("Wolves cannot kill other Wolves!")
+                }
+                if (target != null) instance.pendingDeathId = target.name
+                advanceTurn(instance)
+                null
+            }
+            "HEAL" -> {
+                if (actor.role !is Medic) throw IllegalArgumentException("Only Medic can heal")
+                if (target != null && instance.pendingDeathId == target.name) {
+                     instance.pendingDeathId = null // Saved!
+                }
+                advanceTurn(instance)
+                null
+            }
+            "PEEK" -> {
+                if (actor.role !is Seer) throw IllegalArgumentException("Only Seer can peek")
+                val targetRole = target?.role ?: return null
+                advanceTurn(instance)
+                
+                // Return vague result:
+                if (targetRole is Villager) "Regular Villager" else "Not a Regular Villager"
+            }
+            "SKIP" -> {
+                advanceTurn(instance)
+                null
+            }
+            else -> throw IllegalArgumentException("Invalid action for Night")
+        }
     }
     
     private fun processOfflineAction(instance: GameInstance, request: ActionRequest) {
@@ -263,11 +372,15 @@ class GameService(
         
         if (candidates.size == 1) {
             val victimName = candidates.first()
-            val victim = instance.game.players.find { it.name == victimName }
-            victim?.die()
-            instance.lastDeadPlayerName = victimName 
+            if (victimName == "ABSTAIN") {
+                instance.lastDeadPlayerName = null
+            } else {
+                val victim = instance.game.players.find { it.name == victimName }
+                victim?.die()
+                instance.lastDeadPlayerName = victimName
+            }
         } else {
-            instance.lastDeadPlayerName = null 
+            instance.lastDeadPlayerName = null
         }
         
         instance.votes.clear()
@@ -282,16 +395,67 @@ class GameService(
     private fun advanceTurn(instance: GameInstance) {
         if (instance.phase != GamePhase.NIGHT) return
         
-        when (instance.currentTurn) {
-            "Wolf" -> instance.currentTurn = "Seer"
-            "Seer" -> instance.currentTurn = "Medic"
-            "Medic" -> advancePhase(instance) // End of night
-            else -> instance.currentTurn = "Wolf"
+        val turnOrder = listOf("Wolf", "Seer", "Medic")
+        val currentIndex = turnOrder.indexOf(instance.currentTurn)
+        
+        // Find next valid turn
+        for (i in currentIndex + 1 until turnOrder.size) {
+            val nextTurn = turnOrder[i]
+            if (hasAliveRole(instance, nextTurn)) {
+                instance.currentTurn = nextTurn
+                return
+            }
+        }
+        
+        // If no more turns in the list, end night
+        advancePhase(instance)
+    }
+
+    private fun hasAliveRole(instance: GameInstance, roleName: String): Boolean {
+        // "Wolf" checks for Wolf class
+        // "Seer" checks for Seer class
+        // "Medic" checks for Medic class
+        return instance.game.players.any { player -> 
+            player.isAlive && when (roleName) {
+                "Wolf" -> player.role is Wolf
+                "Seer" -> player.role is Seer
+                "Medic" -> player.role is Medic
+                else -> false
+            }
         }
     }
     
     private fun handleVotingAction(instance: GameInstance, voter: Player, request: ActionRequest) {
-        // ... (Online voting logic to be implemented)
+        if (request.actionType == "SKIP") {
+            // Abstain from voting
+            if (instance.votes.containsKey(voter.name)) {
+                 throw IllegalArgumentException("You have already voted!")
+            }
+            instance.votes[voter.name] = "ABSTAIN"
+            checkVoteCompletion(instance)
+            return
+        }
+
+        if (request.actionType != "VOTE") throw IllegalArgumentException("Only VOTE action allowed in voting phase")
+        
+        val targetName = request.targetId ?: throw IllegalArgumentException("Vote target needed")
+        val target = instance.game.players.find { it.name == targetName } ?: throw IllegalArgumentException("Target not found")
+        if (!target.isAlive) throw IllegalArgumentException("Cannot vote for dead player")
+        
+        if (instance.votes.containsKey(voter.name)) {
+             throw IllegalArgumentException("You have already voted!")
+        }
+        
+        instance.votes[voter.name] = targetName
+        
+        checkVoteCompletion(instance)
+    }
+
+    private fun checkVoteCompletion(instance: GameInstance) {
+        val alivePlayersCount = instance.game.players.count { it.isAlive }
+        if (instance.votes.size >= alivePlayersCount) {
+             tallyVotes(instance)
+        }
     }
 
     private fun checkPhaseTransition(instance: GameInstance) {
@@ -314,6 +478,7 @@ class GameService(
                 
                 instance.phase = GamePhase.DAY_DISCUSSION
                 instance.currentTurn = ""
+                instance.readyPlayers.clear() // Reset ready status for new day
             }
             GamePhase.DAY_DISCUSSION -> {
                 instance.phase = GamePhase.DAY_VOTING
@@ -324,8 +489,8 @@ class GameService(
             GamePhase.DAY_RESULTS -> {
                 instance.phase = GamePhase.NIGHT
                 instance.dayCount++
-                instance.currentTurn = "Wolf"
                 instance.lastDeadPlayerName = null 
+                startNightPhase(instance)
             }
             GamePhase.FINISHED -> {} 
         }
@@ -346,5 +511,6 @@ data class GameInstance(
     var dayCount: Int = 0,
     var pendingDeathId: String? = null,
     var lastDeadPlayerName: String? = null,
-    val votes: MutableMap<String, String> = mutableMapOf()
+    val votes: MutableMap<String, String> = mutableMapOf(),
+    val readyPlayers: MutableSet<String> = mutableSetOf()
 )
