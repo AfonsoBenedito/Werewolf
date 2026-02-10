@@ -11,13 +11,15 @@ import com.afonsobenedito.werewolf.core.model.roles.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @Service
 class GameService(
     private val redisTemplate: StringRedisTemplate,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val messagingTemplate: SimpMessagingTemplate
 ) {
 
     companion object {
@@ -107,10 +109,13 @@ class GameService(
             GAME_TTL_MINUTES,
             TimeUnit.MINUTES
         )
+        // Broadcast update signal
+        messagingTemplate.convertAndSend("/topic/game/${instance.id}", "UPDATE")
     }
     
     private fun deleteGame(gameId: String) {
         redisTemplate.delete(GAME_KEY_PREFIX + gameId)
+        messagingTemplate.convertAndSend("/topic/game/$gameId", "ENDED")
     }
 
     private fun shouldRevealRole(instance: GameInstance, player: Player, requesterId: String?): Boolean {

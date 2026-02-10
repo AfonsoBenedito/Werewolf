@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getGameState, startGame, performAction } from '../api/gameApi';
-import { RefreshCw, Play } from 'lucide-react';
+import { RefreshCw, Play, WifiOff } from 'lucide-react';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 
 interface Player {
     id: string; // name
@@ -31,12 +33,37 @@ export default function OnlineGame() {
 
     const playerName = localStorage.getItem('werewolf_player');
 
+    const [isConnected, setIsConnected] = useState(false);
+
     useEffect(() => {
-        if (gameId) {
-            const interval = setInterval(fetchState, 2000); // Poll every 2s
-            fetchState();
-            return () => clearInterval(interval);
-        }
+        if (!gameId) return;
+
+        // Initial fetch
+        fetchState();
+
+        const socket = new SockJS('http://localhost:8080/ws');
+        const client = new Client({
+            webSocketFactory: () => socket,
+            onConnect: () => {
+                setIsConnected(true);
+                client.subscribe(`/topic/game/${gameId}`, (message: { body: string }) => {
+                    if (message.body === 'UPDATE' || message.body === 'ENDED') {
+                        fetchState();
+                    }
+                });
+            },
+            onDisconnect: () => {
+                setIsConnected(false);
+            },
+            // Reduce debug logs in production
+            debug: (str: string) => console.log(str)
+        });
+
+        client.activate();
+
+        return () => {
+            client.deactivate();
+        };
     }, [gameId]);
 
     // Handle Phase Transitions & Banners
@@ -143,7 +170,10 @@ export default function OnlineGame() {
             )}
             <div className="header">
                 <h2>Game: {gameId}</h2>
-                <div className="status-badge">{gameState.phase}</div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    {!isConnected && <WifiOff color="red" />}
+                    <div className="status-badge">{gameState.phase}</div>
+                </div>
                 <div>Day {gameState.dayCount}</div>
             </div>
 
