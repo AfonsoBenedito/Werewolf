@@ -14,7 +14,7 @@ class GameController(
 
     @PostMapping
     fun createGame(@RequestBody request: CreateGameRequest): ResponseEntity<Map<String, String>> {
-        val gameId = gameService.createGame(request.mode, request.playerName)
+        val gameId = gameService.createGame(request.mode, request.playerName, request.players)
         return ResponseEntity.ok(mapOf("gameId" to gameId))
     }
 

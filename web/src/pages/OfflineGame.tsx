@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createGame, joinGame, startGame, getGameState, performAction } from '../api/gameApi';
+import { createGame, startGame, getGameState, performAction } from '../api/gameApi';
 import { Play, Skull, RefreshCw, CheckSquare } from 'lucide-react';
 
 interface Player {
@@ -27,27 +27,18 @@ export default function OfflineGame() {
     const [loading, setLoading] = useState(false);
     const [revealRoles, setRevealRoles] = useState(false);
 
+    // Local State for Setup Phase (before game is created in Backend)
+    const [localPlayers, setLocalPlayers] = useState<string[]>([]);
+
     // Voting UI State
     const [activeVoter, setActiveVoter] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!gameId) {
-            initializeGame();
-        } else {
+        if (gameId) {
             const interval = setInterval(fetchGameState, 2000); // Polling every 2s
             return () => clearInterval(interval);
         }
-    }, [gameId]);
-
-    const initializeGame = async () => {
-        try {
-            const data = await createGame('OFFLINE');
-            setGameId(data.gameId);
-            fetchGameState(data.gameId);
-        } catch (error) {
-            console.error("Failed to create game", error);
-        }
-    };
+    }, [gameId]); // Only poll once gameId is set
 
     const fetchGameState = async (id = gameId) => {
         if (!id) return;
@@ -60,26 +51,46 @@ export default function OfflineGame() {
     };
 
     const handleAddPlayer = async () => {
-        if (!newPlayerName.trim() || !gameId) return;
-        setLoading(true);
-        try {
-            await joinGame(gameId, newPlayerName);
+        if (!newPlayerName.trim()) return;
+
+        // If game not started, add locally
+        if (!gameId) {
+            if (localPlayers.includes(newPlayerName)) {
+                alert("Player name already exists!");
+                return;
+            }
+            setLocalPlayers([...localPlayers, newPlayerName]);
             setNewPlayerName('');
-            await fetchGameState();
-        } catch (error) {
-            alert("Failed to add player");
-        } finally {
-            setLoading(false);
+        } else {
+            // Game already started logic? 
+            // Currently not supporting adding players mid-game in Offline mode easily via this UI without refactor.
+            // But user requirement was specifically about setup phase.
+            alert("Game already started.");
         }
     };
 
     const handleStartGame = async () => {
-        if (!gameId) return;
+        if (localPlayers.length < 4) {
+            alert("Need at least 4 players to start!");
+            return;
+        }
+
+        setLoading(true);
         try {
-            await startGame(gameId);
-            await fetchGameState();
+            // 1. Create Game with all players
+            const data = await createGame('OFFLINE', undefined, localPlayers);
+            const newGameId = data.gameId;
+            setGameId(newGameId);
+
+            // 2. Start Game
+            await startGame(newGameId);
+
+            // 3. Fetch Initial State
+            await fetchGameState(newGameId);
         } catch (error) {
             alert("Failed to start game: " + error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -107,10 +118,6 @@ export default function OfflineGame() {
     const handleVote = async (targetId: string) => {
         if (!gameId || !activeVoter) return;
         try {
-            // Need to change backend to accept real player ID for VOTE action even in Offline Mode
-            // because "Master" voting doesn't make sense for individual outcomes.
-            // GameService.kt: if (voterId == "Master") return
-            // So we MUST send activeVoter as playerId
             await performAction(gameId, activeVoter, "VOTE", targetId);
             setActiveVoter(null);
             await fetchGameState();
@@ -154,6 +161,47 @@ export default function OfflineGame() {
         return gameState.phase;
     };
 
+    // SETUP UI
+    if (!gameId) {
+        return (
+            <div className="offline-game">
+                <h1>Offline Mode (Setup)</h1>
+                <div className="setup-section">
+                    <div className="input-group">
+                        <input
+                            value={newPlayerName}
+                            onChange={(e) => setNewPlayerName(e.target.value)}
+                            placeholder="Player Name"
+                            onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
+                        />
+                        <button onClick={handleAddPlayer}>Add Player</button>
+                    </div>
+                    <div className="player-list">
+                        {localPlayers.map(p => (
+                            <div key={p} className="player-item">
+                                <span>{p}</span>
+                            </div>
+                        ))}
+                    </div>
+                    {localPlayers.length >= 4 && (
+                        <button className="start-btn" onClick={handleStartGame} disabled={loading}>
+                            <Play size={16} /> {loading ? "Starting..." : "Start Game"}
+                        </button>
+                    )}
+                </div>
+
+                <style>{`
+                 /* ... Reuse existing styles ... */
+                .player-list { margin: 20px 0; }
+                .player-item { background: #444; padding: 5px 10px; margin: 5px 0; border-radius: 4px; }
+                .input-group { display: flex; gap: 10px; }
+                .start-btn { margin-top: 20px; background: #2ecc71; border: none; padding: 10px 20px; color: white; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 1.1em; }
+                `}</style>
+            </div>
+        );
+    }
+
+
     if (!gameState) return <div className="loading">Loading game state...</div>;
 
     const isNight = gameState.phase.includes("NIGHT");
@@ -190,32 +238,6 @@ export default function OfflineGame() {
                     <button className="continue-btn" onClick={() => performAction(gameId!, "Master", "NEXT_PHASE").then(() => fetchGameState())}>
                         🌙 Continue to Night
                     </button>
-                </div>
-            )}
-
-            {gameState.status === 'NOT_STARTED' && (
-                <div className="setup-section">
-                    <div className="input-group">
-                        <input
-                            value={newPlayerName}
-                            onChange={(e) => setNewPlayerName(e.target.value)}
-                            placeholder="Player Name"
-                            onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
-                        />
-                        <button onClick={handleAddPlayer} disabled={loading}>Add Player</button>
-                    </div>
-                    <div className="player-list">
-                        {gameState.players.map(p => (
-                            <div key={p.name} className="player-item">
-                                <span>{p.name}</span>
-                            </div>
-                        ))}
-                    </div>
-                    {gameState.players.length >= 4 && (
-                        <button className="start-btn" onClick={handleStartGame}>
-                            <Play size={16} /> Start Game
-                        </button>
-                    )}
                 </div>
             )}
 

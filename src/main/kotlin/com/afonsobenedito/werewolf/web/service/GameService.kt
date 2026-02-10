@@ -25,7 +25,7 @@ class GameService(
         private const val GAME_TTL_MINUTES = 120L // 2 hours
     }
 
-    fun createGame(mode: GameMode, hostName: String?): String {
+    fun createGame(mode: GameMode, hostName: String?, players: List<String>? = null): String {
         val gameId = UUID.randomUUID().toString().substring(0, 8)
         val game = Game("Werewolf-$gameId")
         val instance = GameInstance(id = gameId, game = game, mode = mode)
@@ -33,6 +33,12 @@ class GameService(
         if (mode == GameMode.ONLINE && hostName != null) {
              val host = Player(hostName)
              game.players.add(host)
+        }
+        
+        players?.forEach { name ->
+            if (instance.game.players.none { it.name == name }) {
+                instance.game.players.add(Player(name))
+            }
         }
         
         saveGame(instance)

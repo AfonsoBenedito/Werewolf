@@ -6,7 +6,8 @@ enum class GameMode {
 
 data class CreateGameRequest(
     val mode: GameMode,
-    val playerName: String? = null // For Online mode, the host joins immediately
+    val playerName: String? = null, // For Online mode, the host joins immediately
+    val players: List<String>? = null // For Offline mode, bulk add
 )
 
 data class JoinGameRequest(
