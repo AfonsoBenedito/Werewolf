@@ -3,7 +3,7 @@ import LandingPage from './pages/LandingPage';
 import OfflineGame from './pages/OfflineGame';
 import OnlineLobby from './pages/OnlineLobby';
 import OnlineGame from './pages/OnlineGame';
-import './App.css';
+
 
 function App() {
   return (

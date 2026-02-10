@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+// @ts-ignore
 import SockJS from 'sockjs-client';
-console.log("OnlineGame module evaluated");
 import { Client } from '@stomp/stompjs';
 import { Play, RefreshCw } from 'lucide-react';
 import { getGameState, performAction, startGame } from '../api/gameApi';
 import { PlayerCard } from '../components/PlayerCard';
 import { GameHeader } from '../components/GameHeader';
+import '../styles/OnlineGame.css';
+
+console.log("OnlineGame module evaluated");
 
 interface Player {
     id: string; // name
@@ -69,6 +72,10 @@ export default function OnlineGame() {
         };
     }, [gameId]);
 
+    // ... existing imports ...
+
+    // ... (inside the component)
+
     // Handle Phase Transitions & Alerts
     useEffect(() => {
         if (!gameState) return;
@@ -76,14 +83,33 @@ export default function OnlineGame() {
         // Detect Night -> Day Transition
         if (lastPhase.includes('NIGHT') && gameState.phase === 'DAY_DISCUSSION') {
             const victim = gameState.lastDeadPlayerName;
-            alert(victim ? `${victim} died last night!` : "It was a peaceful night.");
+            if (victim) {
+                if (victim === myPlayer?.name) {
+                    alert("You died last night!");
+                } else {
+                    alert(`${victim} died last night!`);
+                }
+            } else {
+                alert("It was a peaceful night.");
+            }
             setHasVotedReady(false); // Reset ready vote for new day
         }
 
         // Detect Voting -> Results Transition (or just being in results)
         if (gameState.phase === 'DAY_RESULTS' && lastPhase !== 'DAY_RESULTS') {
             const victim = gameState.lastDeadPlayerName;
-            alert(victim && victim !== 'ABSTAIN' ? `${victim} was eliminated!` : "No one was eliminated.");
+
+            if (victim) {
+                if (victim === 'ABSTAIN') {
+                    alert("No one was eliminated.");
+                } else if (victim === myPlayer?.name) {
+                    alert("You were eliminated!");
+                } else {
+                    alert(`${victim} was eliminated!`);
+                }
+            } else {
+                alert("No one was eliminated.");
+            }
 
             const isHost = gameState.players[0]?.name === playerName;
             if (isHost) {
@@ -270,26 +296,6 @@ export default function OnlineGame() {
             )}
 
             <button className="refresh-btn" onClick={fetchState}><RefreshCw size={16} /></button>
-
-            <style>{`
-                .online-game { max-width: 600px; margin: 0 auto; }
-                .player-pill { background: #444; padding: 0.5rem; border-radius: 20px; display: inline-block; margin: 0.2rem; }
-                .my-role-card { background: #2a2a2a; padding: 1rem; border: 1px solid #646cff; margin-bottom: 2rem; border-radius: 8px; }
-                .role-reveal { font-size: 1.2em; font-weight: bold; color: #aaddff; }
-                .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
-                
-                .dead-tag { color: red; font-weight: bold; margin-top: 0.5rem; }
-                .refresh-btn { position: fixed; bottom: 20px; right: 20px; border-radius: 50%; width: 50px; height: 50px; padding: 0; display: flex; align-items: center; justify-content: center; }
-                .sleep-banner { background: #2c3e50; color: #bdc3c7; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid #34495e; }
-                .turn-alert { color: #2ecc71; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
-                .discussion-panel { background: #d35400; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-                .ready-btn { background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-weight: bold; cursor: pointer; }
-                .ready-btn:hover { background: #d35400; }
-                .ready-status { margin-top: 0.5rem; font-size: 0.9rem; font-style: italic; }
-                .ready-wait-msg { font-weight: bold; color: #f1c40f; }
-                .skip-btn { background: #95a5a6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 5px; cursor: pointer; }
-                .skip-btn:hover { background: #7f8c8d; }
-            `}</style>
         </div>
     );
 }

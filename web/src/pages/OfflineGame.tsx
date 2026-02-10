@@ -3,6 +3,7 @@ import { createGame, startGame, getGameState, performAction } from '../api/gameA
 import { Play, RefreshCw } from 'lucide-react';
 import { PlayerCard } from '../components/PlayerCard';
 import { GameHeader } from '../components/GameHeader';
+import '../styles/OfflineGame.css';
 
 interface Player {
     id: string;
@@ -188,14 +189,6 @@ export default function OfflineGame() {
                         </button>
                     )}
                 </div>
-
-                <style>{`
-                 /* ... Reuse existing styles ... */
-                .player-list { margin: 20px 0; }
-                .player-item { background: #444; padding: 5px 10px; margin: 5px 0; border-radius: 4px; }
-                .input-group { display: flex; gap: 10px; }
-                .start-btn { margin-top: 20px; background: #2ecc71; border: none; padding: 10px 20px; color: white; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 1.1em; }
-                `}</style>
             </div>
         );
     }
@@ -338,75 +331,7 @@ export default function OfflineGame() {
                 </div>
             )}
 
-            <style>{`
-                .player-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 1rem;
-                    margin-top: 1rem;
-                }
-                .winner-banner {
-                    color: gold;
-                    font-size: 2rem;
-                }
-                .game-controls-wrapper {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-                .game-controls {
-                    display: flex;
-                    gap: 1rem;
-                    flex-wrap: wrap;
-                }
-                
-                .death-announcement {
-                    background: #c0392b;
-                    padding: 1rem;
-                    border-radius: 8px;
-                    text-align: center;
-                    animation: fadeIn 1s;
-                }
-                .death-announcement.good-news {
-                    background: #27ae60;
-                }
-                .vote-phase-btn {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    background-color: #f39c12;
-                    color: black;
-                    font-weight: bold;
-                }
-                .cancel-btn {
-                    background-color: #95a5a6;
-                }
-                .results-screen {
-                    text-align: center;
-                    margin: 20px 0;
-                    padding: 20px;
-                    background: #2c3e50;
-                    border-radius: 8px;
-                    border: 1px solid #34495e;
-                }
-                .continue-btn {
-                    background: #3498db;
-                    color: white;
-                    border: none;
-                    padding: 12px 24px;
-                    border-radius: 4px;
-                    font-size: 1.1rem;
-                    font-weight: bold;
-                    cursor: pointer;
-                    margin-top: 15px;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                .continue-btn:hover {
-                    background: #2980b9;
-                }
-            `}</style>
+
         </div>
     );
 }

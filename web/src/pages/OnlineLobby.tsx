@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createGame, joinGame } from '../api/gameApi';
+import '../styles/OnlineLobby.css';
 
 export default function OnlineLobby() {
     const navigate = useNavigate();
@@ -53,28 +54,7 @@ export default function OnlineLobby() {
                 <button onClick={handleJoin}>Join Game</button>
             </div>
 
-            <style>{`
-                .online-lobby {
-                    max-width: 400px;
-                    margin: 0 auto;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 2rem;
-                }
-                .lobby-section {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                    background: #333;
-                    padding: 1.5rem;
-                    border-radius: 8px;
-                }
-                .divider {
-                    font-weight: bold;
-                    color: #666;
-                }
-                .error { color: #ff6b6b; }
-            `}</style>
+
         </div>
     );
 }

@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Moon, Users, Wifi } from 'lucide-react';
+import { ModeCard } from '../components/ModeCard';
+import '../styles/LandingPage.css';
 
 export default function LandingPage() {
     const navigate = useNavigate();
@@ -8,16 +10,18 @@ export default function LandingPage() {
         <div className="landing-page">
             <h1>Werewolf <Moon className="inline-icon" /></h1>
             <div className="mode-selection">
-                <button className="mode-card" onClick={() => navigate('/offline')}>
-                    <Users size={48} />
-                    <h2>Offline Mode</h2>
-                    <p>Master controls the game for valid players in the same room.</p>
-                </button>
-                <button className="mode-card" onClick={() => navigate('/online')}>
-                    <Wifi size={48} />
-                    <h2>Online Mode</h2>
-                    <p>Join or Host a game to play with friends remotely.</p>
-                </button>
+                <ModeCard
+                    title="Offline Mode"
+                    description="Master controls the game for valid players in the same room."
+                    Icon={Users}
+                    onClick={() => navigate('/offline')}
+                />
+                <ModeCard
+                    title="Online Mode"
+                    description="Join or Host a game to play with friends remotely."
+                    Icon={Wifi}
+                    onClick={() => navigate('/online')}
+                />
             </div>
         </div>
     );
