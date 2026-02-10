@@ -1,5 +1,5 @@
 import { useOnlineLobby } from '../hooks/useOnlineLobby';
-import { LobbySection } from '../components/LobbySection';
+import { LobbySection } from '../components/common/LobbySection';
 import '../styles/OnlineLobby.css';
 
 export default function OnlineLobby() {

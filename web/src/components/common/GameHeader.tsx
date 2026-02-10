@@ -1,5 +1,5 @@
-
 import { WifiOff } from 'lucide-react';
+import '../../styles/components/GameHeader.css';
 
 interface GameHeaderProps {
     gameId: string;
@@ -8,8 +8,6 @@ interface GameHeaderProps {
     isConnected?: boolean; // Online only
     showConnectionStatus?: boolean;
 }
-
-import '../styles/components/GameHeader.css';
 
 export function GameHeader({
     gameId, phase, dayCount, isConnected = true, showConnectionStatus = false

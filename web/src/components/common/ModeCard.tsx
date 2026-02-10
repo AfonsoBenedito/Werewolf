@@ -1,6 +1,5 @@
-
 import type { LucideIcon } from 'lucide-react';
-import '../styles/components/ModeCard.css';
+import '../../styles/components/ModeCard.css';
 
 interface ModeCardProps {
     title: string;

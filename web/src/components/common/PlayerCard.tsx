@@ -1,5 +1,5 @@
-
 import { Skull, CheckSquare } from 'lucide-react';
+import '../../styles/components/PlayerCard.css';
 
 interface PlayerCardProps {
     name: string;
@@ -27,8 +27,6 @@ interface PlayerCardProps {
     showVoteSelect?: boolean;
     showVoteTarget?: boolean;
 }
-
-import '../styles/components/PlayerCard.css';
 
 export function PlayerCard({
     name, isAlive, isMe, revealedRole, hasVoted, isVotingPhase,

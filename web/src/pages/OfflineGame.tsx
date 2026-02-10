@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { createGame, startGame, getGameState, performAction } from '../api/gameApi';
 import { Play, RefreshCw } from 'lucide-react';
-import { PlayerCard } from '../components/PlayerCard';
-import { GameHeader } from '../components/GameHeader';
+import { PlayerCard } from '../components/common/PlayerCard';
+import { GameHeader } from '../components/common/GameHeader';
 import '../styles/OfflineGame.css';
 
 interface Player {

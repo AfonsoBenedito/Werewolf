@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Moon, Users, Wifi } from 'lucide-react';
-import { ModeCard } from '../components/ModeCard';
+import { ModeCard } from '../components/common/ModeCard';
 import '../styles/LandingPage.css';
 
 export default function LandingPage() {
