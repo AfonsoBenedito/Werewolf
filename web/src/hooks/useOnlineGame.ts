@@ -95,6 +95,11 @@ export function useOnlineGame() {
             }
         }
 
+        // Reset local ready state when phase changes
+        if (gameState.phase !== lastPhase) {
+            setHasVotedReady(false);
+        }
+
         setLastPhase(gameState.phase);
     }, [gameState, lastPhase, myPlayer?.name, playerName]);
 
