@@ -130,6 +130,11 @@ open class Game(
             return
         }
 
+        if (actionType == "UNVOTE") {
+            votes.remove(voter.name)
+            return
+        }
+
         if (actionType != "VOTE") throw IllegalArgumentException("Only VOTE action allowed in voting phase")
         
         val targetName = targetId ?: throw IllegalArgumentException("Vote target needed")

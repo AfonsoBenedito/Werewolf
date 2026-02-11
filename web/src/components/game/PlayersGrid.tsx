@@ -38,7 +38,13 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction }: Playe
                         onClick={() => {
                             if (!myPlayer.isAlive) return;
                             if (isDisabled) return;
-                            if (gameState.phase === 'DAY_VOTING') onAction('VOTE', p.name);
+                            if (gameState.phase === 'DAY_VOTING') {
+                                if (isMyVoteTarget) {
+                                    onAction('UNVOTE');
+                                } else {
+                                    onAction('VOTE', p.name);
+                                }
+                            }
                             if (gameState.phase.includes('NIGHT')) {
                                 if (gameState.phase.includes("Wolf") && myPlayer.role === 'Werewolf') onAction('KILL', p.name);
                                 if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') onAction('HEAL', p.name);

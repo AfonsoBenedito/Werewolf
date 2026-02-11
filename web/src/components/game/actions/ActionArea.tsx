@@ -32,7 +32,10 @@ export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction }: Act
             )}
 
             {gameState.phase === 'DAY_VOTING' && (
-                <DayVoting onAction={onAction} />
+                <DayVoting
+                    hasAbstained={gameState.votes?.[myPlayer.name] === 'ABSTAIN'}
+                    onAction={onAction}
+                />
             )}
         </div>
     );
