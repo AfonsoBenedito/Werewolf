@@ -39,7 +39,20 @@ class GameMapper {
             lastDeadPlayerName = game.lastDeadPlayerName,
             votes = maskVotes(game, playerId),
             readyPlayerCount = game.readyPlayers.size,
-            totalAliveCount = game.players.count { it.isAlive }
+            totalAliveCount = game.players.count { it.isAlive },
+            nightStatus = if (playerId != null && game.currentTurn == "Wolf") {
+                val player = game.players.find { it.name == playerId }
+                if (player?.role is Wolf) {
+                    val status = game.getWolfStatus()
+                    // Only show "Waiting" if *I* have already voted.
+                    // "Divergence" should be shown regardless.
+                    if (status == "Waiting for other werewolf..." && !game.wolfVotes.containsKey(playerId)) {
+                        null
+                    } else {
+                        status
+                    }
+                } else null
+            } else null
         )
     }
 

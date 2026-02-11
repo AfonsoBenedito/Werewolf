@@ -23,6 +23,8 @@ open class Game(
     val votes: MutableMap<String, String> = mutableMapOf()
     val readyPlayers: MutableSet<String> = mutableSetOf()
 
+    val wolfVotes: MutableMap<String, String> = mutableMapOf()
+
     fun addPlayers(newPlayers: List<Player>) {
         players.addAll(newPlayers)
     }
@@ -58,7 +60,11 @@ open class Game(
         }
     }
 
+    var seerHasPeeked = false
+
     fun startNightPhase() {
+        wolfVotes.clear()
+        seerHasPeeked = false
         val turnOrder = listOf("Wolf", "Seer", "Medic")
         
         for (roleName in turnOrder) {
@@ -69,7 +75,6 @@ open class Game(
         }
         advancePhase()
     }
-
     fun handleNightAction(actor: Player, actionType: String, targetId: String?): String? {
         val target = players.find { it.name == targetId }
         
@@ -81,9 +86,21 @@ open class Game(
             else -> throw IllegalArgumentException("It is not your turn")
         }
         
-        if (actor.role?.name != expectedRoleName && !(expectedRoleName == "Wolf" && actor.role is Wolf)) {
-             throw IllegalArgumentException("It is not your turn! Current turn: $expectedRoleName")
+        if (actor.role !is Wolf && actor.role?.name != expectedRoleName) {
+             // Special case for Wolf: role name is "Werewolf" usually, but turn is "Wolf". 
+             // Logic below handles specific role checks.
+             // Simpler check:
         }
+        
+        // Better validation based on role instance
+        val isCorrectRole = when (currentTurn) {
+            "Wolf" -> actor.role is Wolf
+            "Seer" -> actor.role is Seer
+            "Medic" -> actor.role is Medic
+            else -> false
+        }
+        
+        if (!isCorrectRole) throw IllegalArgumentException("It is not your turn! Current turn: $currentTurn")
 
         // 2. Execute Action
         return when (actionType) {
@@ -92,9 +109,32 @@ open class Game(
                 if (target != null && target.role is Wolf) {
                      throw IllegalArgumentException("Wolves cannot kill other Wolves!")
                 }
-                if (target != null) pendingDeathId = target.name
-                advanceTurn()
-                null
+                
+                // --- Consensus Logic ---
+                if (target != null) {
+                    wolfVotes[actor.name] = target.name
+                }
+                
+                val aliveWolves = players.count { it.isAlive && it.role is Wolf }
+                
+                if (wolfVotes.size < aliveWolves) {
+                    return "Waiting for other werewolf..."
+                }
+                
+                // All wolves have voted, check consensus
+                val uniqueTargets = wolfVotes.values.toSet()
+                if (uniqueTargets.size == 1) {
+                     // Consensus reached
+                     val decision = uniqueTargets.first()
+                     if (decision != "SKIP") {
+                        pendingDeathId = decision
+                     }
+                     wolfVotes.clear()
+                     advanceTurn()
+                     null
+                } else {
+                     "Wolves have selected different targets! You must agree."
+                }
             }
             "HEAL" -> {
                 if (actor.role !is Medic) throw IllegalArgumentException("Only Medic can heal")
@@ -106,17 +146,50 @@ open class Game(
             }
             "PEEK" -> {
                 if (actor.role !is Seer) throw IllegalArgumentException("Only Seer can peek")
+                if (seerHasPeeked) throw IllegalArgumentException("You have already peeked!")
+                
                 val targetRole = target?.role ?: return null
-                advanceTurn()
+                seerHasPeeked = true
+                // Do NOT advance turn immediately. User must click "Done" (SKIP)
                 
                 if (targetRole is Villager) "${target.name} is just a Regular Villager" else "${target.name} is not just a Regular Villager"
             }
             "SKIP" -> {
-                advanceTurn()
-                null
+                if (currentTurn == "Wolf") {
+                    wolfVotes[actor.name] = "SKIP"
+                    
+                    val aliveWolves = players.count { it.isAlive && it.role is Wolf }
+                    if (wolfVotes.size < aliveWolves) return "Waiting for other werewolf..."
+                    
+                    val uniqueTargets = wolfVotes.values.toSet()
+                    if (uniqueTargets.size == 1) {
+                         // Agreed to skip
+                         pendingDeathId = null
+                         wolfVotes.clear()
+                         advanceTurn()
+                         null
+                    } else {
+                         "Wolves have selected different targets! You must agree."
+                    }
+                } else {
+                    advanceTurn()
+                    null
+                }
             }
             else -> throw IllegalArgumentException("Invalid action for Night")
         }
+    }
+
+    fun getWolfStatus(): String? {
+        if (phase != GamePhase.NIGHT || currentTurn != "Wolf") return null
+        
+        val aliveWolves = players.count { it.isAlive && it.role is Wolf }
+        if (wolfVotes.size < aliveWolves) return "Waiting for other werewolf..."
+        
+        val uniqueTargets = wolfVotes.values.toSet()
+        if (uniqueTargets.size > 1) return "Wolves have selected different targets! You must agree."
+        
+        return null
     }
 
     fun handleVotingAction(voter: Player, actionType: String, targetId: String?) {
@@ -188,10 +261,10 @@ open class Game(
                  if (voterId == "Master") return 
                  if (target == null) throw IllegalArgumentException("Vote target needed")
                  
-                  // Removed "already voted" check
-                  // if (votes.containsKey(voterId)) {
-                  //     throw IllegalArgumentException("Player $voterId has already voted!")
-                  // }
+                 // Removed "already voted" check
+                 // if (votes.containsKey(voterId)) {
+                 //     throw IllegalArgumentException("Player $voterId has already voted!")
+                 // }
                  
                  votes[voterId] = target.name
                  
@@ -272,6 +345,7 @@ open class Game(
                 phase = GamePhase.DAY_DISCUSSION
                 currentTurn = ""
                 readyPlayers.clear()
+                wolfVotes.clear() // Ensure cleanup
             }
             GamePhase.DAY_DISCUSSION -> {
                 phase = GamePhase.DAY_VOTING

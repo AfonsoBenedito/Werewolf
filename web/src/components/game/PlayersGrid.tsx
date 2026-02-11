@@ -6,13 +6,17 @@ interface PlayersGridProps {
     myPlayer: Player;
     playerName: string | null;
     onAction: (actionType: string, targetId?: string) => void;
+    myNightTarget?: string | null;
 }
 
-export function PlayersGrid({ gameState, myPlayer, playerName, onAction }: PlayersGridProps) {
+export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNightTarget }: PlayersGridProps) {
     return (
         <div className="players-grid">
             {gameState.players.map(p => {
                 const isMyVoteTarget = gameState.votes?.[playerName!] === p.name;
+                // Night vote highlighting (local state)
+                const isMyNightTarget = myNightTarget === p.name;
+
                 const hasVoted = gameState.votes?.[p.name] !== undefined;
                 const isMe = p.name === playerName;
 
@@ -21,6 +25,14 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction }: Playe
                     isDisabled = true;
                     if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') isDisabled = false;
                 }
+
+                // Disable fellow werewolves during Night
+                if (gameState.phase.includes("NIGHT") && myPlayer.role === 'Werewolf') {
+                    if (p.role === 'Werewolf' || p.role === 'Wolf') {
+                        isDisabled = true;
+                    }
+                }
+
                 if (!p.isAlive) isDisabled = true;
 
                 return (
@@ -34,7 +46,7 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction }: Playe
                         hasVoted={hasVoted}
                         isVotingPhase={gameState.phase === 'DAY_VOTING'}
                         isDisabled={isDisabled}
-                        isVoteTarget={isMyVoteTarget}
+                        isVoteTarget={isMyVoteTarget || isMyNightTarget} // Highlight for both Day and Night
                         onClick={() => {
                             if (!myPlayer.isAlive) return;
                             if (isDisabled) return;

@@ -8,7 +8,6 @@ import '../styles/pages/OnlineGame.css';
 
 
 import { TransitionScreen } from '../components/game/TransitionScreen';
-import { SeerResultModal } from '../components/game/SeerResultModal';
 import { useGameTransitions } from '../hooks/useGameTransitions';
 
 export default function OnlineGame() {
@@ -20,8 +19,11 @@ export default function OnlineGame() {
         playerName,
         isConnected,
         hasVotedReady,
+        myNightTarget,
+        nightActionFeedback,
         seerResult,
-        dismissSeerResult,
+        isLoading,
+        error,
         fetchState,
         handleStart,
         handleAction
@@ -29,19 +31,26 @@ export default function OnlineGame() {
 
     const { isTransitioning, currentTransition, handleTransitionComplete } = useGameTransitions(gameState, myPlayer, !!seerResult);
 
-    if (!gameState) return <div>Loading...</div>;
+    if (isLoading) return <div className="loading-screen">Loading Game...</div>;
+
+    if (error || !gameState) {
+        return (
+            <div className="error-screen">
+                <h2>Game Not Found</h2>
+                <p>The game ID <strong>{gameId}</strong> does not exist or has expired.</p>
+                <button className="home-btn" onClick={() => navigate('/')}>
+                    <Home size={20} style={{ marginRight: '8px' }} />
+                    Back to Home
+                </button>
+            </div>
+        );
+    }
 
     const isHost = gameState.players[0]?.name === playerName;
 
     return (
         <div className="online-game">
             <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
-            {seerResult && (
-                <SeerResultModal
-                    result={seerResult}
-                    onDismiss={dismissSeerResult}
-                />
-            )}
 
             {isTransitioning && currentTransition && (
                 <TransitionScreen
@@ -76,6 +85,10 @@ export default function OnlineGame() {
                     playerName={playerName}
                     hasVotedReady={hasVotedReady}
                     onAction={handleAction}
+                    myNightTarget={myNightTarget}
+                    nightActionFeedback={nightActionFeedback}
+                    seerResult={seerResult}
+                    nightStatus={gameState.nightStatus}
                 />
             )}
 

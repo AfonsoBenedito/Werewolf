@@ -24,7 +24,8 @@ data class GameResponse(
     val lastDeadPlayerName: String? = null,
     val votes: Map<String, String> = emptyMap(),
     val readyPlayerCount: Int = 0,
-    val totalAliveCount: Int = 0
+    val totalAliveCount: Int = 0,
+    val nightStatus: String? = null // For Wolf consensus feedback
 )
 
 data class PlayerResponse(

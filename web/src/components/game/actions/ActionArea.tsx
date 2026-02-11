@@ -8,9 +8,12 @@ interface ActionAreaProps {
     myPlayer: Player;
     hasVotedReady: boolean;
     onAction: (actionType: string, targetId?: string) => void;
+    nightActionFeedback?: string | null;
+    seerResult?: string | null;
+    nightStatus?: string | null;
 }
 
-export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction }: ActionAreaProps) {
+export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction, nightActionFeedback, seerResult, nightStatus }: ActionAreaProps) {
     if (!myPlayer.isAlive) return null;
 
     return (
@@ -20,6 +23,9 @@ export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction }: Act
                     phase={gameState.phase}
                     myPlayer={myPlayer}
                     onAction={onAction}
+                    nightActionFeedback={nightActionFeedback}
+                    seerResult={seerResult}
+                    nightStatus={nightStatus}
                 />
             )}
 

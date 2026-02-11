@@ -9,9 +9,23 @@ interface GameBoardProps {
     playerName: string | null;
     hasVotedReady: boolean;
     onAction: (actionType: string, targetId?: string) => void;
+    myNightTarget: string | null;
+    nightActionFeedback: string | null;
+    seerResult: string | null;
+    nightStatus?: string | null;
 }
 
-export function GameBoard({ gameState, myPlayer, playerName, hasVotedReady, onAction }: GameBoardProps) {
+export function GameBoard({
+    gameState,
+    myPlayer,
+    playerName,
+    hasVotedReady,
+    onAction,
+    myNightTarget,
+    nightActionFeedback,
+    seerResult,
+    nightStatus
+}: GameBoardProps) {
     const isNight = gameState.phase.includes('NIGHT');
     const currentTurnRole = isNight ? gameState.phase.split(' - ')[1] : null;
 
@@ -34,6 +48,9 @@ export function GameBoard({ gameState, myPlayer, playerName, hasVotedReady, onAc
                         myPlayer={myPlayer}
                         hasVotedReady={hasVotedReady}
                         onAction={onAction}
+                        nightActionFeedback={nightActionFeedback}
+                        seerResult={seerResult}
+                        nightStatus={nightStatus}
                     />
 
                     {/* Hide PlayersGrid during Discussion phase as per request */}
@@ -43,6 +60,7 @@ export function GameBoard({ gameState, myPlayer, playerName, hasVotedReady, onAc
                             myPlayer={myPlayer}
                             playerName={playerName}
                             onAction={onAction}
+                            myNightTarget={myNightTarget}
                         />
                     )}
                 </>
