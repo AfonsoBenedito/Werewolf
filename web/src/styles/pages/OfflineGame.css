@@ -111,3 +111,38 @@
     gap: 5px;
     font-size: 1.1em;
 }
+
+.offline-setup-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+    padding-top: 50px;
+}
+
+.nav-btn-absolute {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background: none;
+    border: none;
+    color: #aaddff;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.home-btn-fixed {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2c3e50;
+    border: 1px solid #34495e;
+    color: #aaddff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+}

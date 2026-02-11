@@ -89,11 +89,15 @@ class GameService(
 
         val player = game.players.find { it.name == request.playerId } ?: throw IllegalArgumentException("Player not found")
         
-        if (!player.isAlive) throw IllegalArgumentException("Player is dead")
+        // if (!player.isAlive) throw IllegalArgumentException("Player is dead") // Moved to specific phases
         
         val result = when (game.phase) {
-            GamePhase.NIGHT -> game.handleNightAction(player, request.actionType, request.targetId)
+            GamePhase.NIGHT -> {
+                if (!player.isAlive) throw IllegalArgumentException("Player is dead")
+                game.handleNightAction(player, request.actionType, request.targetId)
+            }
             GamePhase.DAY_DISCUSSION -> {
+                if (!player.isAlive) throw IllegalArgumentException("Player is dead")
                 println("DAY_DISCUSSION Action: ${request.actionType} from ${player.name}")
                 if (request.actionType == "READY_TO_VOTE") {
                     println("Adding ${player.name} to ready players")
@@ -110,8 +114,12 @@ class GameService(
                     throw IllegalArgumentException("Cannot act during discussion")
                 }
             }
-            GamePhase.DAY_VOTING -> { game.handleVotingAction(player, request.actionType, request.targetId); null }
+            GamePhase.DAY_VOTING -> { 
+                if (!player.isAlive) throw IllegalArgumentException("Player is dead")
+                game.handleVotingAction(player, request.actionType, request.targetId); null 
+            }
             GamePhase.DAY_RESULTS -> {
+                // Allow dead players (HOST) to continue
                 if (request.actionType == "CONTINUE") {
                     game.advancePhase()
                     null

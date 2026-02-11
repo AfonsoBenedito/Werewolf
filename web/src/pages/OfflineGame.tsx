@@ -5,9 +5,12 @@ import { VotingResults } from '../components/offline/VotingResults';
 import { TurnAnnouncement } from '../components/offline/TurnAnnouncement';
 import { OfflineControls } from '../components/offline/OfflineControls';
 import { OfflineGrid } from '../components/offline/OfflineGrid';
+import { ArrowLeft, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/pages/OfflineGame.css';
 
 export default function OfflineGame() {
+    const navigate = useNavigate();
     const {
         gameId,
         gameState,
@@ -31,14 +34,17 @@ export default function OfflineGame() {
     // SETUP UI
     if (!gameId) {
         return (
-            <OfflineSetup
-                newPlayerName={newPlayerName}
-                setNewPlayerName={setNewPlayerName}
-                currentPlayers={localPlayers}
-                onAddPlayer={handleAddPlayer}
-                onStartGame={handleStartGame}
-                loading={loading}
-            />
+            <div className="offline-setup-wrapper">
+                <button className="nav-btn-absolute" onClick={() => navigate('/')}><ArrowLeft /></button>
+                <OfflineSetup
+                    newPlayerName={newPlayerName}
+                    setNewPlayerName={setNewPlayerName}
+                    currentPlayers={localPlayers}
+                    onAddPlayer={handleAddPlayer}
+                    onStartGame={handleStartGame}
+                    loading={loading}
+                />
+            </div>
         );
     }
 
@@ -53,6 +59,7 @@ export default function OfflineGame() {
 
     return (
         <div className="offline-game">
+            <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
             <h1>Offline Mode (Master)</h1>
 
             <GameHeader

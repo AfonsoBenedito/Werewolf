@@ -1,8 +1,9 @@
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Home } from 'lucide-react';
 import { GameHeader } from '../components/common/GameHeader';
 import { WaitingRoom } from '../components/game/WaitingRoom';
 import { GameBoard } from '../components/game/GameBoard';
 import { useOnlineGame } from '../hooks/useOnlineGame';
+import { useNavigate } from 'react-router-dom';
 import '../styles/pages/OnlineGame.css';
 
 console.log("OnlineGame module evaluated");
@@ -12,6 +13,7 @@ import { SeerResultModal } from '../components/game/SeerResultModal';
 import { useGameTransitions } from '../hooks/useGameTransitions';
 
 export default function OnlineGame() {
+    const navigate = useNavigate();
     const {
         gameId,
         gameState,
@@ -34,6 +36,7 @@ export default function OnlineGame() {
 
     return (
         <div className="online-game">
+            <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
             {seerResult && (
                 <SeerResultModal
                     result={seerResult}

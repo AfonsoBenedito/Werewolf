@@ -88,10 +88,10 @@ export function useOnlineGame() {
             const isHost = gameState.players[0]?.name === playerName;
             if (isHost) {
                 // Wait for the transition screens (Announcing + Result) to likely finish
-                // Transitions: 3s + 4s = 7s. Let's wait 8s.
+                // Transitions: 3s + 4s = 7s. Reduce to 6.5s to overlap slightly and remove dead time.
                 setTimeout(() => {
                     handleAction('CONTINUE');
-                }, 8000);
+                }, 6500);
             }
         }
 
