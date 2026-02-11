@@ -30,6 +30,7 @@ export function useOnlineGame() {
     const [hasVotedReady, setHasVotedReady] = useState(false);
     const [lastPhase, setLastPhase] = useState<string>('');
     const [isConnected, setIsConnected] = useState(false);
+    const [seerResult, setSeerResult] = useState<string | null>(null);
 
     const playerName = localStorage.getItem('werewolf_player');
 
@@ -82,42 +83,15 @@ export function useOnlineGame() {
     useEffect(() => {
         if (!gameState) return;
 
-        // Detect Night -> Day Transition
-        if (lastPhase.includes('NIGHT') && gameState.phase === 'DAY_DISCUSSION') {
-            const victim = gameState.lastDeadPlayerName;
-            if (victim) {
-                if (victim === myPlayer?.name) {
-                    alert("You died last night!");
-                } else {
-                    alert(`${victim} died last night!`);
-                }
-            } else {
-                alert("It was a peaceful night.");
-            }
-            setHasVotedReady(false); // Reset ready vote for new day
-        }
-
-        // Detect Voting -> Results Transition (or just being in results)
+        // Auto-continue for host in Results phase
         if (gameState.phase === 'DAY_RESULTS' && lastPhase !== 'DAY_RESULTS') {
-            const victim = gameState.lastDeadPlayerName;
-
-            if (victim) {
-                if (victim === 'ABSTAIN') {
-                    alert("No one was eliminated.");
-                } else if (victim === myPlayer?.name) {
-                    alert("You were eliminated!");
-                } else {
-                    alert(`${victim} was eliminated!`);
-                }
-            } else {
-                alert("No one was eliminated.");
-            }
-
             const isHost = gameState.players[0]?.name === playerName;
             if (isHost) {
+                // Wait for the transition screens (Announcing + Result) to likely finish
+                // Transitions: 3s + 4s = 7s. Let's wait 8s.
                 setTimeout(() => {
                     handleAction('CONTINUE');
-                }, 1000); // Shorter delay since alert is blocking/acknowledged
+                }, 8000);
             }
         }
 
@@ -141,7 +115,7 @@ export function useOnlineGame() {
         try {
             const response = await performAction(gameId, playerName, actionType, targetId);
             if (response && response.peekResult) {
-                alert("Seer Result: " + response.peekResult);
+                setSeerResult(response.peekResult);
             } else {
                 // Success - silence
             }
@@ -151,6 +125,10 @@ export function useOnlineGame() {
         }
     };
 
+    const dismissSeerResult = () => {
+        setSeerResult(null);
+    };
+
     return {
         gameId,
         gameState,
@@ -158,6 +136,8 @@ export function useOnlineGame() {
         playerName,
         isConnected,
         hasVotedReady,
+        seerResult,
+        dismissSeerResult,
         fetchState,
         handleStart,
         handleAction

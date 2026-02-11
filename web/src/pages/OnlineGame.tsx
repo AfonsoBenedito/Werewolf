@@ -7,6 +7,10 @@ import '../styles/pages/OnlineGame.css';
 
 console.log("OnlineGame module evaluated");
 
+import { TransitionScreen } from '../components/game/TransitionScreen';
+import { SeerResultModal } from '../components/game/SeerResultModal';
+import { useGameTransitions } from '../hooks/useGameTransitions';
+
 export default function OnlineGame() {
     const {
         gameId,
@@ -15,10 +19,14 @@ export default function OnlineGame() {
         playerName,
         isConnected,
         hasVotedReady,
+        seerResult,
+        dismissSeerResult,
         fetchState,
         handleStart,
         handleAction
     } = useOnlineGame();
+
+    const { isTransitioning, currentTransition, handleTransitionComplete } = useGameTransitions(gameState, myPlayer, !!seerResult);
 
     if (!gameState) return <div>Loading...</div>;
 
@@ -26,6 +34,21 @@ export default function OnlineGame() {
 
     return (
         <div className="online-game">
+            {seerResult && (
+                <SeerResultModal
+                    result={seerResult}
+                    onDismiss={dismissSeerResult}
+                />
+            )}
+
+            {isTransitioning && currentTransition && (
+                <TransitionScreen
+                    message={currentTransition.message}
+                    duration={currentTransition.duration}
+                    onComplete={handleTransitionComplete}
+                />
+            )}
+
             <GameHeader
                 gameId={gameId || ''}
                 phase={gameState.phase}
