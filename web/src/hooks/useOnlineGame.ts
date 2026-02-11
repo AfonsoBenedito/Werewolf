@@ -69,7 +69,7 @@ export function useOnlineGame() {
                 setIsConnected(false);
             },
             // Reduce debug logs in production
-            debug: (str: string) => console.log(str)
+            debug: (_str: string) => { }
         });
 
         client.activate();

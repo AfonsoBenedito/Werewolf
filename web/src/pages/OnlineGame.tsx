@@ -6,7 +6,6 @@ import { useOnlineGame } from '../hooks/useOnlineGame';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/OnlineGame.css';
 
-console.log("OnlineGame module evaluated");
 
 import { TransitionScreen } from '../components/game/TransitionScreen';
 import { SeerResultModal } from '../components/game/SeerResultModal';

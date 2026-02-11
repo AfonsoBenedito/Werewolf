@@ -109,7 +109,7 @@ open class Game(
                 val targetRole = target?.role ?: return null
                 advanceTurn()
                 
-                if (targetRole is Villager) "Regular Villager" else "Not a Regular Villager"
+                if (targetRole is Villager) "${target.name} is just a Regular Villager" else "${target.name} is not just a Regular Villager"
             }
             "SKIP" -> {
                 advanceTurn()

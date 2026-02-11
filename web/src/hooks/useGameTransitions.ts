@@ -47,7 +47,7 @@ export function useGameTransitions(
                 { message: "The Village goes to sleep...", duration: 3000 }
             ];
             if (currentPhase.includes('Wolf')) {
-                newTransitions.push({ message: "Werewolves wake up", duration: 3000 });
+                newTransitions.push({ message: "The Werewolves wake up", duration: 3000 });
             }
             transitionQueue.current = [...transitionQueue.current, ...newTransitions];
         } else if (prevPhase !== currentPhase) {
@@ -57,7 +57,7 @@ export function useGameTransitions(
             if (prevPhase === 'NOT_STARTED' && currentPhase.includes('NIGHT')) {
                 newTransitions.push({ message: "The Village goes to sleep...", duration: 3000 });
                 if (currentPhase.includes('Wolf')) {
-                    newTransitions.push({ message: "Werewolves wake up", duration: 3000 });
+                    newTransitions.push({ message: "The Werewolves wake up", duration: 3000 });
                 }
             }
 
@@ -73,13 +73,13 @@ export function useGameTransitions(
                     if (prevPhase === 'DAY_RESULTS') {
                         newTransitions.push({ message: "The Village goes to sleep...", duration: 3000 });
                     }
-                    newTransitions.push({ message: "Werewolves wake up", duration: 3000 });
+                    newTransitions.push({ message: "The Werewolves wake up", duration: 3000 });
                 }
 
                 // Seer Turn
                 if (currentTurn === 'Seer') {
                     if (prevTurn === 'Wolf') {
-                        newTransitions.push({ message: "Werewolves go to sleep...", duration: 3000 });
+                        newTransitions.push({ message: "The Werewolves go to sleep...", duration: 3000 });
                     }
                     newTransitions.push({ message: "The Seer wakes up", duration: 3000 });
                 }
@@ -91,7 +91,7 @@ export function useGameTransitions(
                     }
                     // If coming from Wolf directly? (If Seer dead)
                     else if (prevTurn === 'Wolf') {
-                        newTransitions.push({ message: "Werewolves go to sleep...", duration: 3000 });
+                        newTransitions.push({ message: "The Werewolves go to sleep...", duration: 3000 });
                     }
                     newTransitions.push({ message: "The Medic wakes up", duration: 3000 });
                 }
@@ -105,10 +105,10 @@ export function useGameTransitions(
                 } else if (prevTurn === 'Seer') {
                     newTransitions.push({ message: "The Seer goes to sleep...", duration: 3000 });
                 } else if (prevTurn === 'Wolf') {
-                    newTransitions.push({ message: "Werewolves go to sleep...", duration: 3000 });
+                    newTransitions.push({ message: "The Werewolves go to sleep...", duration: 3000 });
                 }
 
-                newTransitions.push({ message: "The Village wakes up...", duration: 3000 });
+                newTransitions.push({ message: "The Village wakes up with the news that...", duration: 3000 });
 
                 // Announce night death
                 const victim = gameState.lastDeadPlayerName;
@@ -125,13 +125,13 @@ export function useGameTransitions(
 
             // 4. Day -> Voting
             else if (currentPhase === 'DAY_VOTING') {
-                newTransitions.push({ message: "Proceed to Voting", duration: 3000 });
+                newTransitions.push({ message: "Village, Let's vote!", duration: 3000 });
             }
 
             // 5. Voting -> Results
             else if (currentPhase === 'DAY_RESULTS') {
 
-                newTransitions.push({ message: "Announcing Vote Results...", duration: 3000 });
+                newTransitions.push({ message: "Village, the votes are in...", duration: 3000 });
 
                 // Announce vote result
                 const victim = gameState.lastDeadPlayerName;

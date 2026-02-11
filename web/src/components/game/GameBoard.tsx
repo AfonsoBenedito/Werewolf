@@ -36,12 +36,15 @@ export function GameBoard({ gameState, myPlayer, playerName, hasVotedReady, onAc
                         onAction={onAction}
                     />
 
-                    <PlayersGrid
-                        gameState={gameState}
-                        myPlayer={myPlayer}
-                        playerName={playerName}
-                        onAction={onAction}
-                    />
+                    {/* Hide PlayersGrid during Discussion phase as per request */}
+                    {gameState.phase !== 'DAY_DISCUSSION' && (
+                        <PlayersGrid
+                            gameState={gameState}
+                            myPlayer={myPlayer}
+                            playerName={playerName}
+                            onAction={onAction}
+                        />
+                    )}
                 </>
             )}
 

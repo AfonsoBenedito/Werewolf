@@ -10,12 +10,12 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({
-    gameId, phase, dayCount, isConnected = true, showConnectionStatus = false
+    gameId, phase: _phase, dayCount, isConnected = true, showConnectionStatus = false
 }: GameHeaderProps) {
     return (
         <div className="game-header">
             <div className="header-top">
-                <h2>Game: {gameId}</h2>
+                <h2>Game ID: {gameId}</h2>
                 {showConnectionStatus && !isConnected && (
                     <div className="connection-alert" title="Disconnected">
                         <WifiOff color="red" />
@@ -24,8 +24,9 @@ export function GameHeader({
             </div>
 
             <div className="phase-container">
-                <div className="status-badge">{phase}</div>
-                <div className="day-count">Day {dayCount}</div>
+                {/* Phase hidden as per request */}
+                {/* <div className="status-badge">{phase}</div> */}
+                {dayCount > 0 && <div className="day-count">Day {dayCount}</div>}
             </div>
         </div>
     );
