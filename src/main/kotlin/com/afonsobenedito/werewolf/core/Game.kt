@@ -121,9 +121,10 @@ open class Game(
 
     fun handleVotingAction(voter: Player, actionType: String, targetId: String?) {
         if (actionType == "SKIP") {
-            if (votes.containsKey(voter.name)) {
-                 throw IllegalArgumentException("You have already voted!")
-            }
+            // Removed "already voted" check
+            // if (votes.containsKey(voter.name)) {
+            //      throw IllegalArgumentException("You have already voted!")
+            // }
             votes[voter.name] = "ABSTAIN"
             checkVoteCompletion()
             return
@@ -135,9 +136,10 @@ open class Game(
         val target = players.find { it.name == targetName } ?: throw IllegalArgumentException("Target not found")
         if (!target.isAlive) throw IllegalArgumentException("Cannot vote for dead player")
         
-        if (votes.containsKey(voter.name)) {
-             throw IllegalArgumentException("You have already voted!")
-        }
+        // Removed "already voted" check
+        // if (votes.containsKey(voter.name)) {
+        //      throw IllegalArgumentException("You have already voted!")
+        // }
         
         votes[voter.name] = targetName
         
@@ -181,9 +183,10 @@ open class Game(
                  if (voterId == "Master") return 
                  if (target == null) throw IllegalArgumentException("Vote target needed")
                  
-                 if (votes.containsKey(voterId)) {
-                     throw IllegalArgumentException("Player $voterId has already voted!")
-                 }
+                  // Removed "already voted" check
+                  // if (votes.containsKey(voterId)) {
+                  //     throw IllegalArgumentException("Player $voterId has already voted!")
+                  // }
                  
                  votes[voterId] = target.name
                  
