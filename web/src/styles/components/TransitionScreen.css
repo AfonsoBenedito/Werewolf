@@ -25,12 +25,46 @@
         transform: scale(0.9);
     }
 
-    20% {
+    10% {
         opacity: 1;
         transform: scale(1);
     }
 
-    80% {
+    90% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+}
+
+.transition-message.manual-mode {
+    animation: fadeInOnly 1s ease-out forwards;
+    opacity: 0;
+    /* Start invisible */
+}
+
+.transition-message.exiting {
+    animation: fadeOut 1s ease-in forwards;
+}
+
+@keyframes fadeInOnly {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
         opacity: 1;
         transform: scale(1);
     }

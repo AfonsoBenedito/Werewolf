@@ -148,6 +148,13 @@ export function useGameTransitions(
 
             if (newTransitions.length > 0) {
                 transitionQueue.current = [...transitionQueue.current, ...newTransitions];
+
+                // If not already transitioning, start the first one immediately
+                if (!isTransitioning) {
+                    const next = transitionQueue.current.shift();
+                    setIsTransitioning(true);
+                    setCurrentTransition(next || null);
+                }
             }
         }
 
@@ -168,10 +175,18 @@ export function useGameTransitions(
 
 
     const handleTransitionComplete = useCallback(() => {
-        // Trigger re-render to process next item in useEffect
-        setIsTransitioning(false);
-        setCurrentTransition(null);
-    }, []);
+        if (transitionQueue.current.length > 0) {
+            // If there are more transitions, show the next one immediately
+            // This prevents the component from unmounting and causing "blinks"
+            const next = transitionQueue.current.shift();
+            setCurrentTransition(next || null);
+            // isTransitioning stays true
+        } else {
+            // Queue empty, finish transitioning
+            setIsTransitioning(false);
+            setCurrentTransition(null);
+        }
+    }, [isTransitioning]);
 
     return {
         isTransitioning,

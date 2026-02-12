@@ -5,6 +5,8 @@ import { VotingResults } from '../components/offline/VotingResults';
 import { TurnAnnouncement } from '../components/offline/TurnAnnouncement';
 import { OfflineControls } from '../components/offline/OfflineControls';
 import { OfflineGrid } from '../components/offline/OfflineGrid';
+import { TransitionScreen } from '../components/game/TransitionScreen'; // Added
+import { useGameTransitions } from '../hooks/useGameTransitions'; // Added
 import { ArrowLeft, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/OfflineGame.css';
@@ -31,6 +33,8 @@ export default function OfflineGame() {
         manualAction,
         phaseMessage
     } = useOfflineGame();
+
+    const { isTransitioning, currentTransition, handleTransitionComplete } = useGameTransitions(gameState, null);
 
     // SETUP UI
     if (!gameId) {
@@ -61,6 +65,17 @@ export default function OfflineGame() {
     return (
         <div className="offline-game">
             <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
+
+            {isTransitioning && currentTransition && (
+                <TransitionScreen
+                    message={currentTransition.message}
+                    duration={currentTransition.duration}
+                    onComplete={handleTransitionComplete}
+                    manualContinue={true}
+                    actionLabel="Next"
+                />
+            )}
+
             <h1>Offline Mode (Master)</h1>
 
             <GameHeader
