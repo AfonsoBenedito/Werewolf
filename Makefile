@@ -12,7 +12,13 @@ unit-tests-kotlin:
 	./gradlew test
 
 unit-tests-web:
-	@echo "Running web unit tests... (placeholder)"
+	npm --prefix web test
+
+code-check-web:
+	npm --prefix web run lint
+
+code-fix-web:
+	npm --prefix web run lint -- --fix
 
 code-check-kotlin:
 	@echo "Running code check... (placeholder)"
@@ -20,4 +26,4 @@ code-check-kotlin:
 code-fix-kotlin:
 	@echo "Running code fix... (placeholder)"
 
-run-all-tests: unit-tests-kotlin unit-tests-web code-check-kotlin
+run-all-tests: unit-tests-kotlin unit-tests-web code-check-kotlin code-check-web
