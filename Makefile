@@ -14,4 +14,10 @@ unit-tests-kotlin:
 unit-tests-web:
 	@echo "Running web unit tests... (placeholder)"
 
-run-all-tests: unit-tests-kotlin unit-tests-web
+code-check-kotlin:
+	@echo "Running code check... (placeholder)"
+
+code-fix-kotlin:
+	@echo "Running code fix... (placeholder)"
+
+run-all-tests: unit-tests-kotlin unit-tests-web code-check-kotlin
