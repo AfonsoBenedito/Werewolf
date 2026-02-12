@@ -47,8 +47,8 @@ class ConsoleGameRunner(
         val aliveBeforeNight = players.filter { it.isAlive }.toSet()
 
         val wolfTarget = playWolfTurn(players)
-        val medicTarget = playMedicTurn(players)
         playSeerTurn(players)
+        val medicTarget = playMedicTurn(players)
         
         // Resolve Night Actions
         if (wolfTarget != null) {

@@ -49,11 +49,10 @@ class ConsoleGameRunnerTest {
         // Wolf Turn: Select Villager to kill.
         fakeInteraction.queuePlayerSelection(villagerPlayer)
         
-        // Medic Turn: (No Medic in game, so no input needed, but wait, the runner iterates ALL players to find roles)
-        // playMedicTurn filters activeMedics. No medic -> no turn.
-        
         // Seer Turn: Select Wolf to check.
         fakeInteraction.queuePlayerSelection(wolfPlayer)
+
+        // Medic Turn: (No Medic in game, so no input needed)
         
         // Day 1: Voting.
         // If the game ends at morning check, we won't reach voting.
@@ -111,11 +110,11 @@ class ConsoleGameRunnerTest {
         // Wolf Turn -> Kill Villager
         fakeInteraction.queuePlayerSelection(villagerPlayer)
         
-        // Medic Turn -> Save Villager
-        fakeInteraction.queuePlayerSelection(villagerPlayer)
-
         // Seer Turn -> Check Wolf
         fakeInteraction.queuePlayerSelection(wolfPlayer)
+
+        // Medic Turn -> Save Villager
+        fakeInteraction.queuePlayerSelection(villagerPlayer)
         
         // Day 1 Voting Inputs (4 players alive):
         // Wolf votes Villager
