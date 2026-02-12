@@ -14,14 +14,24 @@
     /* Space for the fixed footer */
 }
 
-/* ---- Full-screen background image --------------------------------- */
-.landing__bg {
+/* ---- Background elements (Image or Video) ------------------------- */
+.landing__bg,
+.landing__video-bg {
     position: absolute;
     inset: 0;
-    background: url('/werewolf.png') center center / cover no-repeat;
-    opacity: 0.35;
+    width: 100%;
+    height: 100%;
     z-index: 0;
+    opacity: 0.35;
     will-change: opacity;
+}
+
+.landing__bg {
+    background: url('/werewolf.png') center center / cover no-repeat;
+}
+
+.landing__video-bg {
+    object-fit: cover;
 }
 
 /* ---- Dark overlay ------------------------------------------------- */

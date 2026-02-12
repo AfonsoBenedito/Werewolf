@@ -1,14 +1,29 @@
 import { useNavigate } from 'react-router-dom';
 import { Footer } from '../components/common/Footer';
+import { useConnectionQuality } from '../hooks/useConnectionQuality';
 import '../styles/pages/LandingPage.css';
 
 export default function LandingPage() {
     const navigate = useNavigate();
+    const { shouldLoadVideo } = useConnectionQuality();
 
     return (
         <div className="landing">
             {/* Background layer */}
-            <div className="landing__bg" aria-hidden="true" />
+            {shouldLoadVideo ? (
+                <video
+                    className="landing__video-bg"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/werewolf.png"
+                >
+                    <source src="/werewolf-bg.mp4" type="video/mp4" />
+                </video>
+            ) : (
+                <div className="landing__bg" aria-hidden="true" />
+            )}
             <div className="landing__overlay" aria-hidden="true" />
 
             {/* Hero content */}
