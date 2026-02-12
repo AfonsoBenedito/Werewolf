@@ -60,7 +60,7 @@ class GameTest {
         val wolf = game.players.first { it.role is Wolf }
         val seer = game.players.first { it.role is Seer }
         val medic = game.players.first { it.role is Medic }
-        val villager = game.players.first { it.role is Villager } // If any
+        // val villager = game.players.first { it.role is Villager } // If any
         
         assertEquals("Wolf", game.currentTurn)
         
@@ -70,6 +70,7 @@ class GameTest {
         
         // Seer peeks
         game.handleNightAction(seer, "PEEK", wolf.name)
+        game.handleNightAction(seer, "SKIP", null)
         assertEquals("Medic", game.currentTurn)
         
         // Medic heals (self or other)
