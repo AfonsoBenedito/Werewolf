@@ -123,6 +123,18 @@ export function useOfflineGame() {
         }
     };
 
+    const handleAbstain = async () => {
+        if (!gameId || !activeVoter) return;
+        try {
+            // "SKIP" is treated as ABSTAIN by the backend (Vote Action)
+            await performAction(gameId, activeVoter, "VOTE", "SKIP");
+            setActiveVoter(null);
+            await fetchGameState();
+        } catch (error) {
+            alert("Abstain failed");
+        }
+    };
+
     const manualAction = async (action: string, targetId?: string) => {
         if (!gameId) return;
         try {
@@ -184,6 +196,7 @@ export function useOfflineGame() {
         handleKill,
         handleNextPhase,
         handleVote,
+        handleAbstain,
         manualAction,
         phaseMessage
     };

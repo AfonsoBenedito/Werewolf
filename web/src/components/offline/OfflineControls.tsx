@@ -14,6 +14,7 @@ interface OfflineControlsProps {
     onSkipTurn: () => void;
     onCancelVote: () => void;
     onToggleReveal: () => void;
+    onAbstain: () => void;
 }
 
 export function OfflineControls({
@@ -26,7 +27,8 @@ export function OfflineControls({
     onNextPhase,
     onSkipTurn,
     onCancelVote,
-    onToggleReveal
+    onToggleReveal,
+    onAbstain
 }: OfflineControlsProps) {
     return (
         <div className="game-controls">
@@ -45,6 +47,7 @@ export function OfflineControls({
             <VoteControl
                 activeVoter={activeVoter}
                 onCancelVote={onCancelVote}
+                onAbstain={onAbstain}
             />
 
             <GameMasterControl

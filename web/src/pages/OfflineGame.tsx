@@ -27,6 +27,7 @@ export default function OfflineGame() {
         handleKill,
         handleNextPhase,
         handleVote,
+        handleAbstain,
         manualAction,
         phaseMessage
     } = useOfflineGame();
@@ -97,6 +98,7 @@ export default function OfflineGame() {
                         onSkipTurn={() => manualAction("NEXT_TURN")}
                         onCancelVote={() => setActiveVoter(null)}
                         onToggleReveal={() => setRevealRoles(!revealRoles)}
+                        onAbstain={handleAbstain}
                     />
 
                     <OfflineGrid

@@ -1,14 +1,20 @@
 interface VoteControlProps {
     activeVoter: string | null;
     onCancelVote: () => void;
+    onAbstain: () => void;
 }
 
-export function VoteControl({ activeVoter, onCancelVote }: VoteControlProps) {
+export function VoteControl({ activeVoter, onCancelVote, onAbstain }: VoteControlProps) {
     if (!activeVoter) return null;
 
     return (
-        <button className="cancel-btn" onClick={onCancelVote}>
-            Cancel Vote Selection
-        </button>
+        <div className="vote-controls">
+            <button className="cancel-btn" onClick={onCancelVote}>
+                Cancel Selection
+            </button>
+            <button className="abstain-btn" onClick={onAbstain}>
+                Abstain from Voting
+            </button>
+        </div>
     );
 }

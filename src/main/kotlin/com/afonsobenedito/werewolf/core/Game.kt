@@ -259,14 +259,18 @@ open class Game(
              "VOTE" -> {
                  val voterId = playerId
                  if (voterId == "Master") return 
-                 if (target == null) throw IllegalArgumentException("Vote target needed")
+                 if (target == null && targetId != "SKIP") throw IllegalArgumentException("Vote target needed")
                  
                  // Removed "already voted" check
                  // if (votes.containsKey(voterId)) {
                  //     throw IllegalArgumentException("Player $voterId has already voted!")
                  // }
                  
-                 votes[voterId] = target.name
+                 if (targetId == "SKIP") {
+                     votes[voterId] = "ABSTAIN"
+                 } else {
+                     votes[voterId] = target!!.name
+                 }
                  
                  val alivePlayers = players.filter { it.isAlive }
                  
