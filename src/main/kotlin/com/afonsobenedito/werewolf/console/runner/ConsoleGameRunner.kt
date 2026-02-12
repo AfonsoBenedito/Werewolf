@@ -64,7 +64,7 @@ class ConsoleGameRunner(
     }
 
     private fun announceNightStart() {
-        interaction.announce("The village goes to sleep. Close your eyes! (Functionally, press Enter to continue to secret turns...)")
+        interaction.announce("The Village goes to sleep...")
         interaction.promptEnter()
     }
 
@@ -88,7 +88,7 @@ class ConsoleGameRunner(
 
     private fun announceNightEnd() {
         interaction.clearScreen()
-        interaction.announce("Everyone wake up!")
+        interaction.announce("The Village wakes up with the news that...")
         interaction.promptEnter()
     }
 
@@ -101,11 +101,11 @@ class ConsoleGameRunner(
         
         if (diedDuringNight.isNotEmpty()) {
             diedDuringNight.forEach { victim ->
-                interaction.announce("${victim.name} was killed in the night!")
+                interaction.announce("${victim.name} died last night!")
                 interaction.announce("Their role was: ${victim.role?.name}")
             }
         } else {
-            interaction.announce("No one died last night.")
+            interaction.announce("It was a peaceful night.")
         }
         interaction.promptEnter()
     }
@@ -113,7 +113,7 @@ class ConsoleGameRunner(
     private fun dayPhase() {
         announceDiscussion()
         
-        interaction.announce("Voting Phase.")
+        interaction.announce("Village, Let's vote!")
         val votes = collectVotes()
         announceVotingResults(votes)
         processElimination(votes)
@@ -158,14 +158,14 @@ class ConsoleGameRunner(
             val potentialVictims = votes.filter { it.value == maxVotes }.keys.toList()
             if (potentialVictims.size == 1) {
                 val victim = potentialVictims.first()
-                interaction.announce("${victim.name} has been eliminated by the village!")
+                interaction.announce("${victim.name} was eliminated!")
                 victim.die()
                 interaction.announce("Their role was: ${victim.role?.name}")
             } else {
                 interaction.announce("Tie vote between ${potentialVictims.joinToString { it.name }}. No one is eliminated.")
             }
         } else {
-            interaction.announce("No votes cast. No one is eliminated.")
+            interaction.announce("No one was eliminated.")
         }
     }
 

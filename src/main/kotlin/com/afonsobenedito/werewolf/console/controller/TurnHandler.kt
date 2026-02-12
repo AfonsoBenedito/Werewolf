@@ -8,18 +8,18 @@ abstract class TurnHandler {
 
     abstract fun handleTurn(activePlayers: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player?
 
-    protected fun announceWake(interaction: GameInteraction) {
+    protected open fun announceWake(interaction: GameInteraction) {
         interaction.clearScreen()
-        interaction.announce("$roleTitle, wake up!")
+        interaction.announce("The $roleTitle wakes up")
     }
 
-    protected fun announceSleep(interaction: GameInteraction) {
+    protected open fun announceSleep(interaction: GameInteraction) {
         interaction.clearScreen()
-        interaction.announce("$roleTitle, go to sleep.")
+        interaction.announce("The $roleTitle goes to sleep...")
     }
 
     protected fun announceSilence(interaction: GameInteraction) {
-        interaction.announce("$roleTitle is silent...")
+        interaction.announce("The $roleTitle is silent...")
         Thread.sleep(2000)
     }
 }

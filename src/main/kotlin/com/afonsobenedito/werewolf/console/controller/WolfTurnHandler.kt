@@ -27,6 +27,16 @@ class WolfTurnHandler : TurnHandler() {
         return target
     }
 
+    override fun announceWake(interaction: GameInteraction) {
+        interaction.clearScreen()
+        interaction.announce("The Werewolves wake up")
+    }
+
+    override fun announceSleep(interaction: GameInteraction) {
+        interaction.clearScreen()
+        interaction.announce("The Werewolves go to sleep...")
+    }
+
     private fun getConsensusTarget(activeWolves: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player? {
         val aliveNonWolves = allPlayers.filter { it.isAlive && it.role !is Wolf }
         var consensusSelectedPlayer: Player? = null
