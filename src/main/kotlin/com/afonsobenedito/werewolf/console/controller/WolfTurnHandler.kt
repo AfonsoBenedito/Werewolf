@@ -35,6 +35,7 @@ class WolfTurnHandler : TurnHandler() {
     override fun announceSleep(interaction: GameInteraction) {
         interaction.clearScreen()
         interaction.announce("The Werewolves go to sleep...")
+        interaction.promptEnter()
     }
 
     private fun getConsensusTarget(activeWolves: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player? {

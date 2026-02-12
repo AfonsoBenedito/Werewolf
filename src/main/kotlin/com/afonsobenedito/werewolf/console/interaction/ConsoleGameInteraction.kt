@@ -57,10 +57,19 @@ class ConsoleGameInteraction : GameInteraction {
         }
 
         for (i in 1..numPlayers) {
-            println("Enter name for Player $i:")
-            print("> ")
-            val name = scanner.nextLine().trim()
-            players.add(Player(if (name.isNotEmpty()) name else "Player $i"))
+            while (true) {
+                println("Enter name for Player $i:")
+                print("> ")
+                val nameInput = scanner.nextLine().trim()
+                val name = if (nameInput.isNotEmpty()) nameInput else "Player $i"
+                
+                if (players.any { it.name == name }) {
+                    println("Name '$name' is already taken. Please choose another name.")
+                } else {
+                    players.add(Player(name))
+                    break
+                }
+            }
         }
         return players
     }

@@ -16,6 +16,7 @@ abstract class TurnHandler {
     protected open fun announceSleep(interaction: GameInteraction) {
         interaction.clearScreen()
         interaction.announce("The $roleTitle goes to sleep...")
+        interaction.promptEnter()
     }
 
     protected fun announceSilence(interaction: GameInteraction) {
