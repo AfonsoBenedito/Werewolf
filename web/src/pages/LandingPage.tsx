@@ -1,28 +1,40 @@
 import { useNavigate } from 'react-router-dom';
-import { Moon, Users, Wifi } from 'lucide-react';
-import { ModeCard } from '../components/common/ModeCard';
+import { Footer } from '../components/common/Footer';
 import '../styles/pages/LandingPage.css';
 
 export default function LandingPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="landing-page">
-            <h1>Werewolf <Moon className="inline-icon" /></h1>
-            <div className="mode-selection">
-                <ModeCard
-                    title="Offline Mode"
-                    description="Master controls the game for valid players in the same room."
-                    Icon={Users}
-                    onClick={() => navigate('/offline')}
-                />
-                <ModeCard
-                    title="Online Mode"
-                    description="Join or Host a game to play with friends remotely."
-                    Icon={Wifi}
-                    onClick={() => navigate('/online')}
-                />
-            </div>
+        <div className="landing">
+            {/* Background layer */}
+            <div className="landing__bg" aria-hidden="true" />
+            <div className="landing__overlay" aria-hidden="true" />
+
+            {/* Hero content */}
+            <main className="landing__hero">
+                <h1 className="landing__title">WEREWOLF</h1>
+                <p className="landing__tagline">The classic social deduction game</p>
+
+                <div className="landing__ctas">
+                    <button
+                        className="landing__btn landing__btn--primary"
+                        onClick={() => navigate('/online')}
+                    >
+                        <span className="landing__btn-pulse" aria-hidden="true" />
+                        Online Mode
+                    </button>
+                    <button
+                        className="landing__btn landing__btn--outline"
+                        onClick={() => navigate('/offline')}
+                    >
+                        Offline Mode
+                    </button>
+                </div>
+            </main>
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 }

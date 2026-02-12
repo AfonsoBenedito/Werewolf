@@ -4,6 +4,7 @@ import { WaitingRoom } from '../components/game/WaitingRoom';
 import { GameBoard } from '../components/game/GameBoard';
 import { useOnlineGame } from '../hooks/useOnlineGame';
 import { useNavigate } from 'react-router-dom';
+import { Footer } from '../components/common/Footer';
 import '../styles/pages/OnlineGame.css';
 
 
@@ -42,6 +43,7 @@ export default function OnlineGame() {
                     <Home size={20} style={{ marginRight: '8px' }} />
                     Back to Home
                 </button>
+                <Footer />
             </div>
         );
     }
@@ -93,6 +95,7 @@ export default function OnlineGame() {
             )}
 
             <button className="refresh-btn" onClick={fetchState}><RefreshCw size={16} /></button>
+            <Footer />
         </div>
     );
 }

@@ -1,6 +1,8 @@
 .online-game {
     max-width: 600px;
     margin: 0 auto;
+    padding-bottom: 100px;
+    /* Space for fixed footer + refresh button */
 }
 
 .player-pill {
@@ -163,11 +165,44 @@
     text-align: center;
     font-style: italic;
 }
-.loading-screen, .error-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; color: #fff; text-align: center; }
-.error-screen h2 { color: #e74c3c; margin-bottom: 1rem; }
-.error-screen p { margin-bottom: 2rem; font-size: 1.2rem; }
-.error-screen .home-btn { display: flex; align-items: center; padding: 12px 24px; font-size: 1.1em; background: #646cff; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
-.error-screen .home-btn:hover { background: #535bf2; }
+
+.loading-screen,
+.error-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    color: #fff;
+    text-align: center;
+}
+
+.error-screen h2 {
+    color: #e74c3c;
+    margin-bottom: 1rem;
+}
+
+.error-screen p {
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+.error-screen .home-btn {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    background: #646cff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.error-screen .home-btn:hover {
+    background: #535bf2;
+}
 
 /* Seer Result Overlay */
 .seer-result-overlay {

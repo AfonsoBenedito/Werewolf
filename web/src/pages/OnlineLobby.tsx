@@ -2,6 +2,7 @@ import { useOnlineLobby } from '../hooks/useOnlineLobby';
 import { LobbySection } from '../components/common/LobbySection';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Footer } from '../components/common/Footer';
 import '../styles/pages/OnlineLobby.css';
 
 export default function OnlineLobby() {
@@ -50,6 +51,7 @@ export default function OnlineLobby() {
                 />
                 <button onClick={handleJoin}>Join Game</button>
             </LobbySection>
+            <Footer />
         </div>
     );
 }
