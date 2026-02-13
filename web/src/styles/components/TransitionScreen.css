@@ -122,3 +122,30 @@
     border-color: white;
     transform: translateY(-2px);
 }
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+    .transition-message {
+        font-size: 1.8rem;
+    }
+
+    .transition-description {
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+
+    .transition-btn {
+        margin-top: 2rem;
+        padding: 0.65rem 1.5rem;
+        font-size: 0.85rem;
+    }
+
+    .transition-content {
+        top: 35%;
+        width: 90%;
+    }
+
+    .transition-btn-area {
+        top: 55%;
+    }
+}
