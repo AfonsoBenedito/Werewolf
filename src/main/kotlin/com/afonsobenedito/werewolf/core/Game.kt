@@ -224,9 +224,10 @@ open class Game(
         checkVoteCompletion()
     }
 
-    fun processOfflineAction(actionType: String, playerId: String, targetId: String?) {
+    fun processOfflineAction(actionType: String, playerId: String, targetId: String?): String? {
          val target = players.find { it.name == targetId }
          
+         var result: String? = null
          when (actionType) {
              "KILL" -> {
                  if (target != null && target.role is Wolf) {
@@ -242,7 +243,10 @@ open class Game(
                  advanceTurn()
              }
              "PEEK" -> { 
-                 advanceTurn()
+                 val targetRole = target?.role ?: return null
+                 // Do NOT advance turn immediately to allow reading result
+                 // advanceTurn() 
+                 result = if (targetRole is Villager) "Villager" else "NOT a Villager"
              }
              "NEXT_TURN" -> advanceTurn() 
              "NEXT_PHASE" -> advancePhase()
@@ -258,13 +262,8 @@ open class Game(
              }
              "VOTE" -> {
                  val voterId = playerId
-                 if (voterId == "Master") return 
+                 if (voterId == "Master") return null
                  if (target == null && targetId != "SKIP") throw IllegalArgumentException("Vote target needed")
-                 
-                 // Removed "already voted" check
-                 // if (votes.containsKey(voterId)) {
-                 //     throw IllegalArgumentException("Player $voterId has already voted!")
-                 // }
                  
                  if (targetId == "SKIP") {
                      votes[voterId] = "ABSTAIN"
@@ -280,6 +279,7 @@ open class Game(
              }
          }
          checkPhaseTransition()
+         return result
     }
 
     private fun checkVoteCompletion() {
@@ -352,6 +352,7 @@ open class Game(
                 wolfVotes.clear() // Ensure cleanup
             }
             GamePhase.DAY_DISCUSSION -> {
+                lastDeadPlayerName = null
                 phase = GamePhase.DAY_VOTING
             }
             GamePhase.DAY_VOTING -> {

@@ -32,6 +32,9 @@ export function useOfflineGame() {
     // Voting UI State
     const [activeVoter, setActiveVoter] = useState<string | null>(null);
 
+    // Seer Result UI State
+    const [seerResult, setSeerResult] = useState<{ target: string, role: string } | null>(null);
+
     useEffect(() => {
         if (gameId) {
             fetchGameState(gameId);
@@ -39,6 +42,16 @@ export function useOfflineGame() {
             return () => clearInterval(interval);
         }
     }, [gameId]);
+
+    // Reset UI states when phase changes
+    useEffect(() => {
+        // Only clear Seer result when starting a NEW night cycle
+        // to ensure it stays visible during the Day transition
+        if (gameState?.phase === "NIGHT - Wolf" || gameState?.phase === "NOT_STARTED") {
+            setSeerResult(null);
+        }
+        setActiveVoter(null);
+    }, [gameState?.phase]);
 
     const fetchGameState = async (id = gameId) => {
         if (!id) return;
@@ -63,6 +76,12 @@ export function useOfflineGame() {
             setNewPlayerName('');
         } else {
             alert("Game already started.");
+        }
+    };
+
+    const handleRemovePlayer = (name: string) => {
+        if (!gameId) {
+            setLocalPlayers(localPlayers.filter(p => p !== name));
         }
     };
 
@@ -93,12 +112,11 @@ export function useOfflineGame() {
 
     const handleKill = async (playerId: string) => {
         if (!gameId) return;
-        if (!confirm("Are you sure you want to kill this player?")) return;
         try {
             await performAction(gameId, "Master", "KILL", playerId);
             await fetchGameState();
         } catch (error) {
-            alert("Action failed: " + ((error as any).response?.data?.message || "Unknown error"));
+            console.error("Kill failed", error);
         }
     };
 
@@ -108,7 +126,7 @@ export function useOfflineGame() {
             await performAction(gameId, "Master", "NEXT_PHASE");
             await fetchGameState();
         } catch (error) {
-            alert("Action failed");
+            console.error("Action failed", error);
         }
     };
 
@@ -119,7 +137,7 @@ export function useOfflineGame() {
             setActiveVoter(null);
             await fetchGameState();
         } catch (error) {
-            alert("Vote failed");
+            console.error("Vote failed", error);
         }
     };
 
@@ -131,7 +149,31 @@ export function useOfflineGame() {
             setActiveVoter(null);
             await fetchGameState();
         } catch (error) {
-            alert("Abstain failed");
+            console.error("Abstain failed", error);
+        }
+    };
+
+    const handlePeek = async (targetId: string) => {
+        if (!gameId) return;
+        try {
+            const data = await performAction(gameId, "Master", "PEEK", targetId);
+            if (data && data.peekResult) {
+                setSeerResult({ target: targetId, role: data.peekResult });
+            }
+            await fetchGameState();
+        } catch (error) {
+            console.error("Peek failed", error);
+        }
+    };
+
+    const advanceSeerTurn = async () => {
+        if (!gameId) return;
+        try {
+            setSeerResult(null);
+            await performAction(gameId, "Master", "NEXT_TURN");
+            await fetchGameState();
+        } catch (error) {
+            console.error("Advance seer turn failed", error);
         }
     };
 
@@ -192,12 +234,16 @@ export function useOfflineGame() {
         activeVoter,
         setActiveVoter,
         handleAddPlayer,
+        handleRemovePlayer,
         handleStartGame,
         handleKill,
         handleNextPhase,
         handleVote,
         handleAbstain,
+        handlePeek,
+        advanceSeerTurn,
         manualAction,
-        phaseMessage
+        phaseMessage,
+        seerResult
     };
 }

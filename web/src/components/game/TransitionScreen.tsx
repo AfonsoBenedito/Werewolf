@@ -47,15 +47,19 @@ export const TransitionScreen: React.FC<TransitionScreenProps> = ({
 
     return (
         <div className="transition-screen">
-            <h1 className={`transition-message ${getAnimationClass()}`} key={message}>
-                {message}
-            </h1>
-            {description && <p className="transition-description">{description}</p>}
-            {manualContinue && !isExiting && (
-                <button className="transition-btn" onClick={handleNext}>
-                    {actionLabel}
-                </button>
-            )}
+            <div className="transition-content">
+                <h1 className={`transition-message ${getAnimationClass()}`} key={message}>
+                    {message}
+                </h1>
+                {description && <p className="transition-description">{description}</p>}
+            </div>
+            <div className="transition-btn-area">
+                {manualContinue && !isExiting && (
+                    <button className="transition-btn" onClick={handleNext}>
+                        {actionLabel}
+                    </button>
+                )}
+            </div>
         </div>
     );
 };

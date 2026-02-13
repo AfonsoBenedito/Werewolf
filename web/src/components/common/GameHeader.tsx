@@ -7,14 +7,15 @@ interface GameHeaderProps {
     dayCount: number;
     isConnected?: boolean; // Online only
     showConnectionStatus?: boolean;
+    hideGameId?: boolean;
 }
 
 export function GameHeader({
-    gameId, phase: _phase, dayCount, isConnected = true, showConnectionStatus = false
+    gameId, phase: _phase, dayCount, isConnected = true, showConnectionStatus = false, hideGameId = false
 }: GameHeaderProps) {
     return (
         <div className="game-header">
-            <div className="header-top">
+            <div className={`header-top ${hideGameId ? 'game-id-hidden' : ''}`}>
                 <h2>Game ID: {gameId}</h2>
                 {showConnectionStatus && !isConnected && (
                     <div className="connection-alert" title="Disconnected">

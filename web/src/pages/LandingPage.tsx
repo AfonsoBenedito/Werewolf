@@ -19,7 +19,7 @@ export default function LandingPage() {
                     playsInline
                     poster="/werewolf.png"
                 >
-                    <source src="/werewolf-bg.mp4" type="video/mp4" />
+                    <source src="/background.mp4" type="video/mp4" />
                 </video>
             ) : (
                 <div className="landing__bg" aria-hidden="true" />

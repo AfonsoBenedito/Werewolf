@@ -1,150 +1,475 @@
+/* ===================================================================
+   Offline Mode — atmospheric dark redesign
+   =================================================================== */
+
 .offline-game {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.player-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.winner-banner {
-    color: gold;
-    font-size: 2rem;
-}
-
-.game-controls-wrapper {
+    position: relative;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #0d0d1a 0%, #06060f 100%);
+    color: #fff;
+    padding: 2rem 1.5rem 80px;
+    /* Space for fixed footer */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    align-items: center;
 }
 
+.offline-game h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin: 1rem 0 2rem;
+    background: linear-gradient(180deg, #fff 0%, #b0b0c0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(140, 160, 255, 0.15));
+}
+
+/* ---- Containers --------------------------------------------------- */
+.offline-setup-wrapper,
+.results-screen,
+.game-controls-wrapper {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Death Announcement Overlay */
+.death-announcement-overlay {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Seer Result Banner */
+.seer-result-banner-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem 0;
+    animation: slideInBottom 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.seer-result-banner {
+    background: rgba(138, 43, 226, 0.15);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    backdrop-filter: blur(12px);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(138, 43, 226, 0.1);
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+
+.seer-result-icon {
+    font-size: 1.8rem;
+    background: rgba(138, 43, 226, 0.2);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    flex-shrink: 0;
+    aspect-ratio: 1;
+}
+
+.seer-result-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.seer-result-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+}
+
+.seer-result-text {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.seer-result-text strong {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.seer-ok-btn {
+    margin-top: 1.5rem;
+    padding: 0.75rem 3rem;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    border-radius: 10px;
+}
+
+@keyframes slideInBottom {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.offline-setup-wrapper {
+    max-width: 900px;
+    /* Increased from 500px for a wider list */
+    margin-top: 4rem;
+    width: 95%;
+}
+
+@media (max-width: 768px) {
+    .offline-setup-wrapper {
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+}
+
+/* ---- Component Grids ---------------------------------------------- */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 2rem auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+@media (orientation: portrait) {
+    .player-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Day Discussion: disable hover effects on cards */
+.player-grid.discussion-grid .player-card {
+    cursor: default;
+    pointer-events: none;
+}
+
+.player-grid.discussion-grid .player-card:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+/* ---- Typography & Banners ----------------------------------------- */
+.winner-banner {
+    color: #ffd700;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    text-align: center;
+    margin: 2rem 0;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+    letter-spacing: 0.1em;
+}
+
+.death-announcement,
+.turn-indicator {
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-sizing: border-box;
+}
+
+.death-announcement {
+    background: rgba(192, 57, 43, 0.1);
+    border: 1px solid rgba(192, 57, 43, 0.2);
+    color: #ffb3b3;
+    animation: fade-in 0.5s ease-out;
+}
+
+.death-announcement.good-news {
+    background: rgba(39, 174, 96, 0.1);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+    color: #b3ffcc;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- Controls & Buttons ------------------------------------------ */
 .game-controls {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
 
-.death-announcement {
-    background: #c0392b;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    animation: fadeIn 1s;
-}
-
-.death-announcement.good-news {
-    background: #27ae60;
-}
-
-.vote-phase-btn {
+.vote-controls {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #f39c12;
-    color: black;
-    font-weight: bold;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.cancel-btn {
-    background-color: #95a5a6;
-}
-
-.results-screen {
-    text-align: center;
-    margin: 20px 0;
-    padding: 20px;
-    background: #2c3e50;
-    border-radius: 8px;
-    border: 1px solid #34495e;
-}
-
-.continue-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 15px;
+.btn-premium {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.continue-btn:hover {
-    background: #2980b9;
+@media (max-width: 480px) {
+    .btn-premium {
+        width: 100%;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
 }
 
-/* Setup Styles */
-.player-list {
-    margin: 20px 0;
+.btn-premium--primary {
+    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
 }
 
-.player-item {
-    background: #444;
-    padding: 5px 10px;
-    margin: 5px 0;
-    border-radius: 4px;
+.btn-premium--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
+}
+
+.btn-premium--outline {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-premium--outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ---- Turn Indicator ----------------------------------------------- */
+.turn-indicator {
+    background: rgba(124, 77, 255, 0.05);
+    border: 1px solid rgba(124, 77, 255, 0.2);
+    animation: glow-subtle 3s infinite alternate;
+}
+
+.turn-indicator h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #b39ddb;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.turn-indicator p {
+    font-size: 1.1rem;
+    color: #fff;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.seer-result-display {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-radius: 6px;
+    color: #a5d8ff;
+    font-size: 1rem;
+}
+
+.seer-result-display strong {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+@keyframes glow-subtle {
+    from {
+        box-shadow: 0 0 10px rgba(124, 77, 255, 0.1);
+    }
+
+    to {
+        box-shadow: 0 0 25px rgba(124, 77, 255, 0.25);
+    }
+}
+
+/* ---- Setup Specific ----------------------------------------------- */
+.setup-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .input-group {
     display: flex;
-    gap: 10px;
+    gap: 0.75rem;
 }
 
-.start-btn {
-    margin-top: 20px;
-    background: #2ecc71;
-    border: none;
-    padding: 10px 20px;
-    color: white;
+@media (max-width: 480px) {
+    .input-group {
+        flex-direction: column;
+    }
+}
+
+.input-group input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #7c4dff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    width: 100%;
+}
+
+.player-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.remove-player-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 1.1em;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
 
-.offline-setup-wrapper {
-    position: relative;
-    max-width: 500px;
-    margin: 0 auto;
-    padding-top: 50px;
-    padding-bottom: 80px;
-    /* Space for fixed footer */
+.remove-player-btn:hover {
+    background: rgba(192, 57, 43, 0.2);
+    color: #e74c3c;
 }
 
-.nav-btn-absolute {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    background: none;
-    border: none;
-    color: #aaddff;
-    cursor: pointer;
-    padding: 8px;
-}
-
+/* ---- Nav Buttons -------------------------------------------------- */
+.nav-btn-absolute,
 .home-btn-fixed {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #2c3e50;
-    border: 1px solid #34495e;
-    color: #aaddff;
-    width: 40px;
-    height: 40px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.6);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 0;
+    /* Reset default button padding */
+}
+
+.nav-btn-absolute {
+    top: 20px;
+    left: 20px;
+}
+
+.home-btn-fixed {
+    top: 20px;
+    left: 20px;
+    /* Moved to left */
+}
+
+.nav-btn-absolute:hover,
+.home-btn-fixed:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }

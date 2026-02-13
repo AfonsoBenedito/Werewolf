@@ -78,12 +78,12 @@ class GameService(
         
         if (game.mode == GameMode.OFFLINE) {
             if (request.playerId == "Master" || request.actionType == "VOTE") {
-                game.processOfflineAction(request.actionType, request.playerId, request.targetId)
+                val result = game.processOfflineAction(request.actionType, request.playerId, request.targetId)
                 saveGame(game)
                 if (game.phase == GamePhase.FINISHED) {
                    gameRepository.setShortTtl(game.id)
                 }
-                return null
+                return result
             }
         }
 

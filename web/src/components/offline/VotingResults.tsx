@@ -15,7 +15,7 @@ export function VotingResults({ lastDeadPlayerName, onContinue }: VotingResultsP
                     }
                 </p>
             </div>
-            <button className="continue-btn" onClick={onContinue}>
+            <button className="btn-premium btn-premium--outline" style={{ marginTop: '1.5rem' }} onClick={onContinue}>
                 🌙 Continue to Night
             </button>
         </div>

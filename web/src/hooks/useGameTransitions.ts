@@ -42,7 +42,7 @@ export function useGameTransitions(
             return;
         }
 
-        if (prevStatus === 'NOT_STARTED' && currentStatus === 'IN_PROGRESS') {
+        if ((prevStatus === 'NOT_STARTED' || prevStatus === '') && currentStatus === 'IN_PROGRESS') {
             const newTransitions: Transition[] = [
                 { message: "The Village goes to sleep...", duration: 3000 }
             ];
@@ -50,6 +50,13 @@ export function useGameTransitions(
                 newTransitions.push({ message: "The Werewolves wake up", duration: 3000 });
             }
             transitionQueue.current = [...transitionQueue.current, ...newTransitions];
+
+            // Start processing the first transition immediately
+            if (!isTransitioning) {
+                const next = transitionQueue.current.shift();
+                setIsTransitioning(true);
+                setCurrentTransition(next || null);
+            }
         } else if (prevPhase !== currentPhase) {
             const newTransitions: Transition[] = [];
 

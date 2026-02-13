@@ -8,6 +8,7 @@ interface OfflineGridProps {
     isMedicTurn: boolean;
     isSeerTurn: boolean;
     isVoting: boolean;
+    isDiscussion?: boolean;
     activeVoter: string | null;
     revealRoles: boolean;
     onKill: (id: string) => void;
@@ -24,6 +25,7 @@ export function OfflineGrid({
     isMedicTurn,
     isSeerTurn,
     isVoting,
+    isDiscussion,
     activeVoter,
     revealRoles,
     onKill,
@@ -33,7 +35,7 @@ export function OfflineGrid({
     onVoteTarget
 }: OfflineGridProps) {
     return (
-        <div className="player-grid">
+        <div className={`player-grid ${isDiscussion ? 'discussion-grid' : ''}`}>
             {gameState.players.map(p => {
                 const hasVoted = gameState.votes && gameState.votes[p.name];
 
@@ -41,8 +43,14 @@ export function OfflineGrid({
                 const showKill = isNight && isWolfTurn && p.role !== "Werewolf";
                 const showHeal = isNight && isMedicTurn;
                 const showPeek = isNight && isSeerTurn && p.role !== "Seer";
-                const showVoteSelect = isVoting && !activeVoter && !hasVoted;
-                const showVoteTarget = isVoting && activeVoter && activeVoter !== p.name;
+                const showVoteSelect = isVoting && !activeVoter && !hasVoted && p.isAlive;
+                const showVoteTarget = isVoting && activeVoter && activeVoter !== p.name && p.isAlive;
+
+                // Disable card for the person whose turn it is
+                // EXCEPT for Medic, who can heal themselves
+                const isMyTurn = (isWolfTurn && p.role === "Werewolf") ||
+                    (isSeerTurn && p.role === "Seer") ||
+                    (activeVoter === p.name);
 
                 return (
                     <PlayerCard
@@ -54,6 +62,7 @@ export function OfflineGrid({
                         hasVoted={!!hasVoted}
                         isVotingPhase={isVoting}
                         isActiveVoter={activeVoter === p.name}
+                        isDisabled={isMyTurn}
                         isVoteTarget={false}
 
                         showKill={showKill}
@@ -63,12 +72,7 @@ export function OfflineGrid({
                         onHeal={() => onHeal(p.name)}
 
                         showPeek={showPeek}
-                        onPeek={() => {
-                            const isVillager = p.role === "Villager";
-                            const msg = isVillager ? "Regular Villager" : "Has Powers / Special Role";
-                            alert(`${p.name} is: ${msg}`);
-                            onPeek(p.name);
-                        }}
+                        onPeek={() => onPeek(p.name)}
 
                         showVoteSelect={!!showVoteSelect}
                         onVoteSelect={() => onVoteSelect(p.name)}

@@ -26,13 +26,17 @@ export default function OfflineGame() {
         activeVoter,
         setActiveVoter,
         handleAddPlayer,
+        handleRemovePlayer,
         handleStartGame,
         handleKill,
         handleNextPhase,
         handleVote,
         handleAbstain,
+        handlePeek,
+        advanceSeerTurn,
         manualAction,
-        phaseMessage
+        phaseMessage,
+        seerResult
     } = useOfflineGame();
 
     const { isTransitioning, currentTransition, handleTransitionComplete } = useGameTransitions(gameState, null);
@@ -41,16 +45,23 @@ export default function OfflineGame() {
     if (!gameId) {
         return (
             <>
-                <div className="offline-setup-wrapper">
-                    <button className="nav-btn-absolute" onClick={() => navigate('/')}><ArrowLeft /></button>
-                    <OfflineSetup
-                        newPlayerName={newPlayerName}
-                        setNewPlayerName={setNewPlayerName}
-                        currentPlayers={localPlayers}
-                        onAddPlayer={handleAddPlayer}
-                        onStartGame={handleStartGame}
-                        loading={loading}
-                    />
+                <div className="offline-game">
+                    <button className="nav-btn-absolute" onClick={() => navigate('/')} title="Back to menu">
+                        <ArrowLeft size={24} strokeWidth={2.5} />
+                    </button>
+
+                    <div className="offline-setup-wrapper">
+                        <h1>OFFLINE MODE</h1>
+                        <OfflineSetup
+                            newPlayerName={newPlayerName}
+                            setNewPlayerName={setNewPlayerName}
+                            currentPlayers={localPlayers}
+                            onAddPlayer={handleAddPlayer}
+                            onRemovePlayer={handleRemovePlayer}
+                            onStartGame={handleStartGame}
+                            loading={loading}
+                        />
+                    </div>
                 </div>
                 <Footer />
             </>
@@ -69,7 +80,9 @@ export default function OfflineGame() {
     return (
         <>
             <div className="offline-game">
-                <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
+                <button className="home-btn-fixed" onClick={() => navigate('/')} title="Back to menu">
+                    <Home size={24} strokeWidth={2.5} />
+                </button>
 
                 {isTransitioning && currentTransition && (
                     <TransitionScreen
@@ -77,67 +90,116 @@ export default function OfflineGame() {
                         duration={currentTransition.duration}
                         onComplete={handleTransitionComplete}
                         manualContinue={true}
-                        actionLabel="Next"
+                        actionLabel="Proceed"
                     />
                 )}
 
-                <h1>Offline Mode (Master)</h1>
+                <div className="game-container">
+                    <h1>GAME MASTER</h1>
 
-                <GameHeader
-                    gameId={gameId}
-                    phase={phaseMessage}
-                    dayCount={gameState.dayCount}
-                    showConnectionStatus={false}
-                />
-
-                {gameState.winner && <h2 className="winner-banner">🏆 Winner: {gameState.winner}</h2>}
-
-                {/* Voting Results Screen */}
-                {isResults && (
-                    <VotingResults
-                        lastDeadPlayerName={gameState.lastDeadPlayerName}
-                        onContinue={handleNextPhase}
+                    <GameHeader
+                        gameId={gameId}
+                        phase={phaseMessage}
+                        dayCount={gameState.dayCount}
+                        showConnectionStatus={false}
+                        hideGameId={true}
                     />
-                )}
 
-                {gameState.status === 'IN_PROGRESS' && (
-                    <div className="game-controls-wrapper">
-                        <TurnAnnouncement
-                            phase={gameState.phase}
+                    {gameState.winner && <h2 className="winner-banner">🏆 {gameState.winner} WIN</h2>}
+
+                    {/* Voting Results Screen */}
+                    {isResults && (
+                        <VotingResults
                             lastDeadPlayerName={gameState.lastDeadPlayerName}
+                            onContinue={handleNextPhase}
                         />
+                    )}
 
-                        <OfflineControls
-                            phase={gameState.phase}
-                            activeVoter={activeVoter}
-                            isNight={isNight}
-                            isResults={isResults}
-                            isVoting={isVoting}
-                            revealRoles={revealRoles}
-                            onNextPhase={handleNextPhase}
-                            onSkipTurn={() => manualAction("NEXT_TURN")}
-                            onCancelVote={() => setActiveVoter(null)}
-                            onToggleReveal={() => setRevealRoles(!revealRoles)}
-                            onAbstain={handleAbstain}
-                        />
+                    {gameState.status === 'IN_PROGRESS' && !isResults && (
+                        <div className="game-content-area">
+                            {/* New Stylish Turn Indicator */}
+                            <div className="turn-indicator">
+                                <h2>Current Turn</h2>
+                                <p>{phaseMessage}</p>
+                            </div>
 
-                        <OfflineGrid
-                            gameState={gameState}
-                            isNight={isNight}
-                            isWolfTurn={isWolfTurn}
-                            isMedicTurn={isMedicTurn}
-                            isSeerTurn={isSeerTurn}
-                            isVoting={isVoting}
-                            activeVoter={activeVoter}
-                            revealRoles={revealRoles}
-                            onKill={handleKill}
-                            onHeal={(id) => manualAction("HEAL", id)}
-                            onPeek={(id) => manualAction("PEEK", id)}
-                            onVoteSelect={setActiveVoter}
-                            onVoteTarget={handleVote}
-                        />
-                    </div>
-                )}
+                            {/* Seer Result Banner - Show during Seer turn after peeking */}
+                            {seerResult && isSeerTurn && !isTransitioning && (
+                                <div className="seer-result-banner-wrapper">
+                                    <div className="seer-result-banner">
+                                        <span className="seer-result-icon">👁️</span>
+                                        <div className="seer-result-content">
+                                            <span className="seer-result-label">Seer's Investigation:</span>
+                                            <span className="seer-result-text">
+                                                <strong>{seerResult.target}</strong> is a <strong>{seerResult.role}</strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="btn-premium btn-premium--primary seer-ok-btn"
+                                        onClick={advanceSeerTurn}
+                                    >
+                                        OK
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Death Announcement Overlay */}
+                            {gameState.lastDeadPlayerName && !isTransitioning && (
+                                <div className="death-announcement-overlay">
+                                    <TurnAnnouncement
+                                        phase={gameState.phase}
+                                        lastDeadPlayerName={gameState.lastDeadPlayerName}
+                                    />
+                                    <div className="game-controls" style={{ marginTop: '2rem' }}>
+                                        <button className="btn-premium btn-premium--primary" onClick={handleNextPhase}>
+                                            Acknowledge & Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Game Action Grid - hide when seer result is showing */}
+                            {!isTransitioning && !gameState.lastDeadPlayerName && !(seerResult && isSeerTurn) && (
+                                <div className="game-grid-wrapper">
+                                    <OfflineGrid
+                                        gameState={gameState}
+                                        isNight={isNight}
+                                        isWolfTurn={isWolfTurn}
+                                        isMedicTurn={isMedicTurn}
+                                        isSeerTurn={isSeerTurn}
+                                        isVoting={isVoting}
+                                        isDiscussion={gameState.phase === 'DAY_DISCUSSION'}
+                                        activeVoter={activeVoter}
+                                        revealRoles={revealRoles}
+                                        onKill={handleKill}
+                                        onHeal={(id) => manualAction("HEAL", id)}
+                                        onPeek={handlePeek}
+                                        onVoteSelect={setActiveVoter}
+                                        onVoteTarget={handleVote}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Bottom Controls - hide when seer result is showing */}
+                            {!gameState.lastDeadPlayerName && !isTransitioning && !(seerResult && isSeerTurn) && (
+                                <OfflineControls
+                                    phase={gameState.phase}
+                                    activeVoter={activeVoter}
+                                    isNight={isNight}
+                                    isResults={isResults}
+                                    isVoting={isVoting}
+                                    revealRoles={revealRoles}
+                                    onNextPhase={handleNextPhase}
+                                    onSkipTurn={() => manualAction("NEXT_TURN")}
+                                    onCancelVote={() => setActiveVoter(null)}
+                                    onToggleReveal={() => setRevealRoles(!revealRoles)}
+                                    onAbstain={handleAbstain}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
             <Footer />
         </>

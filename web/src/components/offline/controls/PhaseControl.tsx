@@ -10,24 +10,24 @@ interface PhaseControlProps {
 export function PhaseControl({ phase, isVoting, isResults, onNextPhase }: PhaseControlProps) {
     if (phase === "DAY_DISCUSSION") {
         return (
-            <button className="vote-phase-btn" onClick={onNextPhase}>
-                <Play size={16} /> Start Voting
+            <button className="btn-premium btn-premium--primary" onClick={onNextPhase}>
+                <Play size={18} /> Start Voting
             </button>
         );
     }
 
     if (isVoting) {
         return (
-            <button className="skip-phase-btn" onClick={onNextPhase}>
-                <RefreshCw size={16} /> Skip Voting (Force Results)
+            <button className="btn-premium btn-premium--outline" onClick={onNextPhase}>
+                <RefreshCw size={18} /> Skip Voting
             </button>
         );
     }
 
     if (!isVoting && !isResults) {
         return (
-            <button onClick={onNextPhase}>
-                <RefreshCw size={16} /> Force Next Phase
+            <button className="btn-premium btn-premium--outline" onClick={onNextPhase}>
+                <RefreshCw size={18} /> Next Phase
             </button>
         );
     }
