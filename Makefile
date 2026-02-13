@@ -8,6 +8,13 @@ run-web:
 stop-web:
 	docker-compose down
 
+run-backend:
+	docker-compose down
+	docker-compose up --build redis backend
+
+stop-backend:
+	docker-compose stop backend redis
+
 unit-tests-kotlin:
 	./gradlew test
 
