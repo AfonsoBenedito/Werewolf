@@ -27,7 +27,7 @@ export function PhaseControl({ phase, isVoting, isResults, onNextPhase }: PhaseC
     if (!isVoting && !isResults) {
         return (
             <button className="btn-premium btn-premium--outline" onClick={onNextPhase}>
-                <RefreshCw size={18} /> Next Phase
+                <RefreshCw size={18} /> Skip to Voting
             </button>
         );
     }

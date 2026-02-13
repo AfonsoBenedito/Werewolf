@@ -12,6 +12,7 @@
     color: #fff;
     padding-bottom: 80px;
     /* Space for the fixed footer */
+    user-select: none;
 }
 
 /* ---- Background elements (Image or Video) ------------------------- */

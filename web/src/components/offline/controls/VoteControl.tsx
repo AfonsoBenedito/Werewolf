@@ -9,11 +9,11 @@ export function VoteControl({ activeVoter, onCancelVote, onAbstain }: VoteContro
 
     return (
         <div className="vote-controls">
-            <button className="cancel-btn" onClick={onCancelVote}>
-                Cancel Selection
-            </button>
             <button className="abstain-btn" onClick={onAbstain}>
                 Abstain from Voting
+            </button>
+            <button className="cancel-btn" onClick={onCancelVote}>
+                Cancel Selection
             </button>
         </div>
     );

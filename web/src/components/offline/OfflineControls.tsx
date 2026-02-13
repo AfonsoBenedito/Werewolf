@@ -39,9 +39,9 @@ export function OfflineControls({
                 onNextPhase={onNextPhase}
             />
 
-            <TurnControl
-                isNight={isNight}
-                onSkipTurn={onSkipTurn}
+            <GameMasterControl
+                revealRoles={revealRoles}
+                onToggleReveal={onToggleReveal}
             />
 
             <VoteControl
@@ -50,9 +50,9 @@ export function OfflineControls({
                 onAbstain={onAbstain}
             />
 
-            <GameMasterControl
-                revealRoles={revealRoles}
-                onToggleReveal={onToggleReveal}
+            <TurnControl
+                isNight={isNight}
+                onSkipTurn={onSkipTurn}
             />
         </div>
     );
