@@ -1,7 +1,6 @@
-import { useOnlineLobby } from '../hooks/useOnlineLobby';
-import { LobbySection } from '../components/common/LobbySection';
-import { ArrowLeft } from 'lucide-react';
+import { Home, Users, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useOnlineLobby } from '../hooks/useOnlineLobby';
 import { Footer } from '../components/common/Footer';
 import '../styles/pages/OnlineLobby.css';
 
@@ -18,39 +17,63 @@ export default function OnlineLobby() {
 
     return (
         <div className="online-lobby">
-            <div className="header-nav">
-                <button className="nav-btn" onClick={() => navigate('/')}><ArrowLeft /></button>
-                <h1>Online Lobby</h1>
+            <button className="home-btn-fixed" onClick={() => navigate('/')}>
+                <Home size={20} />
+            </button>
+
+            <h1>Online Lobby</h1>
+
+            <div className="lobby-container">
+                {error && (
+                    <div className="error-message">
+                        {error}
+                    </div>
+                )}
+
+                <div className="lobby-section">
+                    <h2>Host New Game</h2>
+                    <div className="lobby-input-group">
+                        <input
+                            type="text"
+                            className="lobby-input"
+                            placeholder="Your Name"
+                            value={hostName}
+                            onChange={(e) => setHostName(e.target.value)}
+                        />
+                        <button className="lobby-btn lobby-btn--primary" onClick={handleHost}>
+                            <Play size={18} />
+                            Create Game
+                        </button>
+                    </div>
+                </div>
+
+                <div className="lobby-section-divider"></div>
+
+                <div className="lobby-section">
+                    <h2>Join Existing Game</h2>
+                    <div className="lobby-input-group">
+                        <input
+                            type="text"
+                            className="lobby-input"
+                            placeholder="Game ID"
+                            value={joinId}
+                            onChange={(e) => setJoinId(e.target.value.toUpperCase())}
+                        />
+                        <input
+                            type="text"
+                            className="lobby-input"
+                            placeholder="Your Name"
+                            value={joinName}
+                            onChange={(e) => setJoinName(e.target.value)}
+                        />
+                        <button className="lobby-btn lobby-btn--secondary" onClick={handleJoin}>
+                            <Users size={18} />
+                            Join Game
+                        </button>
+                    </div>
+                </div>
             </div>
-            {error && <p className="error">{error}</p>}
 
-            <LobbySection title="Host Game">
-                <input
-                    placeholder="Your Name"
-                    value={hostName}
-                    onChange={e => setHostName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleHost()}
-                />
-                <button onClick={handleHost}>Create & Host</button>
-            </LobbySection>
-
-            <div className="divider">OR</div>
-
-            <LobbySection title="Join Game">
-                <input
-                    placeholder="Your Name"
-                    value={joinName}
-                    onChange={e => setJoinName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleJoin()}
-                />
-                <input
-                    placeholder="Game ID"
-                    value={joinId}
-                    onChange={e => setJoinId(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleJoin()}
-                />
-                <button onClick={handleJoin}>Join Game</button>
-            </LobbySection>
             <Footer />
         </div>
     );
