@@ -37,7 +37,7 @@ export function OfflineSetup({
                 </button>
             </div>
 
-            <div className="player-list-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div className="player-list-header">
                 <Users size={14} />
                 <span>Players ({currentPlayers.length})</span>
             </div>
@@ -60,7 +60,7 @@ export function OfflineSetup({
             {currentPlayers.length >= 4 && (
                 <button
                     className="btn-premium btn-premium--primary"
-                    style={{ width: '100%', marginTop: '1rem' }}
+                    style={{ width: '100%', marginTop: '0.5rem' }}
                     onClick={onStartGame}
                     disabled={loading}
                 >
