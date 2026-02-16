@@ -10,7 +10,7 @@ interface NightActionProps {
     myNightTarget?: string | null;
 }
 
-export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, seerResult, nightStatus, myNightTarget }: NightActionProps) {
+export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, seerResult, nightStatus }: NightActionProps) {
     const isMyTurn = (
         (phase.includes("Wolf") && myPlayer.role === "Werewolf") ||
         (phase.includes("Seer") && myPlayer.role === "Seer") ||
