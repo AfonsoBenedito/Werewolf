@@ -119,9 +119,13 @@ class GameService(
                 game.handleVotingAction(player, request.actionType, request.targetId); null 
             }
             GamePhase.DAY_RESULTS -> {
-                // Allow dead players (HOST) to continue
+                if (!player.isAlive) throw IllegalArgumentException("Player is dead")
                 if (request.actionType == "CONTINUE") {
-                    game.advancePhase()
+                    game.readyPlayers.add(player.name)
+                    val aliveCount = game.players.count { it.isAlive }
+                    if (game.readyPlayers.size >= aliveCount) {
+                        game.advancePhase()
+                    }
                     null
                 } else {
                      throw IllegalArgumentException("Cannot act during results")

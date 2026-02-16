@@ -33,7 +33,7 @@ export function useGameTransitions(
             hasSeenNightDead.current = true;
         }
 
-        if (hasSeenNightDead.current) {
+        if (hasSeenNightDead.current && currentPhase !== 'FINISHED') {
             transitionQueue.current = [];
             setIsTransitioning(false);
             setCurrentTransition(null);
@@ -150,6 +150,36 @@ export function useGameTransitions(
                     }
                 } else {
                     newTransitions.push({ message: "No one was eliminated.", duration: 2500 });
+                }
+            }
+
+            // 6. Game Finished — show narrative before winner screen
+            else if (currentPhase === 'FINISHED') {
+                // Night kill ended the game (prev was a NIGHT sub-phase)
+                if (prevPhase.includes('NIGHT')) {
+                    const prevTurn = prevPhase.split(' - ')[1] || '';
+                    if (prevTurn === 'Medic') {
+                        newTransitions.push({ message: "The Medic goes to sleep...", duration: 2000 });
+                    } else if (prevTurn === 'Seer') {
+                        newTransitions.push({ message: "The Seer goes to sleep...", duration: 2000 });
+                    } else if (prevTurn === 'Wolf') {
+                        newTransitions.push({ message: "The Werewolves go to sleep...", duration: 2000 });
+                    }
+
+                    newTransitions.push({ message: "The Village wakes up with the news that...", duration: 2000 });
+
+                    const victim = gameState.lastDeadPlayerName;
+                    if (victim) {
+                        if (myPlayer && myPlayer.name === victim) {
+                            newTransitions.push({ message: "You died last night!", duration: 2500 });
+                        } else {
+                            newTransitions.push({ message: `${victim} died last night!`, duration: 2500 });
+                        }
+                    }
+                }
+                // Day vote ended the game (prev was DAY_RESULTS)
+                else if (prevPhase === 'DAY_RESULTS') {
+                    // Transitions already played during DAY_RESULTS entry — nothing extra needed
                 }
             }
 

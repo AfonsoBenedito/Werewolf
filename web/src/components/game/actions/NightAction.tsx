@@ -7,6 +7,7 @@ interface NightActionProps {
     nightActionFeedback?: string | null;
     seerResult?: string | null;
     nightStatus?: string | null;
+    myNightTarget?: string | null;
 }
 
 export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, seerResult, nightStatus }: NightActionProps) {
@@ -38,14 +39,22 @@ export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, se
                 </div>
             )}
 
-            {/* Seer Result Overlay */}
+            {/* Seer Result Banner */}
             {seerResult && myPlayer.role === 'Seer' && (
-                <div className="seer-result-overlay">
-                    <div className="seer-result-content">
-                        <h3>🔮 Vision Result 🔮</h3>
-                        <p className="result-text">{seerResult}</p>
-                        <button className="ready-btn" onClick={() => onAction('SKIP')}>Done</button>
+                <div className="seer-result-banner-wrapper">
+                    <div className="seer-result-banner">
+                        <span className="seer-result-icon">👁️</span>
+                        <div className="seer-result-content">
+                            <span className="seer-result-label">Seer's Vision</span>
+                            <span className="seer-result-text">{seerResult}</span>
+                        </div>
                     </div>
+                    <button
+                        className="btn-premium btn-premium--primary seer-ok-btn"
+                        onClick={() => onAction('SKIP')}
+                    >
+                        OK
+                    </button>
                 </div>
             )}
 

@@ -359,16 +359,6 @@
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
-/* ---- Winner Banner ------------------------------------------------ */
-.winner {
-    color: #ffd700;
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    text-align: center;
-    margin: 2rem 0;
-    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
-    letter-spacing: 0.1em;
-}
 
 /* ---- Action Feedback ---------------------------------------------- */
 .action-feedback {
@@ -387,56 +377,6 @@
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.15);
 }
 
-/* ---- Seer Result Overlay ------------------------------------------ */
-.seer-result-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.seer-result-content {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(16px);
-    padding: 2.5rem 2rem;
-    border-radius: 16px;
-    border: 2px solid rgba(124, 77, 255, 0.4);
-    text-align: center;
-    box-shadow: 0 0 40px rgba(124, 77, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
-    max-width: 90%;
-    width: 420px;
-    animation: fadeIn 0.4s ease-out;
-}
-
-.seer-result-content h3 {
-    font-family: 'Cinzel', serif;
-    color: #b39ddb;
-    margin: 0 0 1.5rem 0;
-    font-size: 1.6rem;
-    letter-spacing: 0.08em;
-}
-
-.seer-result-content .result-text {
-    color: #ecf0f1;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    line-height: 1.5;
-}
-
-.seer-result-content .ready-btn {
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.9rem;
-}
 
 /* ---- Voting Controls ---------------------------------------------- */
 .voting-controls {
@@ -616,22 +556,6 @@
         font-size: 0.85rem;
     }
 
-    .winner {
-        font-size: 1.5rem;
-    }
-
-    .seer-result-content {
-        padding: 1.5rem;
-        width: 95%;
-    }
-
-    .seer-result-content h3 {
-        font-size: 1.3rem;
-    }
-
-    .seer-result-content .result-text {
-        font-size: 1.1rem;
-    }
 }
 
 /* ---- Responsive: 480px -------------------------------------------- */

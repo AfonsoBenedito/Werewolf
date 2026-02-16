@@ -192,6 +192,9 @@
 }
 
 .dead-tag {
+    position: absolute;
+    bottom: 0.6rem;
+    right: 0.6rem;
     color: #e74c3c;
     font-weight: 800;
     font-size: 0.75rem;
