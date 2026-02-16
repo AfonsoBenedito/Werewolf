@@ -8,4 +8,13 @@ export default defineConfig({
     // Polyfill global for sockjs-client
     global: 'window',
   },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8080',
+      '/ws': {
+        target: 'http://localhost:8080',
+        ws: true,
+      },
+    },
+  },
 })

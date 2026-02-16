@@ -4,9 +4,15 @@ import OfflineGame from './pages/OfflineGame';
 import OnlineLobby from './pages/OnlineLobby';
 import OnlineGame from './pages/OnlineGame';
 
+function getBasename() {
+  const path = window.location.pathname;
+  if (path.startsWith('/werewolf')) return '/werewolf';
+  return '/';
+}
+
 function App() {
   return (
-    <Router>
+    <Router basename={getBasename()}>
       <div className="app-container">
         <Routes>
           <Route path="/" element={<LandingPage />} />
