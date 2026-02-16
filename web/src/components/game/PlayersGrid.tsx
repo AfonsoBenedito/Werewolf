@@ -17,8 +17,8 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
                 // Night vote highlighting (local state)
                 const isMyNightTarget = myNightTarget === p.name;
 
-                const hasVoted = gameState.votes?.[p.name] !== undefined;
                 const isMe = p.name === playerName;
+                const hasVoted = !isMe && gameState.votes?.[p.name] !== undefined;
 
                 let isDisabled = false;
                 if (isMe) {
@@ -35,6 +35,14 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
 
                 if (!p.isAlive) isDisabled = true;
 
+                // Action indicators (match offline mode)
+                const isNight = gameState.phase.includes('NIGHT');
+                const isVoting = gameState.phase === 'DAY_VOTING';
+                const showKill = isNight && gameState.phase.includes('Wolf') && myPlayer.role === 'Werewolf' && p.isAlive && !isDisabled;
+                const showHeal = isNight && gameState.phase.includes('Medic') && myPlayer.role === 'Medic' && p.isAlive && !isDisabled;
+                const showPeek = isNight && gameState.phase.includes('Seer') && myPlayer.role === 'Seer' && p.isAlive && !isDisabled;
+                const showVoteTarget = isVoting && p.isAlive && !isMe && !isDisabled;
+
                 return (
                     <PlayerCard
                         key={p.name}
@@ -44,9 +52,23 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
                         role={p.role}
                         revealedRole={p.role} // Online: role is masked by backend
                         hasVoted={hasVoted}
-                        isVotingPhase={gameState.phase === 'DAY_VOTING'}
+                        isVotingPhase={isVoting}
                         isDisabled={isDisabled}
-                        isVoteTarget={isMyVoteTarget || isMyNightTarget} // Highlight for both Day and Night
+                        isVoteTarget={isMyVoteTarget || isMyNightTarget}
+                        showKill={showKill}
+                        showHeal={showHeal}
+                        showPeek={showPeek}
+                        showVoteTarget={showVoteTarget}
+                        onKill={() => onAction('KILL', p.name)}
+                        onHeal={() => onAction('HEAL', p.name)}
+                        onPeek={() => onAction('PEEK', p.name)}
+                        onVoteTarget={() => {
+                            if (isMyVoteTarget) {
+                                onAction('UNVOTE');
+                            } else {
+                                onAction('VOTE', p.name);
+                            }
+                        }}
                         onClick={() => {
                             if (!myPlayer.isAlive) return;
                             if (isDisabled) return;

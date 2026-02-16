@@ -29,9 +29,9 @@ export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, se
 
     return (
         <>
-            <p className="turn-alert">
+            <div className="turn-alert">
                 It is your turn! {myPlayer.role === 'Werewolf' ? 'Choose a victim.' : myPlayer.role === 'Medic' ? 'Choose who to save.' : 'Choose who to peek.'}
-            </p>
+            </div>
             {message && (
                 <div className="action-feedback">
                     {message}
@@ -50,7 +50,9 @@ export function NightAction({ phase, myPlayer, onAction, nightActionFeedback, se
             )}
 
             {(myPlayer.role === 'Seer' || myPlayer.role === 'Medic') && !seerResult && (
-                <button className="skip-btn" onClick={() => onAction('SKIP')}>Skip Action</button>
+                <div className="skip-btn-container">
+                    <button className="skip-btn" onClick={() => onAction('SKIP')}>Skip Action</button>
+                </div>
             )}
         </>
     );

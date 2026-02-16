@@ -17,9 +17,9 @@ export function WaitingRoom({ players, isHost, onStart }: WaitingRoomProps) {
                 ))}
             </div>
             {isHost && players.length >= 4 && (
-                <button onClick={onStart}><Play size={16} /> Start Game</button>
+                <button className="start-btn" onClick={onStart}><Play size={16} /> Start Game</button>
             )}
-            {isHost && players.length < 4 && <p>Need 4+ players to start</p>}
+            {isHost && players.length < 4 && <p className="wait-msg">Need 4+ players to start</p>}
         </div>
     );
 }

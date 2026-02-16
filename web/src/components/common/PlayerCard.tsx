@@ -56,14 +56,12 @@ export function PlayerCard({
                 <div className="avatar">{name.charAt(0)}</div>
                 <div className="name-container">
                     <h3>{name} {isMe && <span className="me-tag">(You)</span>}</h3>
+                    {revealedRole && revealedRole !== "Unknown" && (
+                        <div className="revealed-role">{revealedRole}</div>
+                    )}
                 </div>
                 {hasVoted && isVotingPhase && !isMe && <span className="voted-badge">Voted</span>}
             </div>
-
-            {/* Revealed Role (e.g. Wolf pack, or Offline reveal) */}
-            {revealedRole && revealedRole !== "Unknown" && (
-                <div className="revealed-role">{revealedRole}</div>
-            )}
 
             {!isAlive && <div className="dead-tag">DEAD</div>}
 

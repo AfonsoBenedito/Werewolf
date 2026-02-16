@@ -33,9 +33,11 @@
 }
 
 .transition-message {
+    font-family: 'Cinzel', serif;
     font-size: 3rem;
     text-align: center;
-    animation: fadeInOut 3s ease-in-out forwards;
+    letter-spacing: 0.1em;
+    animation: fadeInOut 2s ease-in-out forwards;
 }
 
 @keyframes fadeInOut {
@@ -44,12 +46,12 @@
         transform: scale(0.9);
     }
 
-    10% {
+    15% {
         opacity: 1;
         transform: scale(1);
     }
 
-    90% {
+    85% {
         opacity: 1;
         transform: scale(1);
     }

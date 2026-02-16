@@ -1,123 +1,250 @@
+/* ===================================================================
+   Online Game — atmospheric dark redesign (Matches OfflineGame / OnlineLobby)
+   =================================================================== */
+
+/* Global box-sizing */
+.online-game,
+.online-game *,
+.online-game *::before,
+.online-game *::after {
+    box-sizing: border-box;
+}
+
 .online-game {
-    max-width: 600px;
-    margin: 0 auto;
-    padding-bottom: 100px;
-    /* Space for fixed footer + refresh button */
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at top center, #1a1a2e 0%, #0f0f1a 100%);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding: 1rem 1rem 100px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.player-pill {
-    background: #444;
-    padding: 0.5rem;
-    border-radius: 20px;
-    display: inline-block;
-    margin: 0.2rem;
+@media (max-width: 600px) {
+    .online-game {
+        padding: 1rem 0.5rem 100px;
+    }
 }
 
-.my-role-card {
-    background: #2a2a2a;
-    padding: 1rem;
-    border: 1px solid #646cff;
-    margin-bottom: 2rem;
-    border-radius: 8px;
+@media (max-width: 768px) {
+    .online-game {
+        padding-top: 3.5rem;
+    }
 }
 
-.role-reveal {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #aaddff;
-}
-
-.players-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-}
-
-.dead-tag {
-    color: red;
-    font-weight: bold;
-    margin-top: 0.5rem;
-}
-
-.refresh-btn {
+/* ---- Navigation --------------------------------------------------- */
+.online-game .home-btn-fixed {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.6);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.sleep-banner {
-    background: #2c3e50;
-    color: #bdc3c7;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #34495e;
-}
-
-.turn-alert {
-    color: #2ecc71;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-}
-
-.discussion-panel {
-    background: #d35400;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.ready-btn {
-    background: #e67e22;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: bold;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 0;
 }
 
-.ready-btn:hover {
-    background: #d35400;
+.online-game .home-btn-fixed:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-.ready-status {
-    margin-top: 0.5rem;
+/* ---- Waiting Room ------------------------------------------------- */
+.online-game .waiting-room {
+    width: 95%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.online-game .waiting-room h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: #b39ddb;
+    letter-spacing: 0.08em;
+    margin: 0 0 1.5rem;
+}
+
+.online-game .waiting-room .player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    padding: 0;
+}
+
+.online-game .waiting-room .start-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.8rem;
     font-size: 0.9rem;
-    font-style: italic;
-}
-
-.ready-wait-msg {
-    font-weight: bold;
-    color: #f1c40f;
-}
-
-.skip-btn {
-    background: #95a5a6;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    margin-top: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
 }
 
-.skip-btn:hover {
-    background: #7f8c8d;
+.online-game .waiting-room .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
 }
 
-.winner {
-    color: gold;
-    font-size: 2rem;
+.online-game .waiting-room .wait-msg {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* ---- Game Board --------------------------------------------------- */
+.online-game .game-board {
+    width: 95%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ---- Action Area -------------------------------------------------- */
+.online-game .action-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ---- Player Pill -------------------------------------------------- */
+.player-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 0.2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+}
+
+.player-pill:hover {
+    background: rgba(124, 77, 255, 0.1);
+    border-color: rgba(124, 77, 255, 0.3);
+}
+
+/* ---- Role Card ---------------------------------------------------- */
+.my-role-card {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(124, 77, 255, 0.25);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.my-role-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    letter-spacing: 0.05em;
+}
+
+.role-reveal {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #b39ddb;
+    text-shadow: 0 0 15px rgba(179, 157, 219, 0.3);
+}
+
+/* ---- Dead Tag ----------------------------------------------------- */
+.online-game .dead-tag {
+    color: #e74c3c;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(231, 76, 60, 0.5);
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+/* ---- Players Grid ------------------------------------------------- */
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    .players-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        max-width: 100%;
+    }
+}
+
+/* ---- Sleep / Night Banners ---------------------------------------- */
+.sleep-banner,
+.sleeping-banner {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(124, 77, 255, 0.05);
+    border: 1px solid rgba(124, 77, 255, 0.2);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    animation: glow-subtle 3s infinite alternate;
+    margin: 1rem auto;
+}
+
+.sleep-banner h3,
+.sleeping-banner h2 {
+    font-family: 'Cinzel', serif;
+    color: #b39ddb;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
 }
 
 .sleeping-banner {
@@ -125,128 +252,443 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 300px;
-    background: #1a1a1a;
-    border: 2px dashed #444;
+    min-height: 250px;
+}
+
+/* ---- Turn Alert --------------------------------------------------- */
+.turn-alert {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+    padding: 1.25rem;
     border-radius: 12px;
-    color: #888;
-    margin-top: 2rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    background: rgba(124, 77, 255, 0.05);
+    border: 1px solid rgba(124, 77, 255, 0.2);
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: #b39ddb;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    animation: glow-subtle 3s infinite alternate;
+}
+
+/* ---- Discussion Panel --------------------------------------------- */
+.discussion-panel {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
     text-align: center;
 }
 
-.sleeping-banner h2 {
-    color: #aaddff;
-    margin-bottom: 0.5rem;
+.discussion-panel h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: #b39ddb;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem;
 }
 
-.home-btn-fixed {
+.discussion-panel p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0.5rem 0;
+}
+
+/* ---- Ready Button (Primary) --------------------------------------- */
+.ready-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+    margin-top: 0.75rem;
+}
+
+.ready-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
+}
+
+/* ---- Skip Button (Outline) ---------------------------------------- */
+.skip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 0.5rem;
+}
+
+.skip-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.skip-btn-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem auto 1.5rem;
+}
+
+/* ---- Ready Status ------------------------------------------------- */
+.ready-status {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.ready-wait-msg {
+    font-weight: 600;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* ---- Winner Banner ------------------------------------------------ */
+.winner {
+    color: #ffd700;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    text-align: center;
+    margin: 2rem 0;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+    letter-spacing: 0.1em;
+}
+
+/* ---- Action Feedback ---------------------------------------------- */
+.action-feedback {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin: -0.25rem auto 1rem;
+    text-align: center;
+    color: #ffd700;
+    font-style: italic;
+    font-size: 0.95rem;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.15);
+}
+
+/* ---- Seer Result Overlay ------------------------------------------ */
+.seer-result-overlay {
     position: fixed;
-    top: 20px;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.seer-result-content {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    border: 2px solid rgba(124, 77, 255, 0.4);
+    text-align: center;
+    box-shadow: 0 0 40px rgba(124, 77, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 90%;
+    width: 420px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.seer-result-content h3 {
+    font-family: 'Cinzel', serif;
+    color: #b39ddb;
+    margin: 0 0 1.5rem 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+}
+
+.seer-result-content .result-text {
+    color: #ecf0f1;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.seer-result-content .ready-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.9rem;
+}
+
+/* ---- Voting Controls ---------------------------------------------- */
+.voting-controls {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    margin: 0 auto 1rem;
+}
+
+.voting-controls p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.voting-controls .abstained-msg {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* ---- Loading & Error Screens -------------------------------------- */
+.loading-screen {
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at top center, #1a1a2e 0%, #0f0f1a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+}
+
+.error-screen {
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at top center, #1a1a2e 0%, #0f0f1a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    padding: 1rem;
+}
+
+.error-screen h2 {
+    font-family: 'Cinzel', serif;
+    color: #ff8a8a;
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+}
+
+.error-screen p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.error-screen .home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+}
+
+.error-screen .home-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
+}
+
+/* ---- Refresh Button ----------------------------------------------- */
+.refresh-btn {
+    position: fixed;
+    bottom: 20px;
     right: 20px;
-    background: #2c3e50;
-    border: 1px solid #34495e;
-    color: #aaddff;
-    width: 40px;
-    height: 40px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.6);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 0;
 }
 
-.action-feedback {
-    color: #f1c40f;
-    font-weight: normal;
-    font-size: 1rem;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
-    font-style: italic;
-}
-
-.loading-screen,
-.error-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 80vh;
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    text-align: center;
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-.error-screen h2 {
-    color: #e74c3c;
-    margin-bottom: 1rem;
+/* ---- Animations --------------------------------------------------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.error-screen p {
-    margin-bottom: 2rem;
-    font-size: 1.2rem;
+@keyframes glow-subtle {
+    from {
+        box-shadow: 0 0 10px rgba(124, 77, 255, 0.1);
+    }
+    to {
+        box-shadow: 0 0 25px rgba(124, 77, 255, 0.25);
+    }
 }
 
-.error-screen .home-btn {
-    display: flex;
-    align-items: center;
-    padding: 12px 24px;
-    font-size: 1.1em;
-    background: #646cff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+/* ---- Responsive: 768px -------------------------------------------- */
+@media (max-width: 768px) {
+    .my-role-card {
+        padding: 1rem;
+    }
+
+    .discussion-panel {
+        padding: 1.25rem;
+    }
+
+    .sleep-banner,
+    .sleeping-banner {
+        padding: 1.5rem 1rem;
+    }
 }
 
-.error-screen .home-btn:hover {
-    background: #535bf2;
+/* ---- Responsive: 600px -------------------------------------------- */
+@media (max-width: 600px) {
+    .my-role-card,
+    .discussion-panel,
+    .sleep-banner,
+    .sleeping-banner,
+    .turn-alert,
+    .action-feedback,
+    .voting-controls {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .players-grid {
+        width: 100%;
+    }
+
+    .online-game .waiting-room {
+        width: 100%;
+        padding: 1.5rem 1rem;
+    }
+
+    .ready-btn,
+    .skip-btn {
+        width: 100%;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .winner {
+        font-size: 1.5rem;
+    }
+
+    .seer-result-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .seer-result-content h3 {
+        font-size: 1.3rem;
+    }
+
+    .seer-result-content .result-text {
+        font-size: 1.1rem;
+    }
 }
 
-/* Seer Result Overlay */
-.seer-result-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
+/* ---- Responsive: 480px -------------------------------------------- */
+@media (max-width: 480px) {
+    .online-game {
+        padding: 0.75rem 0.5rem 100px;
+    }
 
-.seer-result-content {
-    background: #2c3e50;
-    padding: 2rem;
-    border-radius: 12px;
-    border: 3px solid #9b59b6;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(155, 89, 182, 0.4);
-    max-width: 90%;
-    width: 400px;
-}
+    .my-role-card {
+        padding: 0.85rem;
+    }
 
-.seer-result-content h3 {
-    color: #9b59b6;
-    margin: 0 0 1.5rem 0;
-    font-size: 1.8rem;
-}
+    .my-role-card h3 {
+        font-size: 0.95rem;
+    }
 
-.seer-result-content .result-text {
-    color: #ecf0f1;
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin-bottom: 2rem;
-    line-height: 1.4;
-}
+    .role-reveal {
+        font-size: 1.1em;
+    }
 
-.seer-result-content .ready-btn {
-    width: 100%;
-    font-size: 1.2rem;
-    padding: 0.8rem;
-    cursor: pointer;
+    .discussion-panel h3 {
+        font-size: 1.1rem;
+    }
+
+    .sleep-banner,
+    .sleeping-banner {
+        padding: 1.25rem 0.75rem;
+        min-height: 200px;
+    }
+
+    .turn-alert {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .player-pill {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+    }
 }

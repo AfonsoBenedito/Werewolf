@@ -39,6 +39,7 @@ export default function OnlineLobby() {
                             placeholder="Your Name"
                             value={hostName}
                             onChange={(e) => setHostName(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleHost()}
                         />
                         <button className="lobby-btn lobby-btn--primary" onClick={handleHost}>
                             <Play size={18} />
@@ -55,16 +56,18 @@ export default function OnlineLobby() {
                         <input
                             type="text"
                             className="lobby-input"
-                            placeholder="Game ID"
-                            value={joinId}
-                            onChange={(e) => setJoinId(e.target.value.toUpperCase())}
+                            placeholder="Your Name"
+                            value={joinName}
+                            onChange={(e) => setJoinName(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
                         />
                         <input
                             type="text"
                             className="lobby-input"
-                            placeholder="Your Name"
-                            value={joinName}
-                            onChange={(e) => setJoinName(e.target.value)}
+                            placeholder="Game ID"
+                            value={joinId}
+                            onChange={(e) => setJoinId(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
                         />
                         <button className="lobby-btn lobby-btn--secondary" onClick={handleJoin}>
                             <Users size={18} />
