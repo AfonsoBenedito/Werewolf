@@ -116,8 +116,8 @@ export default function OfflineGame() {
                     )}
 
                     {gameState.status === 'IN_PROGRESS' && !isResults && (
-                        <div className="game-content-area">
-                            {/* New Stylish Turn Indicator */}
+                        <>
+                            {/* Turn Indicator */}
                             <div className="turn-indicator">
                                 <h2>Current Turn</h2>
                                 <p>{phaseMessage}</p>
@@ -161,24 +161,22 @@ export default function OfflineGame() {
 
                             {/* Game Action Grid - hide when seer result is showing */}
                             {!isTransitioning && !gameState.lastDeadPlayerName && !(seerResult && isSeerTurn) && (
-                                <div className="game-grid-wrapper">
-                                    <OfflineGrid
-                                        gameState={gameState}
-                                        isNight={isNight}
-                                        isWolfTurn={isWolfTurn}
-                                        isMedicTurn={isMedicTurn}
-                                        isSeerTurn={isSeerTurn}
-                                        isVoting={isVoting}
-                                        isDiscussion={gameState.phase === 'DAY_DISCUSSION'}
-                                        activeVoter={activeVoter}
-                                        revealRoles={revealRoles}
-                                        onKill={handleKill}
-                                        onHeal={(id) => manualAction("HEAL", id)}
-                                        onPeek={handlePeek}
-                                        onVoteSelect={setActiveVoter}
-                                        onVoteTarget={handleVote}
-                                    />
-                                </div>
+                                <OfflineGrid
+                                    gameState={gameState}
+                                    isNight={isNight}
+                                    isWolfTurn={isWolfTurn}
+                                    isMedicTurn={isMedicTurn}
+                                    isSeerTurn={isSeerTurn}
+                                    isVoting={isVoting}
+                                    isDiscussion={gameState.phase === 'DAY_DISCUSSION'}
+                                    activeVoter={activeVoter}
+                                    revealRoles={revealRoles}
+                                    onKill={handleKill}
+                                    onHeal={(id) => manualAction("HEAL", id)}
+                                    onPeek={handlePeek}
+                                    onVoteSelect={setActiveVoter}
+                                    onVoteTarget={handleVote}
+                                />
                             )}
 
                             {/* Bottom Controls - hide when seer result is showing */}
@@ -197,7 +195,7 @@ export default function OfflineGame() {
                                     onAbstain={handleAbstain}
                                 />
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
             </div>

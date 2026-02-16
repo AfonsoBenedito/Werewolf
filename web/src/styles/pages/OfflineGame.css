@@ -52,8 +52,7 @@
 
 /* ---- Containers --------------------------------------------------- */
 .offline-setup-wrapper,
-.results-screen,
-.game-content-area {
+.results-screen {
     width: 95%;
     max-width: 1200px;
     background: rgba(255, 255, 255, 0.03);
@@ -61,7 +60,6 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 1.5rem;
-    /* Reduced from 2.5rem */
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -73,8 +71,7 @@
 @media (max-width: 600px) {
 
     .offline-setup-wrapper,
-    .results-screen,
-    .game-content-area {
+    .results-screen {
         padding: 1.25rem 1rem;
         border-radius: 8px;
     }
@@ -252,37 +249,7 @@
     }
 }
 
-/* ---- Component Grids ---------------------------------------------- */
-.player-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 2rem auto;
-    width: 100%;
-    max-width: 800px;
-}
-
-@media (max-width: 600px) {
-    .player-grid {
-        max-width: 100%;
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-        margin: 1rem auto;
-    }
-}
-
-/* Day Discussion: disable hover effects on cards */
-.player-grid.discussion-grid .player-card {
-    cursor: default;
-    pointer-events: none;
-}
-
-.player-grid.discussion-grid .player-card:hover {
-    transform: none;
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: none;
-}
+/* ---- Component Grids: see PlayerCard.css (.players-grid) ---------- */
 
 /* ---- Typography & Banners ----------------------------------------- */
 .winner-banner {
@@ -298,9 +265,8 @@
 .death-announcement,
 .turn-indicator {
     width: 100%;
-    max-width: 500px;
+    max-width: 800px;
     margin: 0 auto 1.5rem;
-    /* Reduced top margin to 0 */
     padding: 1.5rem;
     border-radius: 12px;
     text-align: center;

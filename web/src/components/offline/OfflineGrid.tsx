@@ -35,7 +35,7 @@ export function OfflineGrid({
     onVoteTarget
 }: OfflineGridProps) {
     return (
-        <div className={`player-grid ${isDiscussion ? 'discussion-grid' : ''}`}>
+        <div className={`players-grid ${isDiscussion ? 'discussion-grid' : ''}`}>
             {gameState.players.map(p => {
                 const hasVoted = gameState.votes && gameState.votes[p.name];
 
