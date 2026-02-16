@@ -82,8 +82,11 @@ export function GameBoard({
                         myNightTarget={myNightTarget}
                     />
 
-                    {/* Hide PlayersGrid during Discussion phase and when seer result is showing */}
-                    {gameState.phase !== 'DAY_DISCUSSION' && !seerResult && (
+                    {/* Hide PlayersGrid during Discussion, when seer result is showing, and for dead players in voting */}
+                    {gameState.phase !== 'DAY_DISCUSSION'
+                        && !(seerResult && myPlayer.role === 'Seer')
+                        && !(gameState.phase === 'DAY_VOTING' && !myPlayer.isAlive)
+                        && (
                         <PlayersGrid
                             gameState={gameState}
                             myPlayer={myPlayer}

@@ -359,16 +359,6 @@
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
-/* ---- Winner Banner ------------------------------------------------ */
-.winner {
-    color: #ffd700;
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    text-align: center;
-    margin: 2rem 0;
-    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
-    letter-spacing: 0.1em;
-}
 
 /* ---- Action Feedback ---------------------------------------------- */
 .action-feedback {
@@ -566,9 +556,6 @@
         font-size: 0.85rem;
     }
 
-    .winner {
-        font-size: 1.5rem;
-    }
 }
 
 /* ---- Responsive: 480px -------------------------------------------- */

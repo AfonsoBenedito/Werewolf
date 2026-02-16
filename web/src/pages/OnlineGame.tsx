@@ -2,13 +2,13 @@ import { RefreshCw, Home } from 'lucide-react';
 import { GameHeader } from '../components/common/GameHeader';
 import { WaitingRoom } from '../components/game/WaitingRoom';
 import { GameBoard } from '../components/game/GameBoard';
+import { WinnerAnnouncement } from '../components/common/WinnerAnnouncement';
 import { useOnlineGame } from '../hooks/useOnlineGame';
 import { useNavigate } from 'react-router-dom';
 import { Footer } from '../components/common/Footer';
 import '../styles/pages/OnlineGame.css';
 import '../styles/components/common/SeerResult.css';
 import '../styles/components/common/Buttons.css';
-
 
 import { TransitionScreen } from '../components/game/TransitionScreen';
 import { useGameTransitions } from '../hooks/useGameTransitions';
@@ -72,7 +72,13 @@ export default function OnlineGame() {
                 showConnectionStatus={true}
             />
 
-            {gameState.winner && <h1 className="winner">Winner: {gameState.winner}</h1>}
+            {gameState.winner && !isTransitioning && (
+                <WinnerAnnouncement
+                    winner={gameState.winner}
+                    players={gameState.players}
+                    onGoHome={() => navigate('/')}
+                />
+            )}
 
             {gameState.status === 'NOT_STARTED' && (
                 <WaitingRoom

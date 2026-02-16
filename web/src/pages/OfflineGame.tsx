@@ -2,6 +2,7 @@ import { GameHeader } from '../components/common/GameHeader';
 import { useOfflineGame } from '../hooks/useOfflineGame';
 import { OfflineSetup } from '../components/offline/OfflineSetup';
 import { VotingResults } from '../components/common/VotingResults';
+import { WinnerAnnouncement } from '../components/common/WinnerAnnouncement';
 import { TurnAnnouncement } from '../components/offline/TurnAnnouncement';
 import { OfflineControls } from '../components/offline/OfflineControls';
 import { OfflineGrid } from '../components/offline/OfflineGrid';
@@ -107,7 +108,13 @@ export default function OfflineGame() {
                         hideGameId={true}
                     />
 
-                    {gameState.winner && <h2 className="winner-banner">🏆 {gameState.winner} WIN</h2>}
+                    {gameState.winner && (
+                        <WinnerAnnouncement
+                            winner={gameState.winner}
+                            players={gameState.players}
+                            onGoHome={() => navigate('/')}
+                        />
+                    )}
 
                     {/* Voting Results Screen */}
                     {isResults && (
