@@ -133,15 +133,6 @@
 /* ---- Component Grids: see PlayerCard.css (.players-grid) ---------- */
 
 /* ---- Typography & Banners ----------------------------------------- */
-.winner-banner {
-    color: #ffd700;
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    text-align: center;
-    margin: 2rem 0;
-    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
-    letter-spacing: 0.1em;
-}
 
 .turn-indicator {
     width: 100%;
@@ -211,53 +202,6 @@
 .cancel-btn:hover {
     background: rgba(220, 53, 69, 0.3);
     border-color: rgba(220, 53, 69, 0.6);
-}
-
-.btn-premium {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.8rem 1.8rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-@media (max-width: 600px) {
-    .btn-premium {
-        width: 100%;
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
-    }
-}
-
-.btn-premium--primary {
-    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
-    color: #fff;
-    border: none;
-    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
-}
-
-.btn-premium--primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
-}
-
-.btn-premium--outline {
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-premium--outline:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px);
 }
 
 /* ---- Turn Indicator ----------------------------------------------- */

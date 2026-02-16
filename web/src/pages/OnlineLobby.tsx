@@ -23,13 +23,13 @@ export default function OnlineLobby() {
 
             <h1>Online Lobby</h1>
 
-            <div className="lobby-container">
-                {error && (
-                    <div className="error-message">
-                        {error}
-                    </div>
-                )}
+            {error && (
+                <div className="error-message">
+                    {error}
+                </div>
+            )}
 
+            <div className="lobby-container">
                 <div className="lobby-section">
                     <h2>Host New Game</h2>
                     <div className="lobby-input-group">

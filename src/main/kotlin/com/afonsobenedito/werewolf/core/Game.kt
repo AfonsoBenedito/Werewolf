@@ -308,10 +308,11 @@ open class Game(
         }
         
         votes.clear()
-        
+        readyPlayers.clear()
+
         phase = GamePhase.DAY_RESULTS
-        currentTurn = "" 
-        
+        currentTurn = ""
+
         checkPhaseTransition()
     }
 
@@ -356,7 +357,8 @@ open class Game(
                 phase = GamePhase.DAY_VOTING
             }
             GamePhase.DAY_VOTING -> {
-                tallyVotes() 
+                tallyVotes()
+                readyPlayers.clear()
             }
             GamePhase.DAY_RESULTS -> {
                 phase = GamePhase.NIGHT

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/game';
+const API_URL = '/api/game';
 
 export const createGame = async (mode: 'OFFLINE' | 'ONLINE', playerName?: string, players?: string[]) => {
     const response = await axios.post(API_URL, { mode, playerName, players });

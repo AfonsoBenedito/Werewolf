@@ -19,7 +19,7 @@ export function DayDiscussion({ gameState, hasVotedReady, onAction }: DayDiscuss
                 <p className="ready-wait-msg">Waiting for the rest...</p>
             )}
             <p className="ready-status">
-                Waiting for players: {(gameState as any).readyPlayerCount || 0} / {(gameState as any).totalAliveCount || 'ALL'}
+                Waiting for players: {gameState.readyPlayerCount || 0} / {gameState.totalAliveCount || 'ALL'}
             </p>
         </div>
     );
