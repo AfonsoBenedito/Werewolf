@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Werewolf Web Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Web Banner](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/landing_page_1771244850991.png)
 
-Currently, two official plugins are available:
+This is the modern web frontend for the Werewolf game. It features a premium, dark, glassmorphic aesthetic inspired by high-end gaming interfaces.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+- **Online Mode**: Multiplayer gameplay using WebSockets. Create or join rooms using a Game ID.
+- **Offline Mode**: A narrator-assisted mode for physical gatherings.
+- **Premium Design**: Custom glassmorphic components, smooth transitions, and responsive layout.
+- **Real-time Updates**: Instant game state synchronization.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📸 Interface Preview
 
-## Expanding the ESLint configuration
+````carousel
+![Online Lobby](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/lobby_page_1771244879318.png)
+Online Lobby
+<!-- slide -->
+![Waiting Room](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/waiting_room_page_1771244925001.png)
+Waiting Room
+````
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
+- Node.js (v20+)
+- npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Development Mode
+To run the frontend independently:
+```bash
+cd web
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Full Stack (with Docker)
+Usually, it's easier to run everything from the project root:
+```bash
+make run-web
 ```
+
+## 📂 Project Structure
+- `src/components`: Reusable UI components.
+- `src/pages`: Main application pages (Landing, Lobby, Game).
+- `src/hooks`: Custom React hooks for game logic and API interaction.
+- `src/api`: API client definitions.
+- `src/styles`: CSS design system and page-specific styles.

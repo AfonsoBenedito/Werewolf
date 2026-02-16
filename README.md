@@ -1,48 +1,61 @@
-# A Aldeia Adormece (Werewolf)
+# Werewolf (A Aldeia Adormece)
 
-A console-based implementation of the classic social deduction game "Werewolf" (Mafia), written in Kotlin.
+![Project Banner](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/landing_page_1771244850991.png)
 
-## How to Play
+A modern, multi-platform implementation of the classic social deduction game **Werewolf** (also known as Mafia). This project features a robust Kotlin/Spring Boot backend, a premium React web interface, and a classic "hot-seat" console version.
 
-The game requires at least 4 players. Since it's a console game, players should take turns at the terminal ("hot-seat" style) to perform their secret night actions.
+## 🌌 Project Overview
 
-### Roles
-- **Villager**: No special abilities. Tries to find the Werewolves during the day.
-- **Werewolf**: Wakes up at night to eliminate a villager.
-- **Seer**: Wakes up at night to inspect one player's role.
-- **Medic**: Wakes up at night to protect one player from being eliminated.
+This repository contains a full-stack implementation of Werewolf, designed with a focus on premium aesthetics and smooth gameplay across different platforms.
 
-### Game Phases
-1. **Night**: Special roles (Wolf, Seer, Medic) wake up to perform actions.
-2. **Day**: All players discuss and vote to eliminate a suspect.
-3. **Win Condition**:
-    - **Villagers Win**: All Werewolves are eliminated.
-    - **Werewolves Win**: Werewolves equal or outnumber Villagers.
+### 🎮 Available Versions
+- **Web App**: A beautiful, glassmorphic React interface for both online multiplayer and offline narrator-led games.
+- **Console Version**: A classic CLI implementation for quick, hot-seat sessions at the terminal.
 
-## How to Run
+## 🛠️ Tech Stack
+- **Backend**: Kotlin, Spring Boot, Spring WebFlux/Web, Redis (for game state).
+- **Frontend**: React, TypeScript, Vite, CSS (Glassmorphism).
+- **Infrastructure**: Docker, Docker Compose, Gradle.
 
-### Prerequisites
-- JDK 17 or higher (or JDK 21 as configured in gradle).
+## 🚀 How to Run
 
-### Running from Terminal
-You can run the game directly using Gradle:
+The easiest way to run any part of the project is through the root `Makefile`.
 
+### 🌐 Web Version (Full Stack)
+To launch the entire web ecosystem (Backend, Frontend, and Redis) using Docker:
 ```bash
-./gradlew run --console=plain
+make run-web
+```
+*Access the UI at `http://localhost:3000`*
+
+### 💻 Console Version
+To play the traditional terminal-based game:
+```bash
+make run-console
 ```
 
-*Note: The `--console=plain` flag is recommended to ensure standard input/output handling works smoothly.*
-
-### Building and Running Jar
-Alternatively, you can build a jar file:
-
+### 🧪 Running Tests
 ```bash
-./gradlew build
-java -jar build/libs/Werewolf-1.0-SNAPSHOT.jar
+make run-all-tests
 ```
-(Note: You may need to configure the jar task in `build.gradle.kts` to include dependencies/Main-Class for the jar to be executable directly, otherwise use `run` task).
 
-## Project Structure
-- `src/main/kotlin/Game.kt`: Core game loop and logic.
-- `src/main/kotlin/roles/`: Role definitions.
-- `src/main/kotlin/Player.kt`: Player model.
+## 📸 Screenshots
+
+### Web Interface
+````carousel
+![Landing Page](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/landing_page_1771244850991.png)
+Landing Page
+<!-- slide -->
+![Online Lobby](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/lobby_page_1771244879318.png)
+Online Lobby
+<!-- slide -->
+![Waiting Room](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/waiting_room_page_1771244925001.png)
+Waiting Room
+````
+
+### Console Version
+![Console Mockup](file:///Users/afcoelho/.gemini/antigravity/brain/a8e834ba-93d9-4552-9f6e-b1fd647cc9f2/console_mockup_1771244991052.png)
+Console Gameplay
+
+---
+*Created by Afonso Benedito*
