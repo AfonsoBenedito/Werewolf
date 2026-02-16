@@ -8,6 +8,9 @@ run-web:
 stop-web:
 	docker-compose down
 
+run-frontend:
+	cd web && npm run dev
+
 run-backend:
 	docker-compose down
 	docker-compose up --build redis backend

@@ -11,6 +11,7 @@
     justify-content: center;
     z-index: 9999;
     color: white;
+    user-select: none;
 }
 
 .transition-content {
