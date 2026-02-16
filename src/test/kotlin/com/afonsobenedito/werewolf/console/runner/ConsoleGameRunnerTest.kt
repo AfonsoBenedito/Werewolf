@@ -1,19 +1,21 @@
 package com.afonsobenedito.werewolf.console.runner
 
-import com.afonsobenedito.Game
-import com.afonsobenedito.GameStatus
-import com.afonsobenedito.Winner
-import com.afonsobenedito.werewolf.model.Player
-import com.afonsobenedito.werewolf.model.roles.Medic
-import com.afonsobenedito.werewolf.model.roles.Seer
-import com.afonsobenedito.werewolf.model.roles.Villager
-import com.afonsobenedito.werewolf.model.roles.Wolf
+import com.afonsobenedito.werewolf.core.Game
+import com.afonsobenedito.werewolf.core.GameStatus
+import com.afonsobenedito.werewolf.core.Winner
+import com.afonsobenedito.werewolf.core.model.Player
+import com.afonsobenedito.werewolf.core.model.roles.Medic
+import com.afonsobenedito.werewolf.core.model.roles.Seer
+import com.afonsobenedito.werewolf.core.model.roles.Villager
+import com.afonsobenedito.werewolf.core.model.roles.Wolf
 import com.afonsobenedito.werewolf.testdouble.FakeGameInteraction
+import com.afonsobenedito.werewolf.core.GameMode
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TestableGame(name: String) : Game(name) {
+class TestableGame(id: String, name: String, mode: GameMode) : Game(id, name, mode) {
     override fun startGame() {
         // Bypass random assignment.
         // We assume roles are already set or will be set manually in the test setup.
@@ -47,11 +49,10 @@ class ConsoleGameRunnerTest {
         // Wolf Turn: Select Villager to kill.
         fakeInteraction.queuePlayerSelection(villagerPlayer)
         
-        // Medic Turn: (No Medic in game, so no input needed, but wait, the runner iterates ALL players to find roles)
-        // playMedicTurn filters activeMedics. No medic -> no turn.
-        
         // Seer Turn: Select Wolf to check.
         fakeInteraction.queuePlayerSelection(wolfPlayer)
+
+        // Medic Turn: (No Medic in game, so no input needed)
         
         // Day 1: Voting.
         // If the game ends at morning check, we won't reach voting.
@@ -62,7 +63,7 @@ class ConsoleGameRunnerTest {
         
         // So we expect the game to end after night 1.
         
-        val game = TestableGame("Test Game")
+        val game = TestableGame(UUID.randomUUID().toString(), "Test Game", GameMode.OFFLINE)
         val runner = ConsoleGameRunner(game, fakeInteraction)
         
         runner.run()
@@ -109,11 +110,11 @@ class ConsoleGameRunnerTest {
         // Wolf Turn -> Kill Villager
         fakeInteraction.queuePlayerSelection(villagerPlayer)
         
-        // Medic Turn -> Save Villager
-        fakeInteraction.queuePlayerSelection(villagerPlayer)
-
         // Seer Turn -> Check Wolf
         fakeInteraction.queuePlayerSelection(wolfPlayer)
+
+        // Medic Turn -> Save Villager
+        fakeInteraction.queuePlayerSelection(villagerPlayer)
         
         // Day 1 Voting Inputs (4 players alive):
         // Wolf votes Villager
@@ -127,7 +128,7 @@ class ConsoleGameRunnerTest {
         
         // Result: Wolf has 3 votes, Villager 1. Wolf eliminated.
         
-        val game = TestableGame("Test Game")
+        val game = TestableGame(UUID.randomUUID().toString(), "Test Game", GameMode.OFFLINE)
         val runner = ConsoleGameRunner(game, fakeInteraction)
         
         runner.run()

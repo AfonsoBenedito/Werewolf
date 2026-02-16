@@ -1,10 +1,11 @@
 package com.afonsobenedito.werewolf.console.controller
 
-import com.afonsobenedito.werewolf.model.Player
-import com.afonsobenedito.werewolf.model.roles.Villager
-import com.afonsobenedito.werewolf.model.roles.Wolf
+import com.afonsobenedito.werewolf.core.model.Player
+import com.afonsobenedito.werewolf.core.model.roles.Villager
+import com.afonsobenedito.werewolf.core.model.roles.Wolf
 import com.afonsobenedito.werewolf.testdouble.FakeGameInteraction
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -30,9 +31,10 @@ class WolfTurnHandlerTest {
         // Wolf2 chooses Victim
         interaction.queuePlayerSelection(victim)
 
-        handler.handleTurn(activePlayers, allPlayers, interaction)
+        val result = handler.handleTurn(activePlayers, allPlayers, interaction)
 
-        assertFalse(victim.isAlive, "Victim should be dead")
+        assertEquals(victim, result, "Should return the agreed victim")
+        assertTrue(victim.isAlive, "Victim should still be alive (death is deferred)")
     }
 
     @Test

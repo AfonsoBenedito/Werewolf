@@ -1,9 +1,9 @@
 package com.afonsobenedito.werewolf.console.controller
 
-import com.afonsobenedito.werewolf.model.Player
-import com.afonsobenedito.werewolf.model.roles.Seer
-import com.afonsobenedito.werewolf.model.roles.Villager
-import com.afonsobenedito.werewolf.model.roles.Wolf
+import com.afonsobenedito.werewolf.core.model.Player
+import com.afonsobenedito.werewolf.core.model.roles.Seer
+import com.afonsobenedito.werewolf.core.model.roles.Villager
+import com.afonsobenedito.werewolf.core.model.roles.Wolf
 import com.afonsobenedito.werewolf.testdouble.FakeGameInteraction
 import kotlin.test.Test
 import kotlin.test.assertTrue

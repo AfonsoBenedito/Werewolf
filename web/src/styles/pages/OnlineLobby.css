@@ -1,0 +1,236 @@
+/* ===================================================================
+   Online Lobby — atmospheric dark redesign (Matches OfflineGame.css)
+   =================================================================== */
+
+.online-lobby,
+.online-lobby *,
+.online-lobby *::before,
+.online-lobby *::after {
+    box-sizing: border-box;
+}
+
+.online-lobby {
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at top center, #1a1a2e 0%, #0f0f1a 100%);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding: 1rem 1rem 80px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .online-lobby {
+        padding: 1rem 0.5rem 80px;
+        padding-top: 3.5rem;
+    }
+}
+
+.online-lobby h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin: 1rem 0 2rem;
+    background: linear-gradient(180deg, #fff 0%, #b0b0c0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(140, 160, 255, 0.15));
+    user-select: none;
+}
+
+/* ---- Glassmorphic Container --------------------------------------- */
+.lobby-container {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
+    min-height: 450px;
+}
+
+@media (max-width: 768px) {
+    .lobby-container {
+        flex-direction: column;
+        max-width: 500px;
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* ---- Sections ----------------------------------------------------- */
+/* ---- Sections ----------------------------------------------------- */
+.lobby-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0;
+    border: none;
+}
+
+.lobby-section-divider {
+    width: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    align-self: stretch;
+}
+
+@media (max-width: 768px) {
+    .lobby-section {
+        width: 100%;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .lobby-section:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .lobby-section-divider {
+        display: none;
+    }
+}
+
+.lobby-section h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: #b39ddb;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+    letter-spacing: 0.05em;
+}
+
+/* ---- Inputs ------------------------------------------------------- */
+.lobby-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lobby-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.lobby-input:focus {
+    outline: none;
+    border-color: #7c4dff;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+}
+
+.lobby-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ---- Buttons ------------------------------------------------------ */
+.lobby-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    border: none;
+}
+
+.lobby-btn--primary {
+    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+}
+
+.lobby-btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
+}
+
+.lobby-btn--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lobby-btn--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ---- Error Message ------------------------------------------------ */
+.error-message {
+    background: rgba(220, 53, 69, 0.15);
+    border: 1px solid rgba(220, 53, 69, 0.4);
+    color: #ff8a8a;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- Navigation --------------------------------------------------- */
+.home-btn-fixed {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.6);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-btn-fixed:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}

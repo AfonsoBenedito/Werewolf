@@ -1,0 +1,122 @@
+/* ===================================================================
+   Seer Result Banner — shared between Online & Offline modes
+   =================================================================== */
+
+.seer-result-banner-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem 0;
+    animation: slideInBottom 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+}
+
+.seer-result-banner {
+    background: rgba(138, 43, 226, 0.15);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    backdrop-filter: blur(12px);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(138, 43, 226, 0.1);
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .seer-result-banner {
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 100%;
+        flex-direction: column;
+        text-align: center;
+        margin: 0;
+    }
+
+    .seer-result-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+
+    .seer-result-text {
+        font-size: 1rem;
+    }
+
+    .seer-ok-btn {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        margin-top: 1rem;
+    }
+}
+
+.seer-result-icon {
+    font-size: 1.8rem;
+    background: rgba(138, 43, 226, 0.2);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    flex-shrink: 0;
+    aspect-ratio: 1;
+    user-select: none;
+}
+
+.seer-result-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.seer-result-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+}
+
+.seer-result-text {
+    font-size: 1.25rem;
+    color: white;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.seer-result-text strong {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.seer-ok-btn {
+    margin-top: 1.5rem;
+    padding: 0.75rem 3rem;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    border-radius: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@keyframes slideInBottom {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
