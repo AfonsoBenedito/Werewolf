@@ -1,7 +1,7 @@
 package com.afonsobenedito.werewolf.testdouble
 
-import com.afonsobenedito.werewolf.interaction.GameInteraction
-import com.afonsobenedito.werewolf.model.Player
+import com.afonsobenedito.werewolf.console.interaction.GameInteraction
+import com.afonsobenedito.werewolf.core.model.Player
 
 class FakeGameInteraction(
     private val playersToSetup: List<Player>,
