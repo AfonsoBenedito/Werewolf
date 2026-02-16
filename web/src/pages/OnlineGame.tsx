@@ -6,6 +6,8 @@ import { useOnlineGame } from '../hooks/useOnlineGame';
 import { useNavigate } from 'react-router-dom';
 import { Footer } from '../components/common/Footer';
 import '../styles/pages/OnlineGame.css';
+import '../styles/components/common/SeerResult.css';
+import '../styles/components/common/Buttons.css';
 
 
 import { TransitionScreen } from '../components/game/TransitionScreen';

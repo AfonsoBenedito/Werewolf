@@ -22,6 +22,8 @@ export interface GameState {
     lastDeadPlayerName?: string;
     votes?: Record<string, string>; // voter -> target (or "SECRET"/"ABSTAIN")
     nightStatus?: string | null;
+    readyPlayerCount?: number;
+    totalAliveCount?: number;
 }
 
 export function useOnlineGame() {
@@ -100,18 +102,6 @@ export function useOnlineGame() {
     // Handle Phase Transitions & Alerts
     useEffect(() => {
         if (!gameState) return;
-
-        // Auto-continue for host in Results phase
-        if (gameState.phase === 'DAY_RESULTS' && lastPhase !== 'DAY_RESULTS') {
-            const isHost = gameState.players[0]?.name === playerName;
-            if (isHost) {
-                // Wait for the transition screens (Announcing + Result) to likely finish
-                // Transitions: 3s + 4s = 7s. Reduce to 6.5s to overlap slightly and remove dead time.
-                setTimeout(() => {
-                    handleAction('CONTINUE');
-                }, 6500);
-            }
-        }
 
         // Reset local ready state when phase changes
         if (gameState.phase !== lastPhase) {

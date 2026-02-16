@@ -1,7 +1,7 @@
 import { GameHeader } from '../components/common/GameHeader';
 import { useOfflineGame } from '../hooks/useOfflineGame';
 import { OfflineSetup } from '../components/offline/OfflineSetup';
-import { VotingResults } from '../components/offline/VotingResults';
+import { VotingResults } from '../components/common/VotingResults';
 import { TurnAnnouncement } from '../components/offline/TurnAnnouncement';
 import { OfflineControls } from '../components/offline/OfflineControls';
 import { OfflineGrid } from '../components/offline/OfflineGrid';
@@ -11,6 +11,8 @@ import { ArrowLeft, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Footer } from '../components/common/Footer';
 import '../styles/pages/OfflineGame.css';
+import '../styles/components/common/SeerResult.css';
+import '../styles/components/common/Buttons.css';
 
 export default function OfflineGame() {
     const navigate = useNavigate();
