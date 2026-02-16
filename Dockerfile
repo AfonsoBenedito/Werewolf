@@ -17,7 +17,10 @@ RUN ./gradlew bootJar --no-daemon
 
 # Stage 3: Runtime
 FROM eclipse-temurin:17-jre
+RUN apt-get update && apt-get install -y --no-install-recommends redis-server && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=backend /app/build/libs/*.jar app.jar
+COPY start.sh .
+RUN chmod +x start.sh
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["./start.sh"]
