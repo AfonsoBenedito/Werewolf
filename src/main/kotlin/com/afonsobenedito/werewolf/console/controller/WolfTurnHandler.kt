@@ -7,35 +7,24 @@ import com.afonsobenedito.werewolf.core.model.strategy.ConsensusResult
 import com.afonsobenedito.werewolf.core.model.strategy.UnanimousWithAbstainStrategy
 
 class WolfTurnHandler : TurnHandler() {
-    override val roleTitle = "Werewolves"
+    override val roleName = "Werewolves"
     private val consensusStrategy = UnanimousWithAbstainStrategy()
 
     override fun handleTurn(activePlayers: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player? {
         announceWake(interaction)
         
-        var target: Player? = null
+        var targetPlayer: Player? = null
         if (activePlayers.isNotEmpty()) {
-            val selectedPlayer = getConsensusTarget(activePlayers, allPlayers, interaction)
-            if (selectedPlayer != null) {
-                target = performNightAction(activePlayers.first(), selectedPlayer)
+            targetPlayer = getConsensusTarget(activePlayers, allPlayers, interaction)
+            if (targetPlayer != null) {
+                activePlayers.first().role?.nightAction(targetPlayer)
             }
         } else {
             announceSilence(interaction)
         }
-        
+
         announceSleep(interaction)
-        return target
-    }
-
-    override fun announceWake(interaction: GameInteraction) {
-        interaction.clearScreen()
-        interaction.announce("The Werewolves wake up")
-    }
-
-    override fun announceSleep(interaction: GameInteraction) {
-        interaction.clearScreen()
-        interaction.announce("The Werewolves go to sleep...")
-        interaction.promptEnter()
+        return targetPlayer
     }
 
     private fun getConsensusTarget(activeWolves: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player? {
@@ -52,7 +41,7 @@ class WolfTurnHandler : TurnHandler() {
                     interaction.announce("The pack has agreed on a victim.")
                 }
                 is ConsensusResult.NoTarget -> {
-                    interaction.announce("The pack is silent (all abstained). No one will be killed.")
+                    interaction.announce("The pack is silent. No one will be killed.")
                     return null
                 }
                 is ConsensusResult.Divided -> {
@@ -71,7 +60,7 @@ class WolfTurnHandler : TurnHandler() {
             interaction.clearScreen()
             interaction.announce("Werewolf ${wolf.name}, wake up!")
             interaction.announce("Wolves are: ${activeWolves.joinToString { it.name }}")
-            val vote = interaction.getPlayerSelection(possibleTargets, "Select a player to eliminate:", allowSkip = true)
+            val vote = interaction.getPlayerSelection(possibleTargets, "Select a player to kill:", allowSkip = true)
             
             votes[wolf] = vote
             interaction.promptEnter()
@@ -79,8 +68,4 @@ class WolfTurnHandler : TurnHandler() {
         return votes
     }
 
-    private fun performNightAction(wolf: Player, target: Player): Player {
-        wolf.role?.nightAction(target)
-        return target
-    }
 }

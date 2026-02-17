@@ -1,6 +1,5 @@
 package com.afonsobenedito.werewolf.core.model
 
-import com.afonsobenedito.werewolf.core.model.roles.NightActionResult
 import com.afonsobenedito.werewolf.core.model.roles.Role
 
 data class Player(

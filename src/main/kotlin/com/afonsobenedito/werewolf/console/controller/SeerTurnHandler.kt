@@ -5,7 +5,7 @@ import com.afonsobenedito.werewolf.core.model.Player
 import com.afonsobenedito.werewolf.core.model.roles.NightActionResult
 
 class SeerTurnHandler : TurnHandler() {
-    override val roleTitle = "Seer"
+    override val roleName = "Seer"
 
     override fun handleTurn(activePlayers: List<Player>, allPlayers: List<Player>, interaction: GameInteraction): Player? {
         announceWake(interaction)
@@ -18,13 +18,13 @@ class SeerTurnHandler : TurnHandler() {
         }
         
         announceSleep(interaction)
-        return null // Seer doesn't target for death/save
+        return null
     }
 
     private fun handleSeerAction(seer: Player, allPlayers: List<Player>, interaction: GameInteraction) {
         interaction.announce("Seer: ${seer.name}")
 
-        val validTargets = allPlayers.filter { it != seer }  // Filter out self
+        val validTargets = allPlayers.filter { it != seer }
         val selectedPlayer = interaction.getPlayerSelection(validTargets, "Choose a player to inspect:", allowSkip = true)
         
         if (selectedPlayer != null) {

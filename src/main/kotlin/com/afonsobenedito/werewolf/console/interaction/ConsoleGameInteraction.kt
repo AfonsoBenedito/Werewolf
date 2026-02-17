@@ -5,7 +5,10 @@ import java.util.Scanner
 
 class ConsoleGameInteraction : GameInteraction {
     private val scanner = Scanner(System.`in`)
-    private val MINIMUM_OF_PLAYERS = 4
+
+    companion object {
+        private const val MINIMUM_OF_PLAYERS = 4
+    }
 
     override fun clearScreen() { repeat(50) { println() } }
 

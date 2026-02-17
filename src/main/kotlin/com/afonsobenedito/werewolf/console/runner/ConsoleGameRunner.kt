@@ -14,6 +14,9 @@ class ConsoleGameRunner(
     private val game: Game,
     private val interaction: GameInteraction
 ) {
+    private val wolfHandler = WolfTurnHandler()
+    private val seerHandler = SeerTurnHandler()
+    private val medicHandler = MedicTurnHandler()
 
     fun run() {
         interaction.announce("Welcome to A Aldeia Adormece!")
@@ -24,19 +27,18 @@ class ConsoleGameRunner(
     }
 
     private fun gameLoop() {
-        var dayCount = 1
         while (game.status == GameStatus.IN_PROGRESS) {
-            interaction.announce("\n--- Night $dayCount ---")
+            interaction.announce("\n--- Night ${game.dayCount} ---")
             nightPhase()
-            
+
             if (checkWinCondition()) break
 
-            interaction.announce("\n--- Day $dayCount ---")
+            interaction.announce("\n--- Day ${game.dayCount} ---")
             dayPhase()
-            
+
             if (checkWinCondition()) break
-            
-            dayCount++
+
+            game.dayCount++
         }
     }
 
@@ -49,8 +51,7 @@ class ConsoleGameRunner(
         val wolfTarget = playWolfTurn(players)
         playSeerTurn(players)
         val medicTarget = playMedicTurn(players)
-        
-        // Resolve Night Actions
+
         if (wolfTarget != null) {
             if (wolfTarget != medicTarget) {
                 wolfTarget.die()
@@ -70,19 +71,16 @@ class ConsoleGameRunner(
 
     private fun playWolfTurn(players: List<Player>): Player? {
         val activeWolves = players.filter { it.isAlive && it.role is Wolf }
-        val wolfHandler = WolfTurnHandler()
         return wolfHandler.handleTurn(activeWolves, players, interaction)
     }
 
     private fun playMedicTurn(players: List<Player>): Player? {
         val activeMedics = players.filter { it.isAlive && it.role is Medic }
-        val medicHandler = MedicTurnHandler()
         return medicHandler.handleTurn(activeMedics, players, interaction)
     }
 
     private fun playSeerTurn(players: List<Player>) {
         val activeSeers = players.filter { it.isAlive && it.role is Seer }
-        val seerHandler = SeerTurnHandler()
         seerHandler.handleTurn(activeSeers, players, interaction)
     }
 
@@ -170,14 +168,13 @@ class ConsoleGameRunner(
     }
 
     private fun checkWinCondition(): Boolean {
-        if (game.checkWinCondition()) {
-            if (game.winner == Winner.VILLAGERS) {
-                interaction.announce("\n*** VILLAGERS WIN! All werewolves are eliminated. ***")
-            } else if (game.winner == Winner.WEREWOLVES) {
-                 interaction.announce("\n*** WEREWOLVES WIN! They outnumber the villagers. ***")
-            }
-            return true
+        if (!game.checkWinCondition()) return false
+
+        when (game.winner) {
+            Winner.VILLAGERS -> interaction.announce("\n*** VILLAGERS WIN! All werewolves are eliminated. ***")
+            Winner.WEREWOLVES -> interaction.announce("\n*** WEREWOLVES WIN! They outnumber the villagers. ***")
+            null -> {}
         }
-        return false
+        return true
     }
 }
