@@ -50,8 +50,6 @@ export default function OnlineGame() {
         );
     }
 
-    const isHost = gameState.players[0]?.name === playerName;
-
     return (
         <div className="online-game">
             <button className="home-btn-fixed" onClick={() => navigate('/')}><Home /></button>
@@ -66,7 +64,6 @@ export default function OnlineGame() {
 
             <GameHeader
                 gameId={gameId || ''}
-                phase={gameState.phase}
                 dayCount={gameState.dayCount}
                 isConnected={isConnected}
                 showConnectionStatus={true}
@@ -83,7 +80,9 @@ export default function OnlineGame() {
             {gameState.status === 'NOT_STARTED' && (
                 <WaitingRoom
                     players={gameState.players}
-                    isHost={isHost}
+                    isHost={gameState.isHost}
+                    canStart={gameState.canStart}
+                    minPlayers={gameState.minPlayers}
                     onStart={handleStart}
                 />
             )}

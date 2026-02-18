@@ -20,6 +20,11 @@ export const TransitionScreen: React.FC<TransitionScreenProps> = ({
 }) => {
     const [isExiting, setIsExiting] = React.useState(false);
 
+    // Reset exit state when message changes
+    useEffect(() => {
+        setIsExiting(false);
+    }, [message]);
+
     useEffect(() => {
         if (manualContinue) return;
 

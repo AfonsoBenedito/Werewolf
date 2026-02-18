@@ -3,7 +3,7 @@ import { ActionArea } from './actions/ActionArea';
 import { PlayersGrid } from './PlayersGrid';
 import { RoleInfo } from './RoleInfo';
 import { VotingResults } from '../common/VotingResults';
-import type { GameState, Player } from '../../hooks/useOnlineGame';
+import type { GameState, Player } from '../../types/game';
 
 interface GameBoardProps {
     gameState: GameState;
@@ -34,19 +34,11 @@ export function GameBoard({
         setHasConfirmedResults(false);
     }, [gameState.phase]);
 
-    const isNight = gameState.phase.includes('NIGHT');
-    const currentTurnRole = isNight ? gameState.phase.split(' - ')[1] : null;
-
-    // Logic: Hide board if it is Night, I am alive, and it is NOT my turn.
-    // Exception: Werewolves share a turn, so all Wolves see the board during "NIGHT - Wolf".
-    let isMyTurn = false;
-    if (currentTurnRole === 'Wolf' && myPlayer.role === 'Werewolf') isMyTurn = true;
-    else if (currentTurnRole === myPlayer.role) isMyTurn = true;
-
-    const shouldHideBoard = isNight && myPlayer.isAlive && !isMyTurn;
+    const isNight = gameState.phaseKey === 'NIGHT';
+    const shouldHideBoard = isNight && myPlayer.isAlive && !gameState.isMyTurn;
 
     // Voting Results page during DAY_RESULTS
-    if (gameState.phase === 'DAY_RESULTS') {
+    if (gameState.phaseKey === 'DAY_RESULTS') {
         return (
             <div className="game-board">
                 <RoleInfo role={myPlayer.role} isAlive={myPlayer.isAlive} />
@@ -83,9 +75,9 @@ export function GameBoard({
                     />
 
                     {/* Hide PlayersGrid during Discussion, when seer result is showing, and for dead players in voting */}
-                    {gameState.phase !== 'DAY_DISCUSSION'
+                    {gameState.phaseKey !== 'DAY_DISCUSSION'
                         && !(seerResult && myPlayer.role === 'Seer')
-                        && !(gameState.phase === 'DAY_VOTING' && !myPlayer.isAlive)
+                        && !(gameState.phaseKey === 'DAY_VOTING' && !myPlayer.isAlive)
                         && (
                         <PlayersGrid
                             gameState={gameState}

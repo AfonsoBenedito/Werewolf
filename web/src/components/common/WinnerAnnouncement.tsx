@@ -2,10 +2,10 @@ import { Home } from 'lucide-react';
 import '../../styles/components/common/WinnerAnnouncement.css';
 
 interface PlayerInfo {
-    id: string;
     name: string;
     isAlive: boolean;
     role: string;
+    isOnWinningTeam?: boolean | null;
 }
 
 interface WinnerAnnouncementProps {
@@ -22,11 +22,6 @@ function getRoleClass(role: string): string {
     return 'role-villager';
 }
 
-function isOnWinningTeam(player: PlayerInfo, winner: string): boolean {
-    if (winner === 'WEREWOLVES') return player.role === 'Werewolf';
-    return player.role !== 'Werewolf';
-}
-
 export function WinnerAnnouncement({ winner, players, onGoHome }: WinnerAnnouncementProps) {
     const displayWinner = winner === 'WEREWOLVES' ? 'Werewolves' : 'Villagers';
 
@@ -39,8 +34,8 @@ export function WinnerAnnouncement({ winner, players, onGoHome }: WinnerAnnounce
             <div className="winner-roster">
                 {players.map(player => (
                     <div
-                        key={player.id}
-                        className={`winner-roster-player ${isOnWinningTeam(player, winner) ? 'is-winner' : ''} ${!player.isAlive ? 'is-dead' : ''}`}
+                        key={player.name}
+                        className={`winner-roster-player ${player.isOnWinningTeam ? 'is-winner' : ''} ${!player.isAlive ? 'is-dead' : ''}`}
                     >
                         <span className="roster-name">
                             {player.name} {!player.isAlive ? '💀' : ''}

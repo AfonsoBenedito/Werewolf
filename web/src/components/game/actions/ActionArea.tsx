@@ -1,7 +1,7 @@
 import { DayDiscussion } from './DayDiscussion';
 import { DayVoting } from './DayVoting';
 import { NightAction } from './NightAction';
-import type { GameState, Player } from '../../../hooks/useOnlineGame';
+import type { GameState, Player } from '../../../types/game';
 
 interface ActionAreaProps {
     gameState: GameState;
@@ -19,9 +19,9 @@ export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction, night
 
     return (
         <div className="action-area">
-            {gameState.phase.includes('NIGHT') && (
+            {gameState.phaseKey === 'NIGHT' && (
                 <NightAction
-                    phase={gameState.phase}
+                    gameState={gameState}
                     myPlayer={myPlayer}
                     onAction={onAction}
                     nightActionFeedback={nightActionFeedback}
@@ -31,7 +31,7 @@ export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction, night
                 />
             )}
 
-            {gameState.phase === 'DAY_DISCUSSION' && (
+            {gameState.phaseKey === 'DAY_DISCUSSION' && (
                 <DayDiscussion
                     gameState={gameState}
                     hasVotedReady={hasVotedReady}
@@ -39,7 +39,7 @@ export function ActionArea({ gameState, myPlayer, hasVotedReady, onAction, night
                 />
             )}
 
-            {gameState.phase === 'DAY_VOTING' && (
+            {gameState.phaseKey === 'DAY_VOTING' && (
                 <DayVoting
                     hasAbstained={gameState.votes?.[myPlayer.name] === 'ABSTAIN'}
                     onAction={onAction}

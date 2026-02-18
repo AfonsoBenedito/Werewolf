@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { GameState } from './useOnlineGame';
+import type { GameState } from '../types/game';
 
 interface Transition {
     message: string;
@@ -60,16 +60,8 @@ export function useGameTransitions(
         } else if (prevPhase !== currentPhase) {
             const newTransitions: Transition[] = [];
 
-            // 1. Initial Start
-            if (prevPhase === 'NOT_STARTED' && currentPhase.includes('NIGHT')) {
-                newTransitions.push({ message: "The Village goes to sleep...", duration: 2000 });
-                if (currentPhase.includes('Wolf')) {
-                    newTransitions.push({ message: "The Werewolves wake up", duration: 2000 });
-                }
-            }
-
-            // 2. Night Phase Changes
-            else if (currentPhase.includes('NIGHT')) {
+            // Night Phase Changes
+            if (currentPhase.includes('NIGHT')) {
                 // Determine current role turn
                 const currentTurn = currentPhase.split(' - ')[1] || '';
                 const prevTurn = prevPhase.includes('NIGHT') ? prevPhase.split(' - ')[1] || '' : '';
@@ -208,7 +200,7 @@ export function useGameTransitions(
             setIsTransitioning(true);
             setCurrentTransition(next || null);
         }
-    }, [isTransitioning, transitionQueue.current.length, isPaused]); // Re-run when transitioning finishes or queue grows
+    }, [isTransitioning, isPaused]);
 
 
     const handleTransitionComplete = useCallback(() => {
@@ -223,7 +215,7 @@ export function useGameTransitions(
             setIsTransitioning(false);
             setCurrentTransition(null);
         }
-    }, [isTransitioning]);
+    }, []);
 
     return {
         isTransitioning,

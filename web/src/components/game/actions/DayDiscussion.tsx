@@ -1,4 +1,4 @@
-import type { GameState } from '../../../hooks/useOnlineGame';
+import type { GameState } from '../../../types/game';
 
 interface DayDiscussionProps {
     gameState: GameState;

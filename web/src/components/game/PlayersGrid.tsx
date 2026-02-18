@@ -1,5 +1,5 @@
 import { PlayerCard } from '../common/PlayerCard';
-import type { GameState, Player } from '../../hooks/useOnlineGame';
+import type { GameState, Player } from '../../types/game';
 
 interface PlayersGridProps {
     gameState: GameState;
@@ -10,38 +10,21 @@ interface PlayersGridProps {
 }
 
 export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNightTarget }: PlayersGridProps) {
+    const isNight = gameState.phaseKey === 'NIGHT';
+    const isVoting = gameState.phaseKey === 'DAY_VOTING';
+    const actions = gameState.availableActions;
+
     return (
         <div className="players-grid">
             {gameState.players.map(p => {
                 const isMyVoteTarget = gameState.votes?.[playerName!] === p.name;
-                // Night vote highlighting (local state)
                 const isMyNightTarget = myNightTarget === p.name;
-
                 const isMe = p.name === playerName;
-                const hasVoted = !isMe && gameState.votes?.[p.name] !== undefined;
 
-                let isDisabled = false;
-                if (isMe) {
-                    isDisabled = true;
-                    if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') isDisabled = false;
-                }
-
-                // Disable fellow werewolves during Night
-                if (gameState.phase.includes("NIGHT") && myPlayer.role === 'Werewolf') {
-                    if (p.role === 'Werewolf' || p.role === 'Wolf') {
-                        isDisabled = true;
-                    }
-                }
-
-                if (!p.isAlive) isDisabled = true;
-
-                // Action indicators (match offline mode)
-                const isNight = gameState.phase.includes('NIGHT');
-                const isVoting = gameState.phase === 'DAY_VOTING';
-                const showKill = isNight && gameState.phase.includes('Wolf') && myPlayer.role === 'Werewolf' && p.isAlive && !isDisabled;
-                const showHeal = isNight && gameState.phase.includes('Medic') && myPlayer.role === 'Medic' && p.isAlive && !isDisabled;
-                const showPeek = isNight && gameState.phase.includes('Seer') && myPlayer.role === 'Seer' && p.isAlive && !isDisabled;
-                const showVoteTarget = isVoting && p.isAlive && !isMe && !isDisabled;
+                const showKill = isNight && actions.includes('KILL') && p.isTargetable;
+                const showHeal = isNight && actions.includes('HEAL') && p.isTargetable;
+                const showPeek = isNight && actions.includes('PEEK') && p.isTargetable;
+                const showVoteTarget = isVoting && p.isTargetable;
 
                 return (
                     <PlayerCard
@@ -51,9 +34,9 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
                         isMe={isMe}
                         role={p.role}
                         revealedRole={p.role} // Online: role is masked by backend
-                        hasVoted={hasVoted}
+                        hasVoted={p.hasVoted}
                         isVotingPhase={isVoting}
-                        isDisabled={isDisabled}
+                        isDisabled={!p.isTargetable}
                         isVoteTarget={isMyVoteTarget || isMyNightTarget}
                         showKill={showKill}
                         showHeal={showHeal}
@@ -67,22 +50,6 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
                                 onAction('UNVOTE');
                             } else {
                                 onAction('VOTE', p.name);
-                            }
-                        }}
-                        onClick={() => {
-                            if (!myPlayer.isAlive) return;
-                            if (isDisabled) return;
-                            if (gameState.phase === 'DAY_VOTING') {
-                                if (isMyVoteTarget) {
-                                    onAction('UNVOTE');
-                                } else {
-                                    onAction('VOTE', p.name);
-                                }
-                            }
-                            if (gameState.phase.includes('NIGHT')) {
-                                if (gameState.phase.includes("Wolf") && myPlayer.role === 'Werewolf') onAction('KILL', p.name);
-                                if (gameState.phase.includes("Medic") && myPlayer.role === 'Medic') onAction('HEAL', p.name);
-                                if (gameState.phase.includes("Seer") && myPlayer.role === 'Seer') onAction('PEEK', p.name);
                             }
                         }}
                     />

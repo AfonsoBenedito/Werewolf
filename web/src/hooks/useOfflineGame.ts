@@ -1,23 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { createGame, startGame, getGameState, performAction } from '../api/gameApi';
-
-export interface Player {
-    id: string;
-    name: string;
-    isAlive: boolean;
-    role: string;
-}
-
-export interface GameState {
-    id: string;
-    status: string;
-    players: Player[];
-    phase: string;
-    dayCount: number;
-    winner?: string;
-    lastDeadPlayerName?: string;
-    votes?: Record<string, string>; // VoterID -> TargetName
-}
+import type { GameState } from '../types/game';
 
 export function useOfflineGame() {
     const [gameId, setGameId] = useState<string | null>(null);
@@ -36,18 +19,21 @@ export function useOfflineGame() {
     const [seerResult, setSeerResult] = useState<{ target: string, role: string } | null>(null);
 
     useEffect(() => {
-        if (gameId) {
-            fetchGameState(gameId);
-            const interval = setInterval(() => fetchGameState(gameId), 2000); // Polling every 2s
-            return () => clearInterval(interval);
-        }
-    }, [gameId]);
+        if (!gameId) return;
+        if (gameState?.phase === 'FINISHED') return;
+
+        fetchGameState(gameId);
+        const interval = setInterval(() => fetchGameState(gameId), 2000);
+        return () => clearInterval(interval);
+    }, [gameId, gameState?.phase === 'FINISHED']);
 
     // Reset UI states when phase changes
     useEffect(() => {
         // Only clear Seer result when starting a NEW night cycle
-        // to ensure it stays visible during the Day transition
-        if (gameState?.phase === "NIGHT - Wolf" || gameState?.phase === "NOT_STARTED") {
+        if (gameState?.phaseKey === "NIGHT" && gameState?.currentTurn === "Wolf") {
+            setSeerResult(null);
+        }
+        if (gameState?.phase === "NOT_STARTED") {
             setSeerResult(null);
         }
         setActiveVoter(null);
@@ -187,40 +173,29 @@ export function useOfflineGame() {
         }
     };
 
-    const phaseMessage = useMemo(() => {
+    const phaseMessage = (() => {
         if (!gameState) return "";
 
-        if (gameState.phase.includes("NIGHT")) {
-            if (gameState.phase.includes("Wolf")) {
-                const wolves = gameState.players.filter(p => p.role === "Werewolf" && p.isAlive).map(p => p.name).join(", ");
-                return `🐺 Werewolves' Turn (${wolves}): Choose a victim to kill.`;
-            }
-            if (gameState.phase.includes("Seer")) {
-                const seers = gameState.players.filter(p => p.role === "Seer" && p.isAlive).map(p => p.name).join(", ");
-                return `👁️ Seer's Turn (${seers}): Choose a player to inspect.`;
-            }
-            if (gameState.phase.includes("Medic")) {
-                const medics = gameState.players.filter(p => p.role === "Medic" && p.isAlive).map(p => p.name).join(", ");
-                return `❤️ Medic's Turn (${medics}): Choose a player to save.`;
-            }
-            return "Night Phase";
+        if (gameState.phaseKey === "NIGHT") {
+            const turnEmoji = gameState.currentTurn === "Wolf" ? "🐺" : gameState.currentTurn === "Seer" ? "👁️" : "❤️";
+            const roleFilter = gameState.currentTurn === "Wolf" ? "Werewolf" : gameState.currentTurn;
+            const rolePlayers = gameState.players.filter(p => p.role === roleFilter && p.isAlive).map(p => p.name).join(", ");
+            return `${turnEmoji} ${gameState.phaseDisplayName} (${rolePlayers}): ${gameState.turnInstruction || ""}`;
         }
 
-        if (gameState.phase === "DAY_DISCUSSION") return "☀️ Day Discussion: Discuss who might be a wolf.";
-
-        if (gameState.phase === "DAY_VOTING") {
-            if (activeVoter) {
-                return `🗳️ Voting: Who is ${activeVoter} voting for? (Click a target)`;
-            }
-            return "🗳️ Voting Phase: Select a player to cast their vote.";
+        if (gameState.phaseKey === "DAY_VOTING" && activeVoter) {
+            return `🗳️ Voting: Who is ${activeVoter} voting for? (Click a target)`;
         }
 
-        if (gameState.phase === "DAY_RESULTS") {
-            return "📊 Voting Results";
-        }
-
-        return gameState.phase;
-    }, [gameState, activeVoter]);
+        const phaseEmojis: Record<string, string> = {
+            "DAY_DISCUSSION": "☀️",
+            "DAY_VOTING": "🗳️",
+            "DAY_RESULTS": "📊"
+        };
+        const emoji = phaseEmojis[gameState.phaseKey] || "";
+        const instruction = gameState.turnInstruction ? `: ${gameState.turnInstruction}` : "";
+        return `${emoji} ${gameState.phaseDisplayName}${instruction}`;
+    })();
 
     return {
         gameId,

@@ -4,27 +4,7 @@ import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { getGameState, performAction, startGame } from '../api/gameApi';
-
-export interface Player {
-    id: string; // name
-    name: string;
-    isAlive: boolean;
-    role: string;
-}
-
-export interface GameState {
-    id: string;
-    players: Player[];
-    phase: string;
-    status: string;
-    dayCount: number;
-    winner?: string;
-    lastDeadPlayerName?: string;
-    votes?: Record<string, string>; // voter -> target (or "SECRET"/"ABSTAIN")
-    nightStatus?: string | null;
-    readyPlayerCount?: number;
-    totalAliveCount?: number;
-}
+import type { Player, GameState } from '../types/game';
 
 export function useOnlineGame() {
     const { gameId } = useParams<{ gameId: string }>();
@@ -145,14 +125,11 @@ export function useOnlineGame() {
                 // Success - silence
                 setNightActionFeedback(null);
             }
-        } catch (e: any) {
-            const msg = e.response?.data?.message || e.message || "Action failed";
+        } catch (e: unknown) {
+            const err = e as { response?: { data?: { message?: string } }; message?: string };
+            const msg = err.response?.data?.message || err.message || "Action failed";
             alert("Action failed: " + msg);
         }
-    };
-
-    const dismissSeerResult = () => {
-        setSeerResult(null);
     };
 
     return {
@@ -167,7 +144,6 @@ export function useOnlineGame() {
         seerResult,
         isLoading,
         error,
-        dismissSeerResult,
         fetchState,
         handleStart,
         handleAction

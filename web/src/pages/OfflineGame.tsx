@@ -73,12 +73,10 @@ export default function OfflineGame() {
 
     if (!gameState) return <div className="loading">Loading game state...</div>;
 
-    const isNight = gameState.phase.includes("NIGHT");
-    const isWolfTurn = gameState.phase.includes("Wolf");
-    const isSeerTurn = gameState.phase.includes("Seer");
-    const isMedicTurn = gameState.phase.includes("Medic");
-    const isVoting = gameState.phase.includes("VOTING");
-    const isResults = gameState.phase === "DAY_RESULTS";
+    const isSeerTurn = gameState.phaseKey === 'NIGHT' && gameState.currentTurn === 'Seer';
+    const isResults = gameState.phaseKey === 'DAY_RESULTS';
+    const isNight = gameState.phaseKey === 'NIGHT';
+    const isVoting = gameState.phaseKey === 'DAY_VOTING';
 
     return (
         <>
@@ -102,7 +100,6 @@ export default function OfflineGame() {
 
                     <GameHeader
                         gameId={gameId}
-                        phase={phaseMessage}
                         dayCount={gameState.dayCount}
                         showConnectionStatus={false}
                         hideGameId={true}
@@ -172,12 +169,6 @@ export default function OfflineGame() {
                             {!isTransitioning && !gameState.lastDeadPlayerName && !(seerResult && isSeerTurn) && (
                                 <OfflineGrid
                                     gameState={gameState}
-                                    isNight={isNight}
-                                    isWolfTurn={isWolfTurn}
-                                    isMedicTurn={isMedicTurn}
-                                    isSeerTurn={isSeerTurn}
-                                    isVoting={isVoting}
-                                    isDiscussion={gameState.phase === 'DAY_DISCUSSION'}
                                     activeVoter={activeVoter}
                                     revealRoles={revealRoles}
                                     onKill={handleKill}

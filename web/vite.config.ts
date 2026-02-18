@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -7,6 +8,11 @@ export default defineConfig({
   define: {
     // Polyfill global for sockjs-client
     global: 'window',
+  },
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    setupFiles: './src/test/setup.ts',
   },
   server: {
     proxy: {

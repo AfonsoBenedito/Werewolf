@@ -1,14 +1,8 @@
 import { PlayerCard } from '../common/PlayerCard';
-import type { GameState } from '../../hooks/useOfflineGame';
+import type { GameState } from '../../types/game';
 
 interface OfflineGridProps {
     gameState: GameState;
-    isNight: boolean;
-    isWolfTurn: boolean;
-    isMedicTurn: boolean;
-    isSeerTurn: boolean;
-    isVoting: boolean;
-    isDiscussion?: boolean;
     activeVoter: string | null;
     revealRoles: boolean;
     onKill: (id: string) => void;
@@ -20,12 +14,6 @@ interface OfflineGridProps {
 
 export function OfflineGrid({
     gameState,
-    isNight,
-    isWolfTurn,
-    isMedicTurn,
-    isSeerTurn,
-    isVoting,
-    isDiscussion,
     activeVoter,
     revealRoles,
     onKill,
@@ -34,23 +22,24 @@ export function OfflineGrid({
     onVoteSelect,
     onVoteTarget
 }: OfflineGridProps) {
+    const isNight = gameState.phaseKey === 'NIGHT';
+    const isVoting = gameState.phaseKey === 'DAY_VOTING';
+    const isDiscussion = gameState.phaseKey === 'DAY_DISCUSSION';
+    const actions = gameState.availableActions;
+
     return (
         <div className={`players-grid ${isDiscussion ? 'discussion-grid' : ''}`}>
             {gameState.players.map(p => {
-                const hasVoted = gameState.votes && gameState.votes[p.name];
+                const hasVoted = p.hasVoted;
 
-                // Offline specific flags for PlayerCard
-                const showKill = isNight && isWolfTurn && p.role !== "Werewolf";
-                const showHeal = isNight && isMedicTurn;
-                const showPeek = isNight && isSeerTurn && p.role !== "Seer";
+                const showKill = isNight && actions.includes('KILL') && p.isTargetable;
+                const showHeal = isNight && actions.includes('HEAL') && p.isTargetable;
+                const showPeek = isNight && actions.includes('PEEK') && p.isTargetable;
                 const showVoteSelect = isVoting && !activeVoter && !hasVoted && p.isAlive;
                 const showVoteTarget = isVoting && activeVoter && activeVoter !== p.name && p.isAlive;
 
-                // Disable card for the person whose turn it is
-                // EXCEPT for Medic, who can heal themselves
-                const isMyTurn = (isWolfTurn && p.role === "Werewolf") ||
-                    (isSeerTurn && p.role === "Seer") ||
-                    (activeVoter === p.name);
+                // Disable card for the person whose turn it is (except Medic who can self-heal)
+                const isDisabled = isNight && !p.isTargetable;
 
                 return (
                     <PlayerCard
@@ -59,10 +48,10 @@ export function OfflineGrid({
                         isAlive={p.isAlive}
                         role={p.role}
                         revealedRole={revealRoles ? p.role : undefined}
-                        hasVoted={!!hasVoted}
+                        hasVoted={hasVoted}
                         isVotingPhase={isVoting}
                         isActiveVoter={activeVoter === p.name}
-                        isDisabled={isMyTurn}
+                        isDisabled={isDisabled}
                         isVoteTarget={false}
 
                         showKill={showKill}
