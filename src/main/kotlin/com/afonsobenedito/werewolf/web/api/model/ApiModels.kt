@@ -2,7 +2,6 @@ package com.afonsobenedito.werewolf.web.api.model
 
 import com.afonsobenedito.werewolf.core.GameMode
 
-
 data class CreateGameRequest(
     val mode: GameMode,
     val playerName: String? = null,

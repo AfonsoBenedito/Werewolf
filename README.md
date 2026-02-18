@@ -145,10 +145,13 @@ Werewolf/
 │   ├── src/types/             # TypeScript type definitions
 │   └── public/                # Static assets (favicon, background)
 ├── Makefile                   # All project commands
-├── docker-compose.yml         # Local Docker orchestration
-├── Dockerfile                 # Production single-container build
-├── Dockerfile.backend         # Dev backend container
-├── Dockerfile.frontend        # Dev frontend container (Nginx)
+├── docker/                    # Docker configuration
+│   ├── docker-compose.yml     # Local Docker orchestration
+│   ├── Dockerfile             # Production single-container build
+│   ├── Dockerfile.backend     # Dev backend container
+│   ├── Dockerfile.frontend    # Dev frontend container (Nginx)
+│   ├── nginx.conf             # Nginx reverse proxy config
+│   └── start.sh               # Production container entrypoint
 └── .github/workflows/         # CI & Cloud Run deployment
 ```
 
@@ -194,7 +197,7 @@ The project uses **GitHub Actions** with two workflows:
 
 ## Docker Architecture
 
-**Development** (`docker-compose.yml`) runs four services:
+**Development** (`docker/docker-compose.yml`) runs four services:
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌──────────────────┐
@@ -204,7 +207,7 @@ The project uses **GitHub Actions** with two workflows:
 └─────────────┘     └─────────────┘     └─────────────┘     └──────────────────┘
 ```
 
-**Production** (`Dockerfile`) builds a single container with frontend assets bundled into the Spring Boot JAR, plus an embedded Redis instance.
+**Production** (`docker/Dockerfile`) builds a single container with frontend assets bundled into the Spring Boot JAR, plus an embedded Redis instance.
 
 ---
 

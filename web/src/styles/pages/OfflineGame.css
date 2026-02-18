@@ -335,6 +335,11 @@
     border-color: rgba(255, 255, 255, 0.25);
 }
 
+.setup-start-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
 .remove-player-btn {
     background: none;
     border: none;

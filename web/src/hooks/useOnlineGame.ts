@@ -109,7 +109,7 @@ export function useOnlineGame() {
 
         try {
             const response = await performAction(gameId, playerName, actionType, targetId);
-            if (response && response.peekResult) {
+            if (typeof response === 'object' && response && response.peekResult) {
                 setSeerResult(response.peekResult);
             } else if (typeof response === 'string' && response.length > 0) {
                 setNightActionFeedback(response);

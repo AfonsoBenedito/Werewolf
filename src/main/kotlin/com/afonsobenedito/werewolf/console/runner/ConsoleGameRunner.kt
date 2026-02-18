@@ -38,7 +38,7 @@ class ConsoleGameRunner(
 
             if (checkWinCondition()) break
 
-            game.dayCount++
+            game.incrementDay()
         }
     }
 
@@ -52,11 +52,8 @@ class ConsoleGameRunner(
         playSeerTurn(players)
         val medicTarget = playMedicTurn(players)
 
-        if (wolfTarget != null) {
-            if (wolfTarget != medicTarget) {
-                wolfTarget.die()
-            } else {
-            }
+        if (wolfTarget != null && wolfTarget != medicTarget) {
+            wolfTarget.die()
         }
         
         announceNightEnd()

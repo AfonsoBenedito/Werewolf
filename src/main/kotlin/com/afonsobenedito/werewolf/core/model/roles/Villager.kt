@@ -4,7 +4,7 @@ import com.afonsobenedito.werewolf.core.model.Player
 
 class Villager : Role(
     "Villager",
-    "Lorem Ipsum"
+    "An ordinary villager. No special powers, but a powerful vote."
 ) {
     override fun nightAction(targetPlayer: Player): NightActionResult {
         return NightActionResult.NoResult

@@ -140,7 +140,7 @@ export function useOfflineGame() {
         if (!gameId) return;
         try {
             const data = await performAction(gameId, "Master", "PEEK", targetId);
-            if (data && data.peekResult) {
+            if (typeof data === 'object' && data && data.peekResult) {
                 setSeerResult({ target: targetId, role: data.peekResult });
             }
             await fetchGameState();

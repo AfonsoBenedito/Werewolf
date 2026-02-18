@@ -59,8 +59,7 @@ export function OfflineSetup({
 
             {currentPlayers.length >= 4 && (
                 <button
-                    className="btn-premium btn-premium--primary"
-                    style={{ width: '100%', marginTop: '0.5rem' }}
+                    className="btn-premium btn-premium--primary setup-start-btn"
                     onClick={onStartGame}
                     disabled={loading}
                 >

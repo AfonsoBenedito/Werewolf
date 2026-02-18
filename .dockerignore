@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+.gradle
+.kotlin
+build
+web/node_modules
+web/dist
+*.iml
+*.ipr
+*.iws
+.DS_Store
+.claude
+.gemini

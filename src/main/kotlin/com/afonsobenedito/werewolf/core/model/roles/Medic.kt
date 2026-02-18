@@ -4,7 +4,7 @@ import com.afonsobenedito.werewolf.core.model.Player
 
 class Medic : Role(
     "Medic",
-    "Lorem Ipsum."
+    "Sworn to protect. Saves one player from death each night."
 ) {
     override fun nightAction(targetPlayer: Player): NightActionResult {
         targetPlayer.resurrect()

@@ -9,9 +9,22 @@ open class Game(
     val mode: GameMode
 ) {
     companion object {
-        private val TURN_ORDER = listOf("Wolf", "Seer", "Medic")
+        const val TURN_WOLF = "Wolf"
+        const val TURN_SEER = "Seer"
+        const val TURN_MEDIC = "Medic"
+        const val ACTION_KILL = "KILL"
+        const val ACTION_HEAL = "HEAL"
+        const val ACTION_PEEK = "PEEK"
+        const val ACTION_SKIP = "SKIP"
+        const val ACTION_VOTE = "VOTE"
+        const val ACTION_UNVOTE = "UNVOTE"
+        const val ACTION_NEXT_TURN = "NEXT_TURN"
+        const val ACTION_NEXT_PHASE = "NEXT_PHASE"
+        const val ACTION_ELIMINATE = "ELIMINATE"
+        const val VOTE_ABSTAIN = "ABSTAIN"
         const val WOLF_VOTE_NO_TARGET = "NO_TARGET"
         const val OFFLINE_MASTER = "Master"
+        private val TURN_ORDER = listOf(TURN_WOLF, TURN_SEER, TURN_MEDIC)
     }
 
     var status: GameStatus = GameStatus.NOT_STARTED
@@ -48,6 +61,10 @@ open class Game(
 
     fun markPlayerReady(playerName: String) {
         readyPlayers.add(playerName)
+    }
+
+    fun incrementDay() {
+        dayCount++
     }
 
     open fun startGame() {
@@ -96,29 +113,29 @@ open class Game(
         val target = players.find { it.name == targetId }
 
         val isCorrectRole = when (currentTurn) {
-            "Wolf" -> actor.role is Wolf
-            "Seer" -> actor.role is Seer
-            "Medic" -> actor.role is Medic
+            TURN_WOLF -> actor.role is Wolf
+            TURN_SEER -> actor.role is Seer
+            TURN_MEDIC -> actor.role is Medic
             else -> false
         }
         if (!isCorrectRole) throw IllegalArgumentException("It is not your turn! Current turn: $currentTurn")
 
         return when (actionType) {
-            "KILL" -> {
+            ACTION_KILL -> {
                 if (target != null && target.role is Wolf) {
                      throw IllegalArgumentException("Wolves cannot kill other Wolves!")
                 }
                 wolfVotes[actor.name] = target?.name ?: WOLF_VOTE_NO_TARGET
                 resolveWolfConsensus()
             }
-            "HEAL" -> {
+            ACTION_HEAL -> {
                 if (target != null && pendingDeathId == target.name) {
                      pendingDeathId = null
                 }
                 advanceTurn()
                 null
             }
-            "PEEK" -> {
+            ACTION_PEEK -> {
                 if (seerHasPeeked) throw IllegalArgumentException("You have already peeked!")
 
                 val targetRole = target?.role ?: return null
@@ -126,8 +143,8 @@ open class Game(
 
                 if (targetRole is Villager) "${target.name} is just a Regular Villager" else "${target.name} is not just a Regular Villager"
             }
-            "SKIP" -> {
-                if (currentTurn == "Wolf") {
+            ACTION_SKIP -> {
+                if (currentTurn == TURN_WOLF) {
                     wolfVotes[actor.name] = WOLF_VOTE_NO_TARGET
                     resolveWolfConsensus()
                 } else {
@@ -158,7 +175,7 @@ open class Game(
     }
 
     fun getWolfStatus(): String? {
-        if (phase != GamePhase.NIGHT || currentTurn != "Wolf") return null
+        if (phase != GamePhase.NIGHT || currentTurn != TURN_WOLF) return null
 
         val aliveWolves = players.count { it.isAlive && it.role is Wolf }
         if (wolfVotes.size < aliveWolves) return "Waiting for other werewolf..."
@@ -170,18 +187,18 @@ open class Game(
     }
 
     fun handleVotingAction(voter: Player, actionType: String, targetId: String?) {
-        if (actionType == "SKIP") {
-            votes[voter.name] = "ABSTAIN"
+        if (actionType == ACTION_SKIP) {
+            votes[voter.name] = VOTE_ABSTAIN
             checkVoteCompletion()
             return
         }
 
-        if (actionType == "UNVOTE") {
+        if (actionType == ACTION_UNVOTE) {
             votes.remove(voter.name)
             return
         }
 
-        if (actionType != "VOTE") throw IllegalArgumentException("Only VOTE action allowed in voting phase")
+        if (actionType != ACTION_VOTE) throw IllegalArgumentException("Only VOTE action allowed in voting phase")
 
         val targetName = targetId ?: throw IllegalArgumentException("Vote target needed")
         val target = players.find { it.name == targetName } ?: throw IllegalArgumentException("Target not found")
@@ -195,26 +212,26 @@ open class Game(
     fun processOfflineAction(actionType: String, playerId: String, targetId: String?): String? {
          var result: String? = null
          when (actionType) {
-             "KILL" -> {
+             ACTION_KILL -> {
                  val wolves = players.filter { it.isAlive && it.role is Wolf }
                  for (wolf in wolves) {
-                     handleNightAction(wolf, "KILL", targetId)
+                     handleNightAction(wolf, ACTION_KILL, targetId)
                  }
              }
-             "HEAL" -> {
+             ACTION_HEAL -> {
                  val medic = players.find { it.isAlive && it.role is Medic }
                      ?: throw IllegalArgumentException("No alive Medic found")
-                 handleNightAction(medic, "HEAL", targetId)
+                 handleNightAction(medic, ACTION_HEAL, targetId)
              }
-             "PEEK" -> {
+             ACTION_PEEK -> {
                  val seer = players.find { it.isAlive && it.role is Seer }
                      ?: throw IllegalArgumentException("No alive Seer found")
-                 val rawResult = handleNightAction(seer, "PEEK", targetId)
+                 val rawResult = handleNightAction(seer, ACTION_PEEK, targetId)
                  result = if (rawResult?.contains("not just") == true) "NOT a Villager" else "Villager"
              }
-             "NEXT_TURN" -> advanceTurn()
-             "NEXT_PHASE" -> advancePhase()
-             "ELIMINATE" -> {
+             ACTION_NEXT_TURN -> advanceTurn()
+             ACTION_NEXT_PHASE -> advancePhase()
+             ACTION_ELIMINATE -> {
                  val target = players.find { it.name == targetId }
                  target?.die()
                  checkPhaseTransition()
@@ -225,14 +242,14 @@ open class Game(
                     startNightPhase()
                  }
              }
-             "VOTE" -> {
+             ACTION_VOTE -> {
                  if (playerId == OFFLINE_MASTER) return null
                  val voter = players.find { it.name == playerId }
                      ?: throw IllegalArgumentException("Voter not found")
-                 if (targetId == "SKIP") {
-                     handleVotingAction(voter, "SKIP", null)
+                 if (targetId == ACTION_SKIP) {
+                     handleVotingAction(voter, ACTION_SKIP, null)
                  } else {
-                     handleVotingAction(voter, "VOTE", targetId)
+                     handleVotingAction(voter, ACTION_VOTE, targetId)
                  }
              }
          }
@@ -254,7 +271,7 @@ open class Game(
 
         if (candidates.size == 1) {
             val victimName = candidates.first()
-            if (victimName == "ABSTAIN") {
+            if (victimName == VOTE_ABSTAIN) {
                 lastDeadPlayerName = null
             } else {
                 val victim = players.find { it.name == victimName }
@@ -329,9 +346,9 @@ open class Game(
     private fun hasAliveRole(roleName: String): Boolean {
         return players.any { player ->
             player.isAlive && when (roleName) {
-                "Wolf" -> player.role is Wolf
-                "Seer" -> player.role is Seer
-                "Medic" -> player.role is Medic
+                TURN_WOLF -> player.role is Wolf
+                TURN_SEER -> player.role is Seer
+                TURN_MEDIC -> player.role is Medic
                 else -> false
             }
         }

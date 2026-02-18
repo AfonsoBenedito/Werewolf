@@ -1,6 +1,9 @@
 FROM gradle:8-jdk17 AS build
 WORKDIR /app
-COPY . .
+COPY build.gradle.kts settings.gradle.kts gradlew ./
+COPY gradle/ gradle/
+COPY src/ src/
+COPY detekt.yml ./
 RUN ./gradlew bootJar --no-daemon
 
 FROM eclipse-temurin:17-jre

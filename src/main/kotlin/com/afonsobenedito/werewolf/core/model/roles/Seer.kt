@@ -4,7 +4,7 @@ import com.afonsobenedito.werewolf.core.model.Player
 
 class Seer : Role(
     "Seer",
-    "Lorem Ipsum"
+    "Gifted with foresight. Inspects one player each night."
 ) {
     override fun nightAction(targetPlayer: Player): NightActionResult {
         val hasPowers = targetPlayer.role !is Villager

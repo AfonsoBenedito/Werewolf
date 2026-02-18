@@ -74,7 +74,7 @@ class GameService(
             ?: throw IllegalArgumentException("Game not found")
 
         val result = if (game.mode == GameMode.OFFLINE &&
-            (request.playerId == Game.OFFLINE_MASTER || request.actionType == "VOTE")
+            (request.playerId == Game.OFFLINE_MASTER || request.actionType == Game.ACTION_VOTE)
         ) {
             game.processOfflineAction(request.actionType, request.playerId, request.targetId)
         } else {

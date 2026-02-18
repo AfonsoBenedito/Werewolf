@@ -66,7 +66,7 @@ class GameMapper {
     }
 
     private fun computeNightStatus(game: Game, playerId: String?): String? {
-        if (playerId == null || game.currentTurn != "Wolf") return null
+        if (playerId == null || game.currentTurn != Game.TURN_WOLF) return null
         val player = game.players.find { it.name == playerId }
         if (player?.role !is Wolf) return null
 
@@ -85,9 +85,9 @@ class GameMapper {
             GamePhase.NIGHT -> {
                 if (requester == null) return false
                 when (game.currentTurn) {
-                    "Wolf" -> requester.role is Wolf
-                    "Seer" -> requester.role is Seer
-                    "Medic" -> requester.role is Medic
+                    Game.TURN_WOLF -> requester.role is Wolf
+                    Game.TURN_SEER -> requester.role is Seer
+                    Game.TURN_MEDIC -> requester.role is Medic
                     else -> false
                 }
             }
@@ -103,24 +103,24 @@ class GameMapper {
         return when (game.phase) {
             GamePhase.NIGHT -> {
                 when (game.currentTurn) {
-                    "Wolf" -> listOf("KILL")
-                    "Seer" -> listOf("PEEK")
-                    "Medic" -> listOf("HEAL")
+                    Game.TURN_WOLF -> listOf(Game.ACTION_KILL)
+                    Game.TURN_SEER -> listOf(Game.ACTION_PEEK)
+                    Game.TURN_MEDIC -> listOf(Game.ACTION_HEAL)
                     else -> emptyList()
                 }
             }
             GamePhase.DAY_DISCUSSION -> listOf("READY_TO_VOTE")
-            GamePhase.DAY_VOTING -> listOf("VOTE", "ABSTAIN")
+            GamePhase.DAY_VOTING -> listOf(Game.ACTION_VOTE, Game.VOTE_ABSTAIN)
             else -> emptyList()
         }
     }
 
     private fun computeCanSkip(game: Game, requester: Player?): Boolean {
         if (game.phase != GamePhase.NIGHT) return false
-        if (requester == null) return game.currentTurn == "Seer" || game.currentTurn == "Medic"
+        if (requester == null) return game.currentTurn == Game.TURN_SEER || game.currentTurn == Game.TURN_MEDIC
         return when {
-            requester.role is Seer && game.currentTurn == "Seer" -> true
-            requester.role is Medic && game.currentTurn == "Medic" -> true
+            requester.role is Seer && game.currentTurn == Game.TURN_SEER -> true
+            requester.role is Medic && game.currentTurn == Game.TURN_MEDIC -> true
             else -> false
         }
     }
@@ -131,9 +131,9 @@ class GameMapper {
 
         return when (game.phase) {
             GamePhase.NIGHT -> when (game.currentTurn) {
-                "Wolf" -> player.role !is Wolf
-                "Seer" -> if (requester != null && game.mode != GameMode.OFFLINE) player.name != requester.name else player.role !is Seer
-                "Medic" -> true
+                Game.TURN_WOLF -> player.role !is Wolf
+                Game.TURN_SEER -> if (requester != null && game.mode != GameMode.OFFLINE) player.name != requester.name else player.role !is Seer
+                Game.TURN_MEDIC -> true
                 else -> false
             }
             GamePhase.DAY_VOTING -> requester == null || player.name != requester.name
@@ -153,9 +153,9 @@ class GameMapper {
     private fun computePhaseDisplayName(game: Game): String {
         return when (game.phase) {
             GamePhase.NIGHT -> when (game.currentTurn) {
-                "Wolf" -> "Werewolves' Turn"
-                "Seer" -> "Seer's Turn"
-                "Medic" -> "Medic's Turn"
+                Game.TURN_WOLF -> "Werewolves' Turn"
+                Game.TURN_SEER -> "Seer's Turn"
+                Game.TURN_MEDIC -> "Medic's Turn"
                 else -> "Night Phase"
             }
             GamePhase.DAY_DISCUSSION -> "Village Discussion"
@@ -170,9 +170,9 @@ class GameMapper {
 
         return when (game.phase) {
             GamePhase.NIGHT -> when (game.currentTurn) {
-                "Wolf" -> "Choose a victim to kill."
-                "Seer" -> "Choose a player to inspect."
-                "Medic" -> "Choose a player to save."
+                Game.TURN_WOLF -> "Choose a victim to kill."
+                Game.TURN_SEER -> "Choose a player to inspect."
+                Game.TURN_MEDIC -> "Choose a player to save."
                 else -> null
             }
             GamePhase.DAY_DISCUSSION -> "Discuss who might be a wolf."

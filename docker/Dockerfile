@@ -12,6 +12,7 @@ WORKDIR /app
 COPY build.gradle.kts settings.gradle.kts gradlew ./
 COPY gradle/ gradle/
 COPY src/ src/
+COPY detekt.yml ./
 COPY --from=frontend /app/web/dist/ src/main/resources/static/
 RUN ./gradlew bootJar --no-daemon
 

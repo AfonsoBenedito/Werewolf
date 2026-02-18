@@ -23,17 +23,17 @@ export function VotingResults({ lastDeadPlayerName, onContinue, waiting, readyCo
             </div>
             {isAlive && (
                 waiting ? (
-                    <p className="ready-wait-msg" style={{ marginTop: '1.5rem' }}>
+                    <p className="ready-wait-msg results-action">
                         Waiting for others... {readyCount !== undefined && totalCount !== undefined ? `(${readyCount}/${totalCount})` : ''}
                     </p>
                 ) : (
-                    <button className="btn-premium btn-premium--outline" style={{ marginTop: '1.5rem' }} onClick={onContinue}>
+                    <button className="btn-premium btn-premium--outline results-action" onClick={onContinue}>
                         🌙 Continue to Night
                     </button>
                 )
             )}
             {!isAlive && (
-                <p className="ready-wait-msg" style={{ marginTop: '1.5rem' }}>
+                <p className="ready-wait-msg results-action">
                     Waiting for the village... {readyCount !== undefined && totalCount !== undefined ? `(${readyCount}/${totalCount})` : ''}
                 </p>
             )}
