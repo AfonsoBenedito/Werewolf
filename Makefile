@@ -22,18 +22,18 @@ unit-tests-kotlin:
 	./gradlew test
 
 unit-tests-web:
-	@echo "Running unit tests... (placeholder)"
+	cd web && npm test
 
 code-check-web:
-	@echo "Running code check... (placeholder)"
+	cd web && npx tsc --noEmit && npm run lint
 
 code-fix-web:
-	@echo "Running code fix... (placeholder)"
+	cd web && npx eslint . --fix
 
 code-check-kotlin:
-	@echo "Running code check... (placeholder)"
+	./gradlew detekt
 
 code-fix-kotlin:
-	@echo "Running code fix... (placeholder)"
+	./gradlew detekt -PdetektAutoCorrect
 
 run-all-tests: unit-tests-kotlin unit-tests-web code-check-kotlin code-check-web

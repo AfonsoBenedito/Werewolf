@@ -1,0 +1,29 @@
+complexity:
+  CyclomaticComplexMethod:
+    threshold: 25
+  TooManyFunctions:
+    thresholdInClasses: 20
+  LongMethod:
+    threshold: 80
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false
+
+style:
+  NewLineAtEndOfFile:
+    autoCorrect: true
+  MaxLineLength:
+    maxLineLength: 150
+  WildcardImport:
+    active: false
+  MagicNumber:
+    active: false
+  ReturnCount:
+    max: 5
+  ThrowsCount:
+    active: false
