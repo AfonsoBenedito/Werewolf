@@ -11,8 +11,4 @@ class GameNotificationService(
     fun notifyGameUpdate(gameId: String) {
         messagingTemplate.convertAndSend("/topic/game/$gameId", "UPDATE")
     }
-
-    fun notifyGameEnded(gameId: String) {
-        messagingTemplate.convertAndSend("/topic/game/$gameId", "ENDED")
-    }
 }

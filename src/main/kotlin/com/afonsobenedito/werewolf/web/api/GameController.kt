@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/game")
-@CrossOrigin(origins = ["*"]) // Allow all for simplicity in development
+@CrossOrigin(origins = ["*"])
 class GameController(
     private val gameService: GameService
 ) {
@@ -22,7 +22,7 @@ class GameController(
     fun joinGame(@PathVariable id: String, @RequestBody request: JoinGameRequest): ResponseEntity<Map<String, String>> {
         val player = gameService.joinGame(id, request.playerName)
         return if (player != null) {
-            ResponseEntity.ok(mapOf("message" to "Joined successfully", "playerId" to player.name)) // Simple playerId
+            ResponseEntity.ok(mapOf("message" to "Joined successfully", "playerId" to player.name))
         } else {
             ResponseEntity.badRequest().body(mapOf("message" to "Failed to join"))
         }
@@ -33,13 +33,16 @@ class GameController(
         return try {
             gameService.startGame(id)
             ResponseEntity.ok(mapOf("message" to "Game started"))
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(mapOf("message" to e.message.orEmpty()))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("message" to (e.message ?: "Unknown error")))
         }
     }
 
     @GetMapping("/{id}")
-    fun getGameState(@PathVariable id: String, @RequestParam(required = false) playerId: String?): ResponseEntity<GameResponse> {
+    fun getGameState(
+        @PathVariable id: String,
+        @RequestParam(required = false) playerId: String?
+    ): ResponseEntity<GameResponse> {
         val gameState = gameService.getGameState(id, playerId)
         return if (gameState != null) {
             ResponseEntity.ok(gameState)
@@ -52,13 +55,13 @@ class GameController(
     fun performAction(@PathVariable id: String, @RequestBody request: ActionRequest): ResponseEntity<Map<String, String>> {
         return try {
             val result = gameService.performAction(id, request)
-            val responseMap = mutableMapOf("message" to "Action accepted")
-            if (result != null) {
-                responseMap["peekResult"] = result
+            val response = buildMap {
+                put("message", "Action accepted")
+                if (result != null) put("peekResult", result)
             }
-            ResponseEntity.ok(responseMap)
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(mapOf("message" to e.message.orEmpty()))
+            ResponseEntity.ok(response)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("message" to (e.message ?: "Unknown error")))
         }
     }
 }
