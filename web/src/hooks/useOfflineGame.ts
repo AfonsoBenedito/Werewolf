@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createGame, startGame, getGameState, performAction } from '../api/gameApi';
 import type { GameState } from '../types/game';
 
@@ -18,36 +18,43 @@ export function useOfflineGame() {
     // Seer Result UI State
     const [seerResult, setSeerResult] = useState<{ target: string, role: string } | null>(null);
 
-    useEffect(() => {
-        if (!gameId) return;
-        if (gameState?.phase === 'FINISHED') return;
-
-        fetchGameState(gameId);
-        const interval = setInterval(() => fetchGameState(gameId), 2000);
-        return () => clearInterval(interval);
-    }, [gameId, gameState?.phase === 'FINISHED']);
-
-    // Reset UI states when phase changes
-    useEffect(() => {
-        // Only clear Seer result when starting a NEW night cycle
-        if (gameState?.phaseKey === "NIGHT" && gameState?.currentTurn === "Wolf") {
-            setSeerResult(null);
-        }
-        if (gameState?.phase === "NOT_STARTED") {
-            setSeerResult(null);
-        }
-        setActiveVoter(null);
-    }, [gameState?.phase]);
-
-    const fetchGameState = async (id = gameId) => {
-        if (!id) return;
+    const fetchGameState = useCallback(async (id?: string | null) => {
+        const resolvedId = id ?? gameId;
+        if (!resolvedId) return;
         try {
-            const data = await getGameState(id);
+            const data = await getGameState(resolvedId);
             setGameState(data);
         } catch (error) {
             console.error("Failed to fetch game state", error);
         }
-    };
+    }, [gameId]);
+
+    const isFinished = gameState?.phase === 'FINISHED';
+
+    useEffect(() => {
+        if (!gameId) return;
+        if (isFinished) return;
+
+        fetchGameState(gameId);
+        const interval = setInterval(() => fetchGameState(gameId), 2000);
+        return () => clearInterval(interval);
+    }, [gameId, isFinished, fetchGameState]);
+
+    // Reset UI states when phase changes
+    const phase = gameState?.phase;
+    const phaseKey = gameState?.phaseKey;
+    const currentTurn = gameState?.currentTurn;
+
+    useEffect(() => {
+        // Only clear Seer result when starting a NEW night cycle
+        if (phaseKey === "NIGHT" && currentTurn === "Wolf") {
+            setSeerResult(null);
+        }
+        if (phase === "NOT_STARTED") {
+            setSeerResult(null);
+        }
+        setActiveVoter(null);
+    }, [phase, phaseKey, currentTurn]);
 
     const handleAddPlayer = () => {
         if (!newPlayerName.trim()) return;

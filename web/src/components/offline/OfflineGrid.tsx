@@ -46,13 +46,11 @@ export function OfflineGrid({
                         key={p.name}
                         name={p.name}
                         isAlive={p.isAlive}
-                        role={p.role}
                         revealedRole={revealRoles ? p.role : undefined}
                         hasVoted={hasVoted}
                         isVotingPhase={isVoting}
                         isActiveVoter={activeVoter === p.name}
                         isDisabled={isDisabled}
-                        isVoteTarget={false}
 
                         showKill={showKill}
                         onKill={() => onKill(p.name)}
@@ -63,10 +61,10 @@ export function OfflineGrid({
                         showPeek={showPeek}
                         onPeek={() => onPeek(p.name)}
 
-                        showVoteSelect={!!showVoteSelect}
+                        showVoteSelect={showVoteSelect}
                         onVoteSelect={() => onVoteSelect(p.name)}
 
-                        showVoteTarget={!!showVoteTarget}
+                        showVoteTarget={showVoteTarget}
                         onVoteTarget={() => onVoteTarget(p.name)}
                     />
                 );

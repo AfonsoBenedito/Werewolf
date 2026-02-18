@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ActionArea } from './actions/ActionArea';
 import { PlayersGrid } from './PlayersGrid';
 import { RoleInfo } from './RoleInfo';
@@ -29,10 +29,12 @@ export function GameBoard({
     nightStatus
 }: GameBoardProps) {
     const [hasConfirmedResults, setHasConfirmedResults] = useState(false);
+    const [prevPhase, setPrevPhase] = useState(gameState.phase);
 
-    useEffect(() => {
+    if (gameState.phase !== prevPhase) {
+        setPrevPhase(gameState.phase);
         setHasConfirmedResults(false);
-    }, [gameState.phase]);
+    }
 
     const isNight = gameState.phaseKey === 'NIGHT';
     const shouldHideBoard = isNight && myPlayer.isAlive && !gameState.isMyTurn;
@@ -71,7 +73,6 @@ export function GameBoard({
                         nightActionFeedback={nightActionFeedback}
                         seerResult={seerResult}
                         nightStatus={nightStatus}
-                        myNightTarget={myNightTarget}
                     />
 
                     {/* Hide PlayersGrid during Discussion, when seer result is showing, and for dead players in voting */}
@@ -81,7 +82,6 @@ export function GameBoard({
                         && (
                         <PlayersGrid
                             gameState={gameState}
-                            myPlayer={myPlayer}
                             playerName={playerName}
                             onAction={onAction}
                             myNightTarget={myNightTarget}

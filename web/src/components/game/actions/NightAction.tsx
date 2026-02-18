@@ -7,7 +7,6 @@ interface NightActionProps {
     nightActionFeedback?: string | null;
     seerResult?: string | null;
     nightStatus?: string | null;
-    myNightTarget?: string | null;
 }
 
 export function NightAction({ gameState, myPlayer, onAction, nightActionFeedback, seerResult, nightStatus }: NightActionProps) {

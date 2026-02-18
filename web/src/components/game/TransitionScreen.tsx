@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/components/TransitionScreen.css';
 
 interface TransitionScreenProps {
@@ -10,20 +10,21 @@ interface TransitionScreenProps {
     actionLabel?: string;
 }
 
-export const TransitionScreen: React.FC<TransitionScreenProps> = ({
+export function TransitionScreen({
     message,
     description,
     onComplete,
     duration = 3000,
     manualContinue = false,
     actionLabel = "Next"
-}) => {
-    const [isExiting, setIsExiting] = React.useState(false);
+}: TransitionScreenProps) {
+    const [isExiting, setIsExiting] = useState(false);
+    const [prevMessage, setPrevMessage] = useState(message);
 
-    // Reset exit state when message changes
-    useEffect(() => {
+    if (message !== prevMessage) {
+        setPrevMessage(message);
         setIsExiting(false);
-    }, [message]);
+    }
 
     useEffect(() => {
         if (manualContinue) return;
@@ -67,4 +68,4 @@ export const TransitionScreen: React.FC<TransitionScreenProps> = ({
             </div>
         </div>
     );
-};
+}

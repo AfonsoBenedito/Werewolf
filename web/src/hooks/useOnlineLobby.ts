@@ -15,7 +15,7 @@ export function useOnlineLobby() {
             const data = await createGame('ONLINE', hostName);
             localStorage.setItem('werewolf_player', hostName);
             navigate(`/online/game/${data.gameId}`);
-        } catch (e) {
+        } catch {
             setError("Failed to create game");
         }
     };
@@ -26,7 +26,7 @@ export function useOnlineLobby() {
             await joinGame(joinId, joinName);
             localStorage.setItem('werewolf_player', joinName);
             navigate(`/online/game/${joinId}`);
-        } catch (e) {
+        } catch {
             setError("Failed to join game. Check ID or name uniqueness.");
         }
     };

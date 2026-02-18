@@ -218,81 +218,6 @@
     white-space: nowrap;
 }
 
-/* ---- Action Buttons ---- */
-.card-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
-}
-
-.icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.kill-btn {
-    background: rgba(231, 76, 60, 0.15);
-    border-color: rgba(231, 76, 60, 0.3);
-    color: #ff9d94;
-}
-
-.kill-btn:hover {
-    background: #e74c3c;
-    color: #fff;
-}
-
-.heal-btn {
-    background: rgba(39, 174, 96, 0.15);
-    border-color: rgba(39, 174, 96, 0.3);
-    color: #a8ffcc;
-}
-
-.heal-btn:hover {
-    background: #2ecc71;
-    color: #fff;
-}
-
-.peek-btn {
-    background: rgba(52, 152, 219, 0.15);
-    border-color: rgba(52, 152, 219, 0.3);
-    color: #a5d8ff;
-}
-
-.peek-btn:hover {
-    background: #3498db;
-    color: #fff;
-}
-
-.vote-btn {
-    background: linear-gradient(135deg, #5b65e6 0%, #7c4dff 100%);
-    color: #fff;
-}
-
-.vote-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
-}
-
-.vote-target-btn {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.vote-target-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
 /* ---- Players Grid (shared between online & offline) --------------- */
 .players-grid {
     display: grid;
@@ -349,11 +274,6 @@
     .indicator {
         padding: 3px 8px;
         font-size: 0.65rem;
-    }
-
-    .icon-btn {
-        padding: 0.45rem;
-        font-size: 0.75rem;
     }
 
     .revealed-role {

@@ -1,15 +1,14 @@
 import { PlayerCard } from '../common/PlayerCard';
-import type { GameState, Player } from '../../types/game';
+import type { GameState } from '../../types/game';
 
 interface PlayersGridProps {
     gameState: GameState;
-    myPlayer: Player;
     playerName: string | null;
     onAction: (actionType: string, targetId?: string) => void;
     myNightTarget?: string | null;
 }
 
-export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNightTarget }: PlayersGridProps) {
+export function PlayersGrid({ gameState, playerName, onAction, myNightTarget }: PlayersGridProps) {
     const isNight = gameState.phaseKey === 'NIGHT';
     const isVoting = gameState.phaseKey === 'DAY_VOTING';
     const actions = gameState.availableActions;
@@ -32,8 +31,7 @@ export function PlayersGrid({ gameState, myPlayer, playerName, onAction, myNight
                         name={p.name}
                         isAlive={p.isAlive}
                         isMe={isMe}
-                        role={p.role}
-                        revealedRole={p.role} // Online: role is masked by backend
+                        revealedRole={p.role}
                         hasVoted={p.hasVoted}
                         isVotingPhase={isVoting}
                         isDisabled={!p.isTargetable}

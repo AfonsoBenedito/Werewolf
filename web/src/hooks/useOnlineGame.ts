@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-// @ts-ignore
+// @ts-expect-error - sockjs-client has no type exports
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { getGameState, performAction, startGame } from '../api/gameApi';
@@ -69,7 +69,7 @@ export function useOnlineGame() {
                 setIsConnected(false);
             },
             // Reduce debug logs in production
-            debug: (_str: string) => { }
+            debug: () => { }
         });
 
         client.activate();
@@ -92,7 +92,7 @@ export function useOnlineGame() {
         }
 
         setLastPhase(gameState.phase);
-    }, [gameState, lastPhase, myPlayer?.name, playerName]);
+    }, [gameState, lastPhase]);
 
     const handleStart = async () => {
         if (!gameId) return;
