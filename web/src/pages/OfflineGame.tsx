@@ -44,7 +44,6 @@ export default function OfflineGame() {
 
     const { isTransitioning, currentTransition, handleTransitionComplete } = useGameTransitions(gameState, null);
 
-    // SETUP UI
     if (!gameId) {
         return (
             <>
@@ -113,7 +112,6 @@ export default function OfflineGame() {
                         />
                     )}
 
-                    {/* Voting Results Screen */}
                     {isResults && (
                         <VotingResults
                             lastDeadPlayerName={gameState.lastDeadPlayerName}
@@ -123,13 +121,11 @@ export default function OfflineGame() {
 
                     {gameState.status === 'IN_PROGRESS' && !isResults && (
                         <>
-                            {/* Turn Indicator */}
                             <div className="turn-indicator">
                                 <h2>Current Turn</h2>
                                 <p>{phaseMessage}</p>
                             </div>
 
-                            {/* Seer Result Banner - Show during Seer turn after peeking */}
                             {seerResult && isSeerTurn && !isTransitioning && (
                                 <div className="seer-result-banner-wrapper">
                                     <div className="seer-result-banner">
@@ -150,7 +146,6 @@ export default function OfflineGame() {
                                 </div>
                             )}
 
-                            {/* Death Announcement Overlay */}
                             {gameState.lastDeadPlayerName && !isTransitioning && (
                                 <div className="death-announcement-overlay">
                                     <TurnAnnouncement
@@ -165,7 +160,6 @@ export default function OfflineGame() {
                                 </div>
                             )}
 
-                            {/* Game Action Grid - hide when seer result is showing */}
                             {!isTransitioning && !gameState.lastDeadPlayerName && !(seerResult && isSeerTurn) && (
                                 <OfflineGrid
                                     gameState={gameState}
@@ -179,7 +173,6 @@ export default function OfflineGame() {
                                 />
                             )}
 
-                            {/* Bottom Controls - hide when seer result is showing */}
                             {!gameState.lastDeadPlayerName && !isTransitioning && !(seerResult && isSeerTurn) && (
                                 <OfflineControls
                                     phase={gameState.phase}

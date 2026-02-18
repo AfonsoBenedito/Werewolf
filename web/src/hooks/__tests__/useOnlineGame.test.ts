@@ -1,14 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useOnlineGame } from '../useOnlineGame';
-
-// Mock react-router-dom
 const mockUseParams = vi.fn(() => ({ gameId: 'game1' }));
 vi.mock('react-router-dom', () => ({
     useParams: () => mockUseParams(),
 }));
 
-// Track STOMP subscribe callback
 let stompMessageCallback: ((msg: { body: string }) => void) | null = null;
 
 vi.mock('sockjs-client', () => {
@@ -124,18 +121,14 @@ describe('useOnlineGame', () => {
     });
 
     it('skips fetch when gameId is missing', () => {
-        mockUseParams.mockReturnValue({});
+        mockUseParams.mockReturnValue({} as { gameId: string });
 
         const { result } = renderHook(() => useOnlineGame());
 
-        // isLoading stays true (no fetch triggered), but no API call made
         expect(getGameState).not.toHaveBeenCalled();
         expect(result.current.gameState).toBeNull();
     });
 
-    // ===================
-    // handleStart
-    // ===================
 
     it('handleStart calls startGame and refetches', async () => {
         const { result } = await setupHook();
@@ -148,9 +141,6 @@ describe('useOnlineGame', () => {
         expect(getGameState).toHaveBeenCalled();
     });
 
-    // ===================
-    // handleAction
-    // ===================
 
     it('handleAction sets hasVotedReady for READY_TO_VOTE', async () => {
         vi.mocked(performAction).mockResolvedValue({});
@@ -203,19 +193,14 @@ describe('useOnlineGame', () => {
         expect(window.alert).toHaveBeenCalledWith('Action failed: Not your turn');
     });
 
-    // ===================
-    // Phase change resets
-    // ===================
 
     it('resets local state on phase change', async () => {
         vi.mocked(performAction).mockResolvedValue({});
         const { result } = await setupHook();
 
-        // Set some local state
         await act(() => result.current.handleAction('READY_TO_VOTE'));
         expect(result.current.hasVotedReady).toBe(true);
 
-        // Phase changes on next fetch
         vi.mocked(getGameState).mockResolvedValue(mockGameState({ phase: 'NIGHT - Seer' }));
         await act(() => result.current.fetchState());
 
@@ -239,9 +224,6 @@ describe('useOnlineGame', () => {
         expect(performAction).not.toHaveBeenCalled();
     });
 
-    // ===================
-    // WebSocket
-    // ===================
 
     it('subscribes to WebSocket and refetches on UPDATE', async () => {
         const { result } = await setupHook();
@@ -251,7 +233,6 @@ describe('useOnlineGame', () => {
 
         vi.mocked(getGameState).mockClear();
 
-        // Simulate WebSocket UPDATE message
         await act(async () => {
             stompMessageCallback!({ body: 'UPDATE' });
         });

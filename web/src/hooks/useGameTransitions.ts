@@ -14,7 +14,6 @@ function buildPhaseTransitions(
 ): Transition[] {
     const transitions: Transition[] = [];
 
-    // Night Phase Changes
     if (currentPhase.includes('NIGHT')) {
         const currentTurn = currentPhase.split(' - ')[1] || '';
         const prevTurn = prevPhase.includes('NIGHT') ? prevPhase.split(' - ')[1] || '' : '';
@@ -43,7 +42,6 @@ function buildPhaseTransitions(
         }
     }
 
-    // Night -> Day
     else if (currentPhase === 'DAY_DISCUSSION') {
         const prevTurn = prevPhase.includes('NIGHT') ? prevPhase.split(' - ')[1] || '' : '';
         if (prevTurn === 'Medic') {
@@ -68,12 +66,10 @@ function buildPhaseTransitions(
         }
     }
 
-    // Day -> Voting
     else if (currentPhase === 'DAY_VOTING') {
         transitions.push({ message: "Village, Let's vote!", duration: 2000 });
     }
 
-    // Voting -> Results
     else if (currentPhase === 'DAY_RESULTS') {
         transitions.push({ message: "Village, the votes are in...", duration: 2000 });
 
@@ -89,7 +85,6 @@ function buildPhaseTransitions(
         }
     }
 
-    // Game Finished — show narrative before winner screen
     else if (currentPhase === 'FINISHED') {
         if (prevPhase.includes('NIGHT')) {
             const prevTurn = prevPhase.split(' - ')[1] || '';
@@ -112,7 +107,6 @@ function buildPhaseTransitions(
                 }
             }
         }
-        // Day vote ended the game (prev was DAY_RESULTS) — transitions already played
     }
 
     return transitions;
@@ -130,8 +124,6 @@ export function useGameTransitions(
     const transitionQueue = useRef<Transition[]>([]);
     const hasSeenNightDead = useRef(false);
 
-    // State machine effect — intentionally uses setState to drive the transition queue.
-    // Deps are intentionally limited to avoid re-running on every isTransitioning/myPlayer change.
     useEffect(() => {
         if (!gameState) return;
 
@@ -140,7 +132,6 @@ export function useGameTransitions(
         const prevStatus = lastStatusRef.current;
         const currentStatus = gameState.status;
 
-        // Spectator Mode: dead players stop seeing transitions after encountering a night phase
         if (myPlayer && !myPlayer.isAlive && currentPhase.includes('NIGHT')) {
             hasSeenNightDead.current = true;
         }
@@ -180,7 +171,6 @@ export function useGameTransitions(
         // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: only react to gameState/isAlive changes
     }, [gameState, myPlayer?.isAlive]);
 
-    // Process queue when a transition completes and more items are waiting
     useEffect(() => {
         if (isPaused) return;
         if (isTransitioning) return;

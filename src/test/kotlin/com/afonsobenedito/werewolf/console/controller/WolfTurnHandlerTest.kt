@@ -54,10 +54,8 @@ class WolfTurnHandlerTest {
         val allPlayers = listOf(wolf1, wolf2, victim1, victim2)
         val interaction = FakeGameInteraction(allPlayers)
 
-        // Round 1: disagree
         interaction.queuePlayerSelection(victim1)
         interaction.queuePlayerSelection(victim2)
-        // Round 2: agree
         interaction.queuePlayerSelection(victim1)
         interaction.queuePlayerSelection(victim1)
 

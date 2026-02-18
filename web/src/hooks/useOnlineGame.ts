@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-// @ts-expect-error - sockjs-client has no type exports
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { getGameState, performAction, startGame } from '../api/gameApi';
@@ -51,7 +50,6 @@ export function useOnlineGame() {
     useEffect(() => {
         if (!gameId) return;
 
-        // Initial fetch
         fetchState();
 
         const socket = new SockJS('/ws');
@@ -68,7 +66,6 @@ export function useOnlineGame() {
             onDisconnect: () => {
                 setIsConnected(false);
             },
-            // Reduce debug logs in production
             debug: () => { }
         });
 
@@ -79,11 +76,9 @@ export function useOnlineGame() {
         };
     }, [gameId, fetchState]);
 
-    // Handle Phase Transitions & Alerts
     useEffect(() => {
         if (!gameState) return;
 
-        // Reset local ready state when phase changes
         if (gameState.phase !== lastPhase) {
             setHasVotedReady(false);
             setMyNightTarget(null);
@@ -103,15 +98,13 @@ export function useOnlineGame() {
     const handleAction = async (actionType: string, targetId?: string) => {
         if (!gameId || !playerName) return;
 
-        // Local state update for UI responsiveness
         if (actionType === 'READY_TO_VOTE') {
             setHasVotedReady(true);
         }
 
-        // Track local night vote (for Wolves, Medic, Seer)
         if (['KILL', 'HEAL', 'PEEK'].includes(actionType) && targetId) {
             setMyNightTarget(targetId);
-            setNightActionFeedback(null); // Clear previous feedback on new attempt
+            setNightActionFeedback(null);
         }
 
         try {
@@ -119,10 +112,8 @@ export function useOnlineGame() {
             if (response && response.peekResult) {
                 setSeerResult(response.peekResult);
             } else if (typeof response === 'string' && response.length > 0) {
-                // Handle Wolf consensus messages or other feedback
                 setNightActionFeedback(response);
             } else {
-                // Success - silence
                 setNightActionFeedback(null);
             }
         } catch (e: unknown) {

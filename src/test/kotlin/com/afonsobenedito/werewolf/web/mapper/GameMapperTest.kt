@@ -14,7 +14,6 @@ class GameMapperTest {
 
     private val mapper = GameMapper()
 
-    // --- Helpers ---
 
     /** Game subclass that allows setting status from tests. */
     private class TestGame(id: String, name: String, mode: GameMode) : Game(id, name, mode) {

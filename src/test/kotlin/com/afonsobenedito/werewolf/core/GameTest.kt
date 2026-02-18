@@ -9,7 +9,6 @@ import kotlin.test.assertEquals
 
 class GameTest {
 
-    // --- Helpers ---
 
     /**
      * Creates a game in NIGHT phase with known roles, bypassing the random shuffle of startGame().
@@ -37,9 +36,6 @@ class GameTest {
 
     private fun Game.findPlayer(name: String) = players.first { it.name == name }
 
-    // ===================
-    // Initial State
-    // ===================
 
     @Test
     fun `initial game state`() {
@@ -54,9 +50,6 @@ class GameTest {
         assertTrue(game.players.isEmpty())
     }
 
-    // ===================
-    // Start Game & Role Assignment
-    // ===================
 
     @Test
     fun `startGame with 4 players assigns 1 wolf`() {
@@ -95,9 +88,6 @@ class GameTest {
         assertEquals("Need at least 4 players to start a game", ex.message)
     }
 
-    // ===================
-    // Night Actions — Turn Validation
-    // ===================
 
     @Test
     fun `wrong role acting throws`() {
@@ -121,9 +111,6 @@ class GameTest {
         }
     }
 
-    // ===================
-    // Night Actions — Wolf
-    // ===================
 
     @Test
     fun `wolf kill advances to seer turn`() {
@@ -204,9 +191,6 @@ class GameTest {
         assertNull(game.pendingDeathId)
     }
 
-    // ===================
-    // Night Actions — Seer
-    // ===================
 
     @Test
     fun `seer peek on villager returns villager message`() {
@@ -258,9 +242,6 @@ class GameTest {
         assertEquals("Medic", game.currentTurn)
     }
 
-    // ===================
-    // Night Actions — Medic
-    // ===================
 
     @Test
     fun `medic heals pending death target`() {
@@ -290,7 +271,6 @@ class GameTest {
         game.handleNightAction(seer, "SKIP", null)
         game.handleNightAction(medic, "HEAL", "Seer1")
 
-        // Night ends, victim dies during advancePhase
         assertEquals(GamePhase.DAY_DISCUSSION, game.phase)
         assertFalse(game.findPlayer("Villager1").isAlive)
         assertEquals("Villager1", game.lastDeadPlayerName)
@@ -311,9 +291,6 @@ class GameTest {
         assertFalse(game.findPlayer("Villager1").isAlive)
     }
 
-    // ===================
-    // Night → Day Transition
-    // ===================
 
     @Test
     fun `full night with no kill results in peaceful day`() {
@@ -334,14 +311,12 @@ class GameTest {
     @Test
     fun `night skips dead roles`() {
         val game = createNightGame()
-        // Kill the seer before night starts
         game.findPlayer("Seer1").die()
         game.startNightPhase()
 
         val wolf = game.findPlayer("Wolf1")
         game.handleNightAction(wolf, "KILL", "Villager1")
 
-        // Should skip Seer and go directly to Medic
         assertEquals("Medic", game.currentTurn)
     }
 
@@ -357,13 +332,9 @@ class GameTest {
         val wolf = game.findPlayer("W1")
         game.handleNightAction(wolf, "SKIP", null)
 
-        // 1 Wolf vs 2 Villagers, no win yet
         assertEquals(GamePhase.DAY_DISCUSSION, game.phase)
     }
 
-    // ===================
-    // Voting
-    // ===================
 
     @Test
     fun `voting results in death of majority target`() {
@@ -484,9 +455,6 @@ class GameTest {
         }
     }
 
-    // ===================
-    // Phase Transitions (advancePhase)
-    // ===================
 
     @Test
     fun `day discussion advances to day voting`() {
@@ -515,7 +483,6 @@ class GameTest {
     @Test
     fun `day results resets night state`() {
         val game = createNightGame()
-        // Simulate some wolf votes and seer peek leftover
         game.wolfVotes["Wolf1"] = "Villager1"
 
         game.phase = GamePhase.DAY_RESULTS
@@ -525,9 +492,6 @@ class GameTest {
         assertFalse(game.seerHasPeeked)
     }
 
-    // ===================
-    // Win Conditions
-    // ===================
 
     @Test
     fun `villagers win when all wolves are dead`() {
@@ -542,7 +506,6 @@ class GameTest {
     @Test
     fun `wolves win when they equal villagers`() {
         val game = createNightGame()
-        // Kill Seer and Medic: 1 Wolf vs 1 Villager
         game.findPlayer("Seer1").die()
         game.findPlayer("Medic1").die()
 
@@ -556,7 +519,6 @@ class GameTest {
         val game = createNightGame(
             listOf("W1" to Wolf(), "W2" to Wolf(), "Seer1" to Seer(), "Medic1" to Medic(), "V1" to Villager())
         )
-        // Kill Seer and Medic: 2 Wolves vs 1 Villager
         game.findPlayer("Seer1").die()
         game.findPlayer("Medic1").die()
 
@@ -607,9 +569,6 @@ class GameTest {
         assertEquals(Winner.VILLAGERS, game.winner)
     }
 
-    // ===================
-    // Offline Mode (processOfflineAction)
-    // ===================
 
     @Test
     fun `offline KILL action sets pending death`() {
@@ -624,7 +583,6 @@ class GameTest {
     fun `offline HEAL action clears pending death`() {
         val game = createNightGame()
         game.processOfflineAction("KILL", "Master", "Villager1")
-        // After KILL, turn is on Seer — advance past it
         game.processOfflineAction("NEXT_TURN", "Master", null)
 
         game.processOfflineAction("HEAL", "Master", "Villager1")
@@ -636,7 +594,6 @@ class GameTest {
     fun `offline PEEK action returns role hint`() {
         val game = createNightGame()
         game.processOfflineAction("KILL", "Master", "Villager1")
-        // After KILL, turn is on Seer
 
         val villagerResult = game.processOfflineAction("PEEK", "Master", "Villager1")
         assertEquals("Villager", villagerResult)
@@ -646,7 +603,6 @@ class GameTest {
     fun `offline PEEK on wolf returns NOT a Villager`() {
         val game = createNightGame()
         game.processOfflineAction("KILL", "Master", "Villager1")
-        // After KILL, turn is on Seer
 
         val wolfResult = game.processOfflineAction("PEEK", "Master", "Wolf1")
         assertEquals("NOT a Villager", wolfResult)
@@ -656,7 +612,6 @@ class GameTest {
     fun `offline NEXT_TURN advances turn`() {
         val game = createNightGame()
         game.processOfflineAction("KILL", "Master", "Villager1")
-        // After wolf kill, turn is on Seer
         game.processOfflineAction("NEXT_TURN", "Master", null)
 
         assertEquals("Medic", game.currentTurn)
@@ -686,7 +641,6 @@ class GameTest {
     @Test
     fun `offline ELIMINATE triggering win sets FINISHED`() {
         val game = createNightGame()
-        // Kill Seer and Medic so eliminating Villager1 leaves 1 Wolf vs 0 Villagers
         game.findPlayer("Seer1").die()
         game.findPlayer("Medic1").die()
         game.phase = GamePhase.DAY_VOTING
@@ -728,9 +682,6 @@ class GameTest {
         assertEquals("ABSTAIN", game.votes["Wolf1"])
     }
 
-    // ===================
-    // Wolf Status
-    // ===================
 
     @Test
     fun `getWolfStatus returns null when not wolf turn`() {
@@ -738,7 +689,6 @@ class GameTest {
         val wolf = game.findPlayer("Wolf1")
         game.handleNightAction(wolf, "KILL", "Villager1")
 
-        // Now it's Seer's turn
         assertNull(game.getWolfStatus())
     }
 
@@ -771,9 +721,6 @@ class GameTest {
         assertEquals("Wolves have selected different targets! You must agree.", game.getWolfStatus())
     }
 
-    // ===================
-    // Utility Methods
-    // ===================
 
     @Test
     fun `addPlayer adds single player`() {

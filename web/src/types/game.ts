@@ -10,7 +10,7 @@ export interface Player {
 export interface GameState {
     players: Player[];
     status: string;
-    phase: string; // Legacy format for useGameTransitions
+    phase: string;
     dayCount: number;
     winner?: string;
     lastDeadPlayerName?: string;

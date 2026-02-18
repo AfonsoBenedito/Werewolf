@@ -37,7 +37,6 @@ class GameServiceTest {
     @InjectMocks
     lateinit var gameService: GameService
 
-    // --- Helpers ---
 
     private fun createGameWithRoles(
         id: String = "test-game",
@@ -65,9 +64,6 @@ class GameServiceTest {
         return game
     }
 
-    // ===================
-    // createGame
-    // ===================
 
     @Test
     fun `createGame saves game and notifies`() {
@@ -107,9 +103,6 @@ class GameServiceTest {
         assertEquals(2, gameCaptor.firstValue.players.size)
     }
 
-    // ===================
-    // getGameState
-    // ===================
 
     @Test
     fun `getGameState loads game and maps response`() {
@@ -132,9 +125,6 @@ class GameServiceTest {
         assertNull(response)
     }
 
-    // ===================
-    // joinGame
-    // ===================
 
     @Test
     fun `joinGame adds player saves and notifies`() {
@@ -182,9 +172,6 @@ class GameServiceTest {
         assertEquals(1, game.players.size)
     }
 
-    // ===================
-    // startGame
-    // ===================
 
     @Test
     fun `startGame starts game saves and notifies`() {
@@ -222,9 +209,6 @@ class GameServiceTest {
         assertEquals("Need at least 4 players", ex.message)
     }
 
-    // ===================
-    // performAction — game not found
-    // ===================
 
     @Test
     fun `performAction throws when game not found`() {
@@ -235,9 +219,6 @@ class GameServiceTest {
         }
     }
 
-    // ===================
-    // performAction — offline mode
-    // ===================
 
     @Test
     fun `performAction offline delegates to processOfflineAction`() {
@@ -270,7 +251,6 @@ class GameServiceTest {
     @Test
     fun `performAction offline sets short TTL when game finishes`() {
         val game = createGameWithRoles(mode = GameMode.OFFLINE)
-        // Kill everyone except wolf and one villager, then eliminate villager
         game.players.find { it.name == "Seer1" }!!.die()
         game.players.find { it.name == "Medic1" }!!.die()
         game.phase = GamePhase.DAY_VOTING
@@ -282,9 +262,6 @@ class GameServiceTest {
         verify(gameRepository).setShortTtl("test-game")
     }
 
-    // ===================
-    // performAction — online night
-    // ===================
 
     @Test
     fun `performAction online night delegates to handleNightAction`() {
@@ -301,9 +278,6 @@ class GameServiceTest {
         verify(gameRepository).save(game)
     }
 
-    // ===================
-    // performAction — online day discussion
-    // ===================
 
     @Test
     fun `performAction day discussion READY_TO_VOTE marks player ready`() {
@@ -342,9 +316,6 @@ class GameServiceTest {
         }
     }
 
-    // ===================
-    // performAction — online day voting
-    // ===================
 
     @Test
     fun `performAction day voting delegates to handleVotingAction`() {
@@ -357,9 +328,6 @@ class GameServiceTest {
         assertEquals("P2", game.votes["P1"])
     }
 
-    // ===================
-    // performAction — online day results
-    // ===================
 
     @Test
     fun `performAction day results CONTINUE marks player ready`() {
@@ -396,9 +364,6 @@ class GameServiceTest {
         }
     }
 
-    // ===================
-    // performAction — finished game
-    // ===================
 
     @Test
     fun `performAction on finished game throws`() {
@@ -411,9 +376,6 @@ class GameServiceTest {
         }
     }
 
-    // ===================
-    // performAction — dead player
-    // ===================
 
     @Test
     fun `performAction as dead player throws`() {
@@ -427,9 +389,6 @@ class GameServiceTest {
         }
     }
 
-    // ===================
-    // performAction — player not found
-    // ===================
 
     @Test
     fun `performAction with unknown player throws`() {

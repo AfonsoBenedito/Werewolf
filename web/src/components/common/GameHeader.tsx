@@ -4,7 +4,7 @@ import '../../styles/components/common/GameHeader.css';
 interface GameHeaderProps {
     gameId: string;
     dayCount: number;
-    isConnected?: boolean; // Online only
+    isConnected?: boolean;
     showConnectionStatus?: boolean;
     hideGameId?: boolean;
 }

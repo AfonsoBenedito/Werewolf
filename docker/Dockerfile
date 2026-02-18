@@ -20,7 +20,7 @@ FROM eclipse-temurin:17-jre
 RUN apt-get update && apt-get install -y --no-install-recommends redis-server && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=backend /app/build/libs/*.jar app.jar
-COPY start.sh .
+COPY docker/start.sh .
 RUN chmod +x start.sh
 EXPOSE 8080
 ENTRYPOINT ["./start.sh"]

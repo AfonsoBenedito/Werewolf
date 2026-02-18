@@ -36,9 +36,8 @@ export function OfflineGrid({
                 const showHeal = isNight && actions.includes('HEAL') && p.isTargetable;
                 const showPeek = isNight && actions.includes('PEEK') && p.isTargetable;
                 const showVoteSelect = isVoting && !activeVoter && !hasVoted && p.isAlive;
-                const showVoteTarget = isVoting && activeVoter && activeVoter !== p.name && p.isAlive;
+                const showVoteTarget = isVoting && !!activeVoter && activeVoter !== p.name && p.isAlive;
 
-                // Disable card for the person whose turn it is (except Medic who can self-heal)
                 const isDisabled = isNight && !p.isTargetable;
 
                 return (

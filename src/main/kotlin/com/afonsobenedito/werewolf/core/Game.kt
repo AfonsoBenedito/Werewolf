@@ -66,15 +66,12 @@ open class Game(
 
         var currentIndex = 0
 
-        // Wolves
         for (i in 0 until numWolves) {
             shuffledPlayers[currentIndex++].assignRole(Wolf())
         }
 
-        // Seer
         shuffledPlayers[currentIndex++].assignRole(Seer())
 
-        // Medic
         shuffledPlayers[currentIndex++].assignRole(Medic())
 
         while (currentIndex < numPlayers) {
@@ -282,7 +279,6 @@ open class Game(
 
         val currentIndex = TURN_ORDER.indexOf(currentTurn)
 
-        // Find next valid turn
         for (i in currentIndex + 1 until TURN_ORDER.size) {
             val nextTurn = TURN_ORDER[i]
             if (hasAliveRole(nextTurn)) {
@@ -291,7 +287,6 @@ open class Game(
             }
         }
 
-        // If no more turns in the list, end night
         advancePhase()
     }
 
@@ -310,7 +305,7 @@ open class Game(
                 phase = GamePhase.DAY_DISCUSSION
                 currentTurn = ""
                 readyPlayers.clear()
-                wolfVotes.clear() // Ensure cleanup
+                wolfVotes.clear()
             }
             GamePhase.DAY_DISCUSSION -> {
                 lastDeadPlayerName = null

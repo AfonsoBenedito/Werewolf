@@ -56,7 +56,6 @@ class ConsoleGameRunner(
             if (wolfTarget != medicTarget) {
                 wolfTarget.die()
             } else {
-                // Saved by Medic!
             }
         }
         

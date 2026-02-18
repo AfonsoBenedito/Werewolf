@@ -42,16 +42,12 @@ function setupAtPhase(
         ({ gs, p }) => useGameTransitions(gs, p),
         { initialProps: { gs: makeState({ status: 'NOT_STARTED', phase: 'NOT_STARTED' }), p: player } }
     );
-    // Transition to the desired starting phase
     hook.rerender({ gs: makeState({ phase }), p: player });
     drainTransitions(hook.result);
     return hook;
 }
 
 describe('useGameTransitions', () => {
-    // ===================
-    // Game start
-    // ===================
 
     it('produces transitions on game start (NOT_STARTED -> IN_PROGRESS)', () => {
         const { result, rerender } = renderHook(
@@ -59,7 +55,6 @@ describe('useGameTransitions', () => {
             { initialProps: { gs: makeState({ status: 'NOT_STARTED', phase: 'NOT_STARTED' }), player: null } }
         );
 
-        // Transition to IN_PROGRESS with Wolf turn
         rerender({ gs: makeState({ status: 'IN_PROGRESS', phase: 'NIGHT - Wolf' }), player: null });
 
         const messages = drainTransitions(result);
@@ -74,9 +69,6 @@ describe('useGameTransitions', () => {
         expect(result.current.currentTransition).toBeNull();
     });
 
-    // ===================
-    // Night turn changes
-    // ===================
 
     it('produces transition for Wolf -> Seer turn change', () => {
         const { result, rerender } = setupAtPhase('NIGHT - Wolf');
@@ -108,9 +100,6 @@ describe('useGameTransitions', () => {
         expect(messages).toContain('The Medic wakes up');
     });
 
-    // ===================
-    // Night -> Day transition
-    // ===================
 
     it('produces transitions for Night -> Day with death', () => {
         const { result, rerender } = setupAtPhase('NIGHT - Medic');
@@ -137,16 +126,12 @@ describe('useGameTransitions', () => {
         const deadPlayer = { name: 'Bob', isAlive: false };
         const { result, rerender } = setupAtPhase('NIGHT - Medic', alivePlayer);
 
-        // Player dies during the night — isAlive flips to false when day arrives
         rerender({ gs: makeState({ phase: 'DAY_DISCUSSION', lastDeadPlayerName: 'Bob' }), p: deadPlayer });
 
         const messages = drainTransitions(result);
         expect(messages).toContain('You died last night!');
     });
 
-    // ===================
-    // Day -> Voting -> Results
-    // ===================
 
     it('produces voting transition', () => {
         const { result, rerender } = setupAtPhase('DAY_DISCUSSION');
@@ -187,9 +172,6 @@ describe('useGameTransitions', () => {
         expect(messages).toContain('You were eliminated!');
     });
 
-    // ===================
-    // DAY_RESULTS -> NIGHT (new round)
-    // ===================
 
     it('produces transitions for new night round from DAY_RESULTS', () => {
         const { result, rerender } = setupAtPhase('DAY_RESULTS');
@@ -201,9 +183,6 @@ describe('useGameTransitions', () => {
         expect(messages).toContain('The Werewolves wake up');
     });
 
-    // ===================
-    // Game finished
-    // ===================
 
     it('produces transitions when game ends from night', () => {
         const { result, rerender } = setupAtPhase('NIGHT - Wolf');
@@ -221,23 +200,17 @@ describe('useGameTransitions', () => {
 
         rerender({ gs: makeState({ phase: 'FINISHED' }), p: null });
 
-        // DAY_RESULTS -> FINISHED produces no new transitions
         expect(result.current.isTransitioning).toBe(false);
     });
 
-    // ===================
-    // Spectator mode
-    // ===================
 
     it('suppresses transitions after dead player sees night', () => {
         const deadPlayer = { name: 'Ghost', isAlive: false };
         const { result, rerender } = setupAtPhase('DAY_DISCUSSION', deadPlayer);
 
-        // Dead player enters night phase — sets hasSeenNightDead
         rerender({ gs: makeState({ phase: 'NIGHT - Wolf' }), p: deadPlayer });
         drainTransitions(result);
 
-        // Subsequent phases should produce no transitions
         rerender({ gs: makeState({ phase: 'NIGHT - Seer' }), p: deadPlayer });
         expect(result.current.isTransitioning).toBe(false);
 
@@ -259,20 +232,15 @@ describe('useGameTransitions', () => {
         const deadPlayer = { name: 'Ghost', isAlive: false };
         const { result, rerender } = setupAtPhase('DAY_RESULTS', deadPlayer);
 
-        // Dead player enters night — hasSeenNightDead
         rerender({ gs: makeState({ phase: 'NIGHT - Wolf' }), p: deadPlayer });
         drainTransitions(result);
 
-        // FINISHED should still be allowed (the guard checks `currentPhase !== 'FINISHED'`)
         rerender({ gs: makeState({ phase: 'FINISHED', lastDeadPlayerName: 'Someone' }), p: deadPlayer });
 
         const messages = drainTransitions(result);
         expect(messages.length).toBeGreaterThan(0);
     });
 
-    // ===================
-    // handleTransitionComplete / queue
-    // ===================
 
     it('handleTransitionComplete advances through queue', () => {
         const { result, rerender } = renderHook(
@@ -282,29 +250,21 @@ describe('useGameTransitions', () => {
 
         rerender({ gs: makeState({ status: 'IN_PROGRESS', phase: 'NIGHT - Wolf' }) });
 
-        // First transition should be showing
         expect(result.current.isTransitioning).toBe(true);
         const first = result.current.currentTransition?.message;
         expect(first).toBe('The Village goes to sleep...');
 
-        // Complete first transition
         act(() => result.current.handleTransitionComplete());
 
-        // Second should now be showing
         expect(result.current.isTransitioning).toBe(true);
         expect(result.current.currentTransition?.message).toBe('The Werewolves wake up');
 
-        // Complete second
         act(() => result.current.handleTransitionComplete());
 
-        // Queue empty
         expect(result.current.isTransitioning).toBe(false);
         expect(result.current.currentTransition).toBeNull();
     });
 
-    // ===================
-    // Pause
-    // ===================
 
     it('pauses queue processing when isPaused is true', () => {
         const { result, rerender } = renderHook(
@@ -312,27 +272,20 @@ describe('useGameTransitions', () => {
             { initialProps: { gs: makeState({ status: 'NOT_STARTED', phase: 'NOT_STARTED' }), paused: false } }
         );
 
-        // Start game — first transition starts immediately from the main effect
         rerender({ gs: makeState({ status: 'IN_PROGRESS', phase: 'NIGHT - Wolf' }), paused: true });
 
         expect(result.current.isTransitioning).toBe(true);
         expect(result.current.currentTransition?.message).toBe('The Village goes to sleep...');
 
-        // Complete while paused — handleTransitionComplete checks the queue directly
         act(() => result.current.handleTransitionComplete());
 
-        // Second transition should still play (handleTransitionComplete pulls from queue)
         expect(result.current.currentTransition?.message).toBe('The Werewolves wake up');
     });
 
-    // ===================
-    // No duplicate transitions on same phase
-    // ===================
 
     it('does not produce transitions when phase stays the same', () => {
         const { result, rerender } = setupAtPhase('NIGHT - Wolf');
 
-        // Re-render with same phase
         rerender({ gs: makeState({ phase: 'NIGHT - Wolf' }), p: null });
 
         expect(result.current.isTransitioning).toBe(false);

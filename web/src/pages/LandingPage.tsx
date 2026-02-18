@@ -9,7 +9,6 @@ export default function LandingPage() {
 
     return (
         <div className="landing">
-            {/* Background layer */}
             {shouldLoadVideo ? (
                 <video
                     className="landing__video-bg"
@@ -26,7 +25,6 @@ export default function LandingPage() {
             )}
             <div className="landing__overlay" aria-hidden="true" />
 
-            {/* Hero content */}
             <main className="landing__hero">
                 <h1 className="landing__title">WEREWOLF</h1>
                 <p className="landing__tagline">The classic social deduction game</p>
@@ -48,7 +46,6 @@ export default function LandingPage() {
                 </div>
             </main>
 
-            {/* Footer */}
             <Footer />
         </div>
     );

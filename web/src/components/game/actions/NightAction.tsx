@@ -32,7 +32,6 @@ export function NightAction({ gameState, myPlayer, onAction, nightActionFeedback
                 </div>
             )}
 
-            {/* Seer Result Banner */}
             {seerResult && myPlayer.role === 'Seer' && (
                 <div className="seer-result-banner-wrapper">
                     <div className="seer-result-banner">

@@ -39,7 +39,6 @@ export function GameBoard({
     const isNight = gameState.phaseKey === 'NIGHT';
     const shouldHideBoard = isNight && myPlayer.isAlive && !gameState.isMyTurn;
 
-    // Voting Results page during DAY_RESULTS
     if (gameState.phaseKey === 'DAY_RESULTS') {
         return (
             <div className="game-board">
@@ -75,7 +74,6 @@ export function GameBoard({
                         nightStatus={nightStatus}
                     />
 
-                    {/* Hide PlayersGrid during Discussion, when seer result is showing, and for dead players in voting */}
                     {gameState.phaseKey !== 'DAY_DISCUSSION'
                         && !(seerResult && myPlayer.role === 'Seer')
                         && !(gameState.phaseKey === 'DAY_VOTING' && !myPlayer.isAlive)

@@ -38,9 +38,6 @@ beforeEach(() => {
 });
 
 describe('useOfflineGame', () => {
-    // ===================
-    // Local player management
-    // ===================
 
     it('starts with empty local players', () => {
         const { result } = renderHook(() => useOfflineGame());
@@ -97,16 +94,12 @@ describe('useOfflineGame', () => {
         expect(result.current.localPlayers).toEqual(['Bob']);
     });
 
-    // ===================
-    // Game start
-    // ===================
 
     it('requires at least 4 players to start', async () => {
         window.alert = vi.fn();
         const alertSpy = vi.spyOn(window, 'alert');
         const { result } = renderHook(() => useOfflineGame());
 
-        // Add only 3 players
         for (const name of ['A', 'B', 'C']) {
             act(() => result.current.setNewPlayerName(name));
             act(() => result.current.handleAddPlayer());
@@ -139,9 +132,6 @@ describe('useOfflineGame', () => {
         expect(result.current.loading).toBe(false);
     });
 
-    // ===================
-    // Action handlers
-    // ===================
 
     it('handleKill calls performAction and fetches state', async () => {
         vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
@@ -176,11 +166,9 @@ describe('useOfflineGame', () => {
         }
         await act(() => result.current.handleStartGame());
 
-        // No activeVoter set — should not call performAction
         await act(() => result.current.handleVote('B'));
         expect(performAction).not.toHaveBeenCalledWith('game1', expect.any(String), 'VOTE', 'B');
 
-        // Set activeVoter and vote
         act(() => result.current.setActiveVoter('A'));
         await act(() => result.current.handleVote('B'));
         expect(performAction).toHaveBeenCalledWith('game1', 'A', 'VOTE', 'B');
@@ -226,9 +214,6 @@ describe('useOfflineGame', () => {
         expect(result.current.seerResult).toEqual({ target: 'B', role: 'Wolf' });
     });
 
-    // ===================
-    // Phase message
-    // ===================
 
     it('shows night phase message with role info', async () => {
         vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
@@ -279,9 +264,6 @@ describe('useOfflineGame', () => {
         expect(result.current.phaseMessage).toContain('Who is A voting for?');
     });
 
-    // ===================
-    // Polling
-    // ===================
 
     it('stops polling when game is FINISHED', async () => {
         vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
@@ -298,7 +280,6 @@ describe('useOfflineGame', () => {
 
         vi.mocked(getGameState).mockClear();
 
-        // Advance timer — should NOT trigger additional fetches since phase is FINISHED
         await act(() => vi.advanceTimersByTime(4000));
 
         expect(getGameState).not.toHaveBeenCalled();

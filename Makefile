@@ -2,21 +2,21 @@ run-console:
 	./gradlew -q runConsole --console=plain
 
 run-web:
-	docker-compose down
-	docker-compose up --build
+	docker-compose -f docker/docker-compose.yml down
+	docker-compose -f docker/docker-compose.yml up --build
 
 stop-web:
-	docker-compose down
+	docker-compose -f docker/docker-compose.yml down
 
 run-frontend:
 	cd web && npm run dev
 
 run-backend:
-	docker-compose down
-	docker-compose up --build redis backend
+	docker-compose -f docker/docker-compose.yml down
+	docker-compose -f docker/docker-compose.yml up --build redis backend
 
 stop-backend:
-	docker-compose stop backend redis
+	docker-compose -f docker/docker-compose.yml stop backend redis
 
 unit-tests-kotlin:
 	./gradlew test

@@ -11,11 +11,9 @@ class FakeGameInteraction(
     val announcements = mutableListOf<String>()
 
     override fun clearScreen() {
-        // No-op for test
     }
 
     override fun promptEnter() {
-        // No-op for test
     }
 
     override fun announce(message: String) {
@@ -24,7 +22,7 @@ class FakeGameInteraction(
 
     override fun getPlayerSelection(candidates: List<Player>, prompt: String, allowSkip: Boolean): Player? {
         if (playerSelections.isEmpty()) {
-            return null // Default to null/skip if ran out of scripted inputs
+            return null
         }
         return playerSelections.removeAt(0)
     }

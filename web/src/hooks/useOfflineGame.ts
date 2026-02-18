@@ -9,13 +9,10 @@ export function useOfflineGame() {
     const [loading, setLoading] = useState(false);
     const [revealRoles, setRevealRoles] = useState(false);
 
-    // Local State for Setup Phase (before game is created in Backend)
     const [localPlayers, setLocalPlayers] = useState<string[]>([]);
 
-    // Voting UI State
     const [activeVoter, setActiveVoter] = useState<string | null>(null);
 
-    // Seer Result UI State
     const [seerResult, setSeerResult] = useState<{ target: string, role: string } | null>(null);
 
     const fetchGameState = useCallback(async (id?: string | null) => {
@@ -40,13 +37,11 @@ export function useOfflineGame() {
         return () => clearInterval(interval);
     }, [gameId, isFinished, fetchGameState]);
 
-    // Reset UI states when phase changes
     const phase = gameState?.phase;
     const phaseKey = gameState?.phaseKey;
     const currentTurn = gameState?.currentTurn;
 
     useEffect(() => {
-        // Only clear Seer result when starting a NEW night cycle
         if (phaseKey === "NIGHT" && currentTurn === "Wolf") {
             setSeerResult(null);
         }
@@ -59,7 +54,6 @@ export function useOfflineGame() {
     const handleAddPlayer = () => {
         if (!newPlayerName.trim()) return;
 
-        // If game not started, add locally
         if (!gameId) {
             if (localPlayers.includes(newPlayerName)) {
                 alert("Player name already exists!");
@@ -86,15 +80,12 @@ export function useOfflineGame() {
 
         setLoading(true);
         try {
-            // 1. Create Game with all players
             const data = await createGame('OFFLINE', undefined, localPlayers);
             const newGameId = data.gameId;
             setGameId(newGameId);
 
-            // 2. Start Game
             await startGame(newGameId);
 
-            // 3. Fetch Initial State
             await fetchGameState(newGameId);
         } catch (error) {
             alert("Failed to start game: " + error);
@@ -137,7 +128,6 @@ export function useOfflineGame() {
     const handleAbstain = async () => {
         if (!gameId || !activeVoter) return;
         try {
-            // "SKIP" is treated as ABSTAIN by the backend (Vote Action)
             await performAction(gameId, activeVoter, "VOTE", "SKIP");
             setActiveVoter(null);
             await fetchGameState();

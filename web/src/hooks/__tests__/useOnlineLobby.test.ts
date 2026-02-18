@@ -29,9 +29,6 @@ describe('useOnlineLobby', () => {
         expect(result.current.error).toBe('');
     });
 
-    // ===================
-    // Host flow
-    // ===================
 
     it('sets error when hosting with empty name', async () => {
         const { result } = renderHook(() => useOnlineLobby());
@@ -67,18 +64,13 @@ describe('useOnlineLobby', () => {
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 
-    // ===================
-    // Join flow
-    // ===================
 
     it('sets error when joining with missing fields', async () => {
         const { result } = renderHook(() => useOnlineLobby());
 
-        // Both empty
         await act(() => result.current.handleJoin());
         expect(result.current.error).toBe('Name and Game ID required');
 
-        // Only name
         act(() => result.current.setJoinName('Bob'));
         await act(() => result.current.handleJoin());
         expect(result.current.error).toBe('Name and Game ID required');

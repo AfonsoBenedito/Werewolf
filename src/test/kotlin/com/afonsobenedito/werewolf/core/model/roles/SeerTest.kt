@@ -16,7 +16,6 @@ class SeerTest {
         
         val result = seer.nightAction(target)
         
-        // Use manual type checking and casting since NightActionResult is a sealed class
         if (result is NightActionResult.SeerResult) {
             assertEquals("Villager", result.roleName)
             assertFalse(result.hasPowers, "Villager should not have powers")

@@ -38,7 +38,6 @@ export function TransitionScreen({
 
     const handleNext = () => {
         setIsExiting(true);
-        // Match the fadeOut animation duration (1s)
         setTimeout(() => {
             onComplete?.();
             setIsExiting(false);
