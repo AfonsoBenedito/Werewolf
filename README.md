@@ -68,6 +68,7 @@ Werewolves  ---->  Seer  ---->  Medic  ---->  Morning Report  ---->  Discussion 
 | **Spring WebSocket** | Real-time game state sync via STOMP |
 | **Redis** | Persistent game state storage |
 | **JUnit 5** | Unit testing |
+| **Detekt** | Static analysis & code quality |
 
 ### Frontend
 | Technology | Purpose |
@@ -75,6 +76,7 @@ Werewolves  ---->  Seer  ---->  Medic  ---->  Morning Report  ---->  Discussion 
 | **React 19** | UI framework |
 | **TypeScript 5.9** | Type safety |
 | **Vite 7** | Build tool & dev server |
+| **Vitest** | Unit testing |
 | **STOMP.js / SockJS** | WebSocket client |
 | **Lucide React** | Icon library |
 
@@ -132,22 +134,21 @@ Werewolf/
 │   │   └── interaction/       # I/O abstraction
 │   └── web/                   # Spring Boot web version (see web/README.md)
 │       ├── api/               # REST + WebSocket controllers
+│       ├── mapper/            # Game state ↔ API model mapping
 │       ├── service/           # Game orchestration
 │       ├── repository/        # Redis persistence
 │       └── config/            # WebSocket & SPA config
-├── web/                       # React frontend
+├── web/                       # React frontend (see web/README.md)
 │   ├── src/pages/             # Landing, Lobby, Online/Offline Game
 │   ├── src/components/        # Reusable UI components
 │   ├── src/hooks/             # Game logic hooks
+│   ├── src/types/             # TypeScript type definitions
 │   └── public/                # Static assets (favicon, background)
 ├── Makefile                   # All project commands
-├── docker/                    # Docker configuration
-│   ├── docker-compose.yml     # Local Docker orchestration
-│   ├── Dockerfile             # Production single-container build
-│   ├── Dockerfile.backend     # Dev backend container
-│   ├── Dockerfile.frontend    # Dev frontend container (Nginx)
-│   ├── nginx.conf             # Nginx reverse proxy config
-│   └── start.sh               # Production container entrypoint
+├── docker-compose.yml         # Local Docker orchestration
+├── Dockerfile                 # Production single-container build
+├── Dockerfile.backend         # Dev backend container
+├── Dockerfile.frontend        # Dev frontend container (Nginx)
 └── .github/workflows/         # CI & Cloud Run deployment
 ```
 
@@ -193,7 +194,7 @@ The project uses **GitHub Actions** with two workflows:
 
 ## Docker Architecture
 
-**Development** (`docker/docker-compose.yml`) runs four services:
+**Development** (`docker-compose.yml`) runs four services:
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌──────────────────┐
@@ -203,7 +204,7 @@ The project uses **GitHub Actions** with two workflows:
 └─────────────┘     └─────────────┘     └─────────────┘     └──────────────────┘
 ```
 
-**Production** (`docker/Dockerfile`) builds a single container with frontend assets bundled into the Spring Boot JAR, plus an embedded Redis instance.
+**Production** (`Dockerfile`) builds a single container with frontend assets bundled into the Spring Boot JAR, plus an embedded Redis instance.
 
 ---
 

@@ -167,7 +167,7 @@ class ConsoleGameRunner(
     }
 
     private fun checkWinCondition(): Boolean {
-        if (!game.checkWinCondition()) return false
+        if (!game.evaluateWinCondition()) return false
 
         when (game.winner) {
             Winner.VILLAGERS -> interaction.announce("\n*** VILLAGERS WIN! All werewolves are eliminated. ***")
