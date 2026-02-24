@@ -143,10 +143,9 @@ class GameMapper {
 
     private fun computeIsOnWinningTeam(game: Game, player: Player): Boolean? {
         if (game.status != GameStatus.FINISHED || game.winner == null) return null
-        return when (game.winner) {
+        return when (game.winner!!) {
             Winner.WEREWOLVES -> player.role is Wolf
             Winner.VILLAGERS -> player.role !is Wolf
-            null -> null
         }
     }
 
