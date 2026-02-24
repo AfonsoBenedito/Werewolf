@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Kotlin-1.9-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin" />
-  <img src="https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/Kotlin-2.3-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white" alt="Docker" />
@@ -63,8 +63,8 @@ Werewolves  ---->  Seer  ---->  Medic  ---->  Morning Report  ---->  Discussion 
 ### Backend
 | Technology | Purpose |
 |---|---|
-| **Kotlin 1.9** | Primary language |
-| **Spring Boot 3.2** | Web framework & dependency injection |
+| **Kotlin 2.3** | Primary language |
+| **Spring Boot 3.5** | Web framework & dependency injection |
 | **Spring WebSocket** | Real-time game state sync via STOMP |
 | **Redis** | Persistent game state storage |
 | **JUnit 5** | Unit testing |
@@ -96,7 +96,7 @@ Werewolves  ---->  Seer  ---->  Medic  ---->  Morning Report  ---->  Discussion 
 
 - **Docker** & **Docker Compose** (for the web version)
 - **JDK 17** (for the console version or running Gradle directly)
-- **Node.js 20+** (for frontend development)
+- **Node.js 24+** (for frontend development)
 - **Make** (all commands use the root Makefile)
 
 ### Web Version (Full Stack)
