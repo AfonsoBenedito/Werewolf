@@ -20,14 +20,16 @@ class GameService(
 ) {
 
     fun createGame(mode: GameMode, hostName: String?, players: List<String>? = null): String {
-        val gameId = UUID.randomUUID().toString().substring(0, 8)
+        val gameId = UUID.randomUUID().toString().replace("-", "").substring(0, 12)
         val game = Game(gameId, "Werewolf-$gameId", mode)
 
         if (mode == GameMode.ONLINE && hostName != null) {
+            validatePlayerName(hostName)
             game.addPlayer(Player(hostName))
         }
 
         players?.forEach { name ->
+            validatePlayerName(name)
             if (game.players.none { it.name == name }) {
                 game.addPlayer(Player(name))
             }
@@ -48,6 +50,7 @@ class GameService(
     }
 
     fun joinGame(gameId: String, playerName: String): Player? {
+        validatePlayerName(playerName)
         val game = gameRepository.load(gameId) ?: return null
         if (game.status != GameStatus.NOT_STARTED) return null
         if (game.players.any { it.name == playerName }) return null
@@ -125,6 +128,14 @@ class GameService(
         game.markPlayerReady(playerName)
         if (game.readyPlayers.size >= game.players.count { it.isAlive }) {
             game.advancePhase()
+        }
+    }
+
+    private fun validatePlayerName(name: String) {
+        require(name.isNotBlank()) { "Player name must not be blank" }
+        require(name.length <= 30) { "Player name must not exceed 30 characters" }
+        require(name.matches(Regex("""^[a-zA-Z0-9 '_-]+$"""))) {
+            "Player name contains invalid characters"
         }
     }
 }
