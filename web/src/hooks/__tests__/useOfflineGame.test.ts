@@ -113,7 +113,7 @@ describe('useOfflineGame', () => {
     });
 
     it('creates and starts game with 4+ players', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState());
 
@@ -134,7 +134,7 @@ describe('useOfflineGame', () => {
 
 
     it('handleKill calls performAction and fetches state', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState());
         vi.mocked(performAction).mockResolvedValue({});
@@ -153,7 +153,7 @@ describe('useOfflineGame', () => {
     });
 
     it('handleVote requires activeVoter', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({ phaseKey: 'DAY_VOTING', phase: 'DAY_VOTING' }));
         vi.mocked(performAction).mockResolvedValue({});
@@ -175,7 +175,7 @@ describe('useOfflineGame', () => {
     });
 
     it('handleAbstain sends VOTE with SKIP target', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({ phaseKey: 'DAY_VOTING', phase: 'DAY_VOTING' }));
         vi.mocked(performAction).mockResolvedValue({});
@@ -195,7 +195,7 @@ describe('useOfflineGame', () => {
     });
 
     it('handlePeek stores seer result', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({ currentTurn: 'Seer', phase: 'NIGHT - Seer' }));
         vi.mocked(performAction).mockResolvedValue({ peekResult: 'Wolf' });
@@ -216,7 +216,7 @@ describe('useOfflineGame', () => {
 
 
     it('shows night phase message with role info', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({
             phaseKey: 'NIGHT',
@@ -243,7 +243,7 @@ describe('useOfflineGame', () => {
     });
 
     it('shows voting message with active voter', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({
             phaseKey: 'DAY_VOTING',
@@ -266,7 +266,7 @@ describe('useOfflineGame', () => {
 
 
     it('stops polling when game is FINISHED', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1' });
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'game1', token: '' });
         vi.mocked(startGame).mockResolvedValue({});
         vi.mocked(getGameState).mockResolvedValue(makeState({ phase: 'FINISHED' }));
 

@@ -19,7 +19,8 @@ export function useOnlineGame() {
     const [myNightTarget, setMyNightTarget] = useState<string | null>(null);
     const [nightActionFeedback, setNightActionFeedback] = useState<string | null>(null);
 
-    const playerName = localStorage.getItem('werewolf_player');
+    const token = sessionStorage.getItem('werewolf_token');
+    const playerName = sessionStorage.getItem('werewolf_player');
 
     const fetchState = useCallback(async () => {
         if (!gameId) {
@@ -27,7 +28,7 @@ export function useOnlineGame() {
             return;
         }
         try {
-            const data = await getGameState(gameId, playerName || undefined);
+            const data = await getGameState(gameId, token || undefined);
             if (data) {
                 setGameState(data);
                 if (playerName) {
@@ -45,7 +46,7 @@ export function useOnlineGame() {
         } finally {
             setIsLoading(false);
         }
-    }, [gameId, playerName]);
+    }, [gameId, token, playerName]);
 
     useEffect(() => {
         if (!gameId) return;
@@ -96,7 +97,7 @@ export function useOnlineGame() {
     };
 
     const handleAction = async (actionType: string, targetId?: string) => {
-        if (!gameId || !playerName) return;
+        if (!gameId || !token) return;
 
         if (actionType === 'READY_TO_VOTE') {
             setHasVotedReady(true);
@@ -108,7 +109,7 @@ export function useOnlineGame() {
         }
 
         try {
-            const response = await performAction(gameId, playerName, actionType, targetId);
+            const response = await performAction(gameId, token, actionType, targetId);
             if (typeof response === 'object' && response && response.peekResult) {
                 setSeerResult(response.peekResult);
             } else if (typeof response === 'string' && response.length > 0) {

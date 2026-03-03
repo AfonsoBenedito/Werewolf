@@ -8,6 +8,7 @@ import com.afonsobenedito.werewolf.web.api.model.ActionRequest
 import com.afonsobenedito.werewolf.web.api.model.GameResponse
 import com.afonsobenedito.werewolf.core.model.Player
 import com.afonsobenedito.werewolf.web.repository.GameRepository
+import com.afonsobenedito.werewolf.web.repository.SessionRepository
 import com.afonsobenedito.werewolf.web.mapper.GameMapper
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -15,16 +16,19 @@ import java.util.UUID
 @Service
 class GameService(
     private val gameRepository: GameRepository,
+    private val sessionRepository: SessionRepository,
     private val gameNotificationService: GameNotificationService,
     private val gameMapper: GameMapper
 ) {
 
-    fun createGame(mode: GameMode, hostName: String?, players: List<String>? = null): String {
+    fun createGame(mode: GameMode, hostName: String?, players: List<String>? = null): Pair<String, String> {
         val gameId = UUID.randomUUID().toString().substring(0, 8)
         val game = Game(gameId, "Werewolf-$gameId", mode)
+        var token = ""
 
         if (mode == GameMode.ONLINE && hostName != null) {
             game.addPlayer(Player(hostName))
+            token = issueToken(gameId, hostName)
         }
 
         players?.forEach { name ->
@@ -34,7 +38,7 @@ class GameService(
         }
 
         saveGame(game)
-        return gameId
+        return Pair(gameId, token)
     }
 
     fun getGameState(gameId: String, playerId: String?): GameResponse? {
@@ -42,21 +46,24 @@ class GameService(
         return gameMapper.toGameResponse(game, playerId)
     }
 
+    fun resolveToken(token: String, gameId: String): String? =
+        sessionRepository.findPlayerName(token, gameId)
+
     private fun saveGame(game: Game) {
         gameRepository.save(game)
         gameNotificationService.notifyGameUpdate(game.id)
     }
 
-    fun joinGame(gameId: String, playerName: String): Player? {
+    fun joinGame(gameId: String, playerName: String): String? {
         val game = gameRepository.load(gameId) ?: return null
         if (game.status != GameStatus.NOT_STARTED) return null
         if (game.players.any { it.name == playerName }) return null
 
-        val player = Player(playerName)
-        game.addPlayer(player)
+        game.addPlayer(Player(playerName))
+        val token = issueToken(gameId, playerName)
 
         saveGame(game)
-        return player
+        return token
     }
 
     fun startGame(gameId: String) {
@@ -86,6 +93,12 @@ class GameService(
             gameRepository.setShortTtl(game.id)
         }
         return result
+    }
+
+    private fun issueToken(gameId: String, playerName: String): String {
+        val token = UUID.randomUUID().toString()
+        sessionRepository.save(token, gameId, playerName)
+        return token
     }
 
     private fun performOnlineAction(game: Game, request: ActionRequest): String? {

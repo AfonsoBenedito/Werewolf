@@ -2,9 +2,10 @@ import axios from 'axios';
 import type { GameState } from '../types/game';
 
 const API_URL = '/api/game';
+const TOKEN_HEADER = 'X-Player-Token';
 
-export interface CreateGameResponse { gameId: string }
-export interface JoinGameResponse { message?: string; playerId?: string }
+export interface CreateGameResponse { gameId: string; token: string }
+export interface JoinGameResponse { token?: string; message?: string }
 export interface StartGameResponse { message?: string }
 export interface ActionResponse { message?: string; peekResult?: string }
 
@@ -23,17 +24,17 @@ export const startGame = async (gameId: string): Promise<StartGameResponse> => {
     return response.data;
 };
 
-export const getGameState = async (gameId: string, playerId?: string): Promise<GameState | null> => {
-    const params = playerId ? { playerId } : {};
-    const response = await axios.get(`${API_URL}/${gameId}`, { params });
+export const getGameState = async (gameId: string, token?: string): Promise<GameState | null> => {
+    const headers = token ? { [TOKEN_HEADER]: token } : {};
+    const response = await axios.get(`${API_URL}/${gameId}`, { headers });
     return response.data;
 };
 
-export const performAction = async (gameId: string, playerId: string, actionType: string, targetId?: string): Promise<ActionResponse | string> => {
-    const response = await axios.post(`${API_URL}/${gameId}/action`, {
-        playerId,
-        actionType,
-        targetId
-    });
+export const performAction = async (gameId: string, token: string, actionType: string, targetId?: string): Promise<ActionResponse | string> => {
+    const response = await axios.post(
+        `${API_URL}/${gameId}/action`,
+        { actionType, targetId },
+        { headers: { [TOKEN_HEADER]: token } }
+    );
     return response.data;
 };

@@ -46,7 +46,7 @@ data class PlayerResponse(
 )
 
 data class ActionRequest(
-    val playerId: String,
+    val playerId: String = "",
     val actionType: String,
     val targetId: String? = null
 )
