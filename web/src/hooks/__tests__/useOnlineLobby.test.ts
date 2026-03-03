@@ -16,7 +16,7 @@ import { createGame, joinGame } from '../../api/gameApi';
 
 beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
+    sessionStorage.clear();
 });
 
 describe('useOnlineLobby', () => {
@@ -39,8 +39,8 @@ describe('useOnlineLobby', () => {
         expect(createGame).not.toHaveBeenCalled();
     });
 
-    it('creates game, saves player name, and navigates on host', async () => {
-        vi.mocked(createGame).mockResolvedValue({ gameId: 'abc123' });
+    it('creates game, saves token, and navigates on host', async () => {
+        vi.mocked(createGame).mockResolvedValue({ gameId: 'abc123', token: 'test-token' });
 
         const { result } = renderHook(() => useOnlineLobby());
 
@@ -48,7 +48,8 @@ describe('useOnlineLobby', () => {
         await act(() => result.current.handleHost());
 
         expect(createGame).toHaveBeenCalledWith('ONLINE', 'Alice');
-        expect(localStorage.getItem('werewolf_player')).toBe('Alice');
+        expect(sessionStorage.getItem('werewolf_token')).toBe('test-token');
+        expect(sessionStorage.getItem('werewolf_player')).toBe('Alice');
         expect(mockNavigate).toHaveBeenCalledWith('/online/game/abc123');
     });
 
@@ -76,8 +77,8 @@ describe('useOnlineLobby', () => {
         expect(result.current.error).toBe('Name and Game ID required');
     });
 
-    it('joins game, saves player name, and navigates', async () => {
-        vi.mocked(joinGame).mockResolvedValue({});
+    it('joins game, saves token, and navigates', async () => {
+        vi.mocked(joinGame).mockResolvedValue({ token: 'join-token' });
 
         const { result } = renderHook(() => useOnlineLobby());
 
@@ -88,7 +89,8 @@ describe('useOnlineLobby', () => {
         await act(() => result.current.handleJoin());
 
         expect(joinGame).toHaveBeenCalledWith('xyz789', 'Bob');
-        expect(localStorage.getItem('werewolf_player')).toBe('Bob');
+        expect(sessionStorage.getItem('werewolf_token')).toBe('join-token');
+        expect(sessionStorage.getItem('werewolf_player')).toBe('Bob');
         expect(mockNavigate).toHaveBeenCalledWith('/online/game/xyz789');
     });
 

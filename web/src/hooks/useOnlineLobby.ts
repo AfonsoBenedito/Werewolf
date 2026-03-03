@@ -13,7 +13,8 @@ export function useOnlineLobby() {
         if (!hostName) return setError("Name is required");
         try {
             const data = await createGame('ONLINE', hostName);
-            localStorage.setItem('werewolf_player', hostName);
+            sessionStorage.setItem('werewolf_token', data.token);
+            sessionStorage.setItem('werewolf_player', hostName);
             navigate(`/online/game/${data.gameId}`);
         } catch {
             setError("Failed to create game");
@@ -23,8 +24,9 @@ export function useOnlineLobby() {
     const handleJoin = async () => {
         if (!joinName || !joinId) return setError("Name and Game ID required");
         try {
-            await joinGame(joinId, joinName);
-            localStorage.setItem('werewolf_player', joinName);
+            const data = await joinGame(joinId, joinName);
+            sessionStorage.setItem('werewolf_token', data.token!);
+            sessionStorage.setItem('werewolf_player', joinName);
             navigate(`/online/game/${joinId}`);
         } catch {
             setError("Failed to join game. Check ID or name uniqueness.");

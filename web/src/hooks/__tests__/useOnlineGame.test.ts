@@ -38,8 +38,9 @@ import { getGameState, performAction, startGame } from '../../api/gameApi';
 beforeEach(() => {
     vi.clearAllMocks();
     stompMessageCallback = null;
-    localStorage.clear();
-    localStorage.setItem('werewolf_player', 'Alice');
+    sessionStorage.clear();
+    sessionStorage.setItem('werewolf_token', 'test-token');
+    sessionStorage.setItem('werewolf_player', 'Alice');
     mockUseParams.mockReturnValue({ gameId: 'game1' });
 });
 
@@ -89,7 +90,7 @@ describe('useOnlineGame', () => {
             expect(result.current.isLoading).toBe(false);
         });
 
-        expect(getGameState).toHaveBeenCalledWith('game1', 'Alice');
+        expect(getGameState).toHaveBeenCalledWith('game1', 'test-token');
         expect(result.current.gameState).toEqual(state);
         expect(result.current.myPlayer?.name).toBe('Alice');
         expect(result.current.error).toBeNull();
@@ -160,7 +161,7 @@ describe('useOnlineGame', () => {
         await act(() => result.current.handleAction('KILL', 'Bob'));
 
         expect(result.current.myNightTarget).toBe('Bob');
-        expect(performAction).toHaveBeenCalledWith('game1', 'Alice', 'KILL', 'Bob');
+        expect(performAction).toHaveBeenCalledWith('game1', 'test-token', 'KILL', 'Bob');
     });
 
     it('handleAction stores seer peekResult', async () => {
@@ -209,8 +210,8 @@ describe('useOnlineGame', () => {
         expect(result.current.seerResult).toBeNull();
     });
 
-    it('does not call performAction when playerName is missing', async () => {
-        localStorage.clear();
+    it('does not call performAction when token is missing', async () => {
+        sessionStorage.clear();
         vi.mocked(getGameState).mockResolvedValue(mockGameState());
 
         const { result } = renderHook(() => useOnlineGame());
