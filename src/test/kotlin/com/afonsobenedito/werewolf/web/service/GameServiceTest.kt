@@ -9,6 +9,7 @@ import com.afonsobenedito.werewolf.core.model.roles.*
 import com.afonsobenedito.werewolf.web.api.model.ActionRequest
 import com.afonsobenedito.werewolf.web.mapper.GameMapper
 import com.afonsobenedito.werewolf.web.repository.GameRepository
+import com.afonsobenedito.werewolf.web.repository.SessionRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,6 +28,9 @@ class GameServiceTest {
 
     @Mock
     lateinit var gameRepository: GameRepository
+
+    @Mock
+    lateinit var sessionRepository: SessionRepository
 
     @Mock
     lateinit var gameNotificationService: GameNotificationService
@@ -67,7 +71,7 @@ class GameServiceTest {
 
     @Test
     fun `createGame saves game and notifies`() {
-        val gameId = gameService.createGame(GameMode.ONLINE, "Host")
+        val (gameId, _) = gameService.createGame(GameMode.ONLINE, "Host")
 
         val gameCaptor = argumentCaptor<Game>()
         verify(gameRepository).save(gameCaptor.capture())
@@ -131,10 +135,9 @@ class GameServiceTest {
         val game = Game("test-game", "Test", GameMode.ONLINE)
         whenever(gameRepository.load("test-game")).thenReturn(game)
 
-        val player = gameService.joinGame("test-game", "NewPlayer")
+        val token = gameService.joinGame("test-game", "NewPlayer")
 
-        assertNotNull(player)
-        assertEquals("NewPlayer", player?.name)
+        assertNotNull(token)
         assertTrue(game.players.any { it.name == "NewPlayer" })
         verify(gameRepository).save(game)
         verify(gameNotificationService).notifyGameUpdate("test-game")

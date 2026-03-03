@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.spring") version "2.3.0"
     id("org.springframework.boot") version "3.5.9"
     id("io.spring.dependency-management") version "1.1.7"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("dev.detekt") version "2.0.0-alpha.2"
     application
 }
 

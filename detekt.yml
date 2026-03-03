@@ -1,10 +1,10 @@
 complexity:
   CyclomaticComplexMethod:
-    threshold: 25
+    allowedComplexity: 25
   TooManyFunctions:
-    thresholdInClasses: 20
+    allowedFunctionsPerClass: 20
   LongMethod:
-    threshold: 80
+    allowedLines: 80
 
 exceptions:
   TooGenericExceptionCaught:
